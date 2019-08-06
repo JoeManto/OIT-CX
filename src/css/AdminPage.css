@@ -1,0 +1,153 @@
+#adminContainer {
+    margin: 5% auto 0 0;
+}
+
+.editInputCnt {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    float: left;
+    background-color: #f6f5f7;
+    box-shadow: #DEDEDE 5px 0px 8px;
+    margin-bottom: 50px;
+}
+
+.setting-cnt {
+    position: static;
+
+}
+
+.editElement {
+
+}
+
+.innerElements-cnt {
+    position: relative;
+    margin-left: 5%;
+    padding: 20px;
+}
+
+.editElement label {
+    font-style: normal;
+    font-weight: bold;
+}
+
+.headerTitleCnt {
+    padding: 15px;
+    color: #212121;
+    background-color: white;
+    box-shadow: #DEDEDE 5px 5px 8px;
+    margin-bottom: 10px;
+}
+
+.headerTitleCnt h3 {
+    margin-left: 5%;
+    font-style: italic;
+}
+
+.headerTitleCnt p {
+    margin-left: 5%;
+    color: #212121;
+    font-weight: lighter;
+}
+
+.admin-sub-header {
+    color: #212121;
+    font-size: .85em;
+    font-weight: normal;
+    max-width: 280px;
+}
+
+.progressAnimated {
+    width: 100%;
+    float: right;
+    border: none;
+    clip-path: inset(0% 45% 0% 45% round 10%);
+    padding-bottom: 2px;
+    background: linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);
+    background-size: 400% 400%;
+    -webkit-animation: Gradient 2s ease forwards;
+    -moz-animation: Gradient 2s ease forwards;
+    animation: Gradient 2s ease forwards;
+    animation-delay: 20ms;
+}
+
+.expandable-inp-cnt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.matches-ctn {
+    border-radius: 10px;
+    margin-top: 5px;
+    background-color: #fcfcfc;
+    padding: 30px;
+}
+
+.searchMatch {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.matchLink {
+    font-weight: bolder;
+    margin: auto 0;
+
+}
+
+@-webkit-keyframes Gradient {
+    0% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 45% 0% 45% round 10%);
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    90% {
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+    100% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+}
+
+@-moz-keyframes Gradient {
+    0% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 45% 0% 45% round 10%);
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    90% {
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+    100% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+}
+
+@keyframes Gradient {
+    0% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 45% 0% 45% round 10%);
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    90% {
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+    100% {
+        background-position: 0% 50%;
+        clip-path: inset(0% 0% 0% 0% round 0);
+    }
+}

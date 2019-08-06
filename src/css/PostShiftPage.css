@@ -1,0 +1,23 @@
+.contentPostShifts {
+    position: relative;
+    max-width: 400px;
+    min-width: auto;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.dropdown-cont {
+    margin-right: 1.12em;
+}
+
+#pos-checkbox {
+    margin: 0 10px 0 0;
+}
+
+#SelectionLabel {
+    margin-right: 1.12em;
+}
+
+#datePickerCont {
+    margin: auto 0 auto 20px;
+}

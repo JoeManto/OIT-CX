@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>HtmlEmail</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Poppins&display=swap');
+        @media only screen and (min-width: 600px) {
+            #email-header{
+                width:600px;
+            }
+            .option{
+                font-size: 1.4em;
+            }
+            .flex-row p {
+                font-size: 1.4em;
+            }
+        }
+        body{
+            font-family: 'Poppins', sans-serif;
+            margin:0;
+            background: rgb(4,4,4);
+        }
+        #email-cnt{
+            display:flex;
+            flex-direction:column;
+            background-Color:white;
+            margin-top: 20px;
+            height:100vh;
+        }
+        #email-header{
+            background-Color:white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            color:gold;
+            text-align:center;
+        }
+        #email-header h1{
+            font-weight:bold;
+        }
+        #email-footer{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            color:lightgrey;
+        }
+        #email-footer p{
+            line-height:2px;
+            font-size:.8em;
+        }
+        #email-body{
+            border-radius:20px;
+            background-Color:white;
+            margin: 0 auto 20px;
+            padding-bottom:20px;
+            display:flex;
+            flex-direction:column;
+        }
+        .flex-row{
+            margin:0 30px;
+            display:flex;
+            flex-direction:row;
+        }
+        .option{
+            font-weight:bolder;
+            font-size:1.1em;
+            color:gold;
+            margin-Right:1.2em;
+        }
+        #view-btn{
+            padding:10px;
+            background:#ff3355;
+            text-align:center;
+            max-width:200px;
+            min-width:200px;
+            color:white;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div id="email-cnt">
+    <div id="email-body">
+        <div id ="email-header">
+            <h2>Open Shift</h2>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Postedby:</span>Manto, Joe</p>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Date Posted:</span>9/20/2019
+            <p>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Status:</span>open</p>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Dates:</span>9/20/2019 > 9/21/2019
+            <p>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Times:</span>5:00pm > 10:00pm
+            <p>
+        </div>
+        <div class="flex-row">
+            <p><span class="option">Type:</span>Calls
+            <p>
+        </div>
+
+        <div class="flex-row"><p>"I'm posting this because I am leaving"</p></div>
+        <a id = "view-btn" href="something">View Shift</a>
+    </div>
+    <div id = "email-footer">
+        <p>Western Michigan University</p>
+        <p>(269) 387-4357</p>
+        <p>[no-reply]-oit-shift-management-tool</p>
+        <p>compiled on: 5/10/2019</p>
+    </div>
+</div>
+</body>

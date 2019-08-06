@@ -1,0 +1,212 @@
+.hidden {
+    display: none;
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
+.flexRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.coloredButton {
+    margin-top: 35px;
+    border-radius: 2px;
+    border: 3px solid #fcc30f;
+    width: 150px;
+    color: #292929;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 80ms ease-in;
+}
+
+.yellowBordered {
+    border: 2px solid #ffcc33;
+}
+
+.cautionText {
+    color: #ffcc33;
+}
+
+.failureText {
+    color: red;
+}
+
+.clearColor {
+    color: black
+}
+
+.shadow {
+    box-shadow: #282c34;
+}
+
+.fadingButton {
+    background: white;
+    color: #ffb347;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 1.1em;
+    padding: 0 2em;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
+}
+
+.fadingButton:hover {
+    background: #fff;
+    color: #ffb347;
+}
+
+.fadingButton:before, .fadingButton:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
+    background: #ffb347;
+    transition: 400ms ease all;
+}
+
+.fadingButton:after {
+    right: inherit;
+    top: inherit;
+    left: 0;
+    bottom: 0;
+}
+
+.fadingButton:hover:before, .fadingButton:hover:after {
+    width: 100%;
+    transition: 800ms ease all;
+}
+
+.fadingButtonGrey {
+    background: #f6f5f7;
+    color: #212121;
+    border: none;
+    position: relative;
+    height: 40px;
+    font-size: 1.1em;
+    padding: 0 2em;
+    cursor: pointer;
+    transition: 800ms ease all;
+    outline: none;
+}
+
+.fadingButtonGrey:hover {
+    background: #f6f5f7;
+    color: #212121;
+}
+
+.fadingButtonGrey:before, .fadingButtonGrey:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 2px;
+    width: 0;
+    background: #212121;
+    transition: 400ms ease all;
+}
+
+.fadingButtonGrey:after {
+    right: inherit;
+    top: inherit;
+    left: 0;
+    bottom: 0;
+}
+
+.fadingButtonGrey:hover:before, .fadingButtonGrey:hover:after {
+    width: 100%;
+    transition: 800ms ease all;
+}
+
+.clearButton {
+    height: 40px;
+    background-color: white;
+    border: none;
+    color: black;
+    cursor: pointer;
+    outline: none;
+}
+
+#scroll-wrap {
+    margin-bottom: 30px;
+}
+
+#header-background {
+    position: absolute;
+    width: 100%;
+    height: 400px;
+    z-index: -1;
+    background: url("../background.png");
+}
+#headerSpacer{
+    margin-bottom: 280px;
+}
+
+.smallLineHeight {
+    line-height: 16px;
+}
+
+.marginLess {
+    margin: 0;
+}
+
+.inlineh3 {
+    margin: 0;
+}
+
+.sub-header {
+    font-weight: lighter;
+    font-size: 1.3em;
+    margin-bottom: 30px;
+}
+
+.inputBox-1-normal {
+    padding: 10px;
+    border: none;
+    transition: border-bottom .2s;
+}
+
+.inputBox-1-normal:hover {
+    color: white;
+    background-color: #212121;
+    border-bottom: white solid 5px;
+}
+
+.inputBox-2-success {
+    padding: 10px;
+    border: none;
+    transition: border-bottom .2s;
+}
+
+.inputBox-2-success:hover {
+    color: white;
+    background-color: #212121;
+    border-bottom: #00e676 solid 5px;
+}
+
+.inputBox-3-error {
+    line-height: 200%;
+    padding: 10px;
+    border: none;
+    transition: border-bottom .2s;
+}
+
+.inputBox-3-error:hover {
+    color: white;
+    background-color: #212121;
+    border-bottom: #e53935 solid 5px;
+}

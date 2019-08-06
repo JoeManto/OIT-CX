@@ -1,0 +1,33 @@
+.contentShifts {
+    margin-bottom: 0;
+    margin-top: 20px;
+    position: relative;
+    min-width: 400px;
+}
+
+#shiftCont:hover {
+    transform: scale(1.009, 1.009);
+    box-shadow: 0 5px 9px #8999;
+}
+
+.shiftFlexCont {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: auto;
+    justify-content: center;
+}
+
+.ShiftListItem {
+    margin-left: 20px;
+}
+
+.shiftListItemHeader {
+    color: darkgray;
+}
+
+#shift-dialog-cnt {
+    padding-top: 20px;
+    padding-left: 10px;
+    padding-bottom: 20px;
+}
