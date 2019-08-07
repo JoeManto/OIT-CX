@@ -30,9 +30,13 @@
     transition: transform 80ms ease-in;
 }
 
-.yellowBordered {
+.yellowBottomBordered {
     border: none;
     border-bottom: 2px solid #ffcc33;
+}
+
+.yellowBordered {
+    border: 2px solid #ffcc33;
 }
 
 .cautionText {

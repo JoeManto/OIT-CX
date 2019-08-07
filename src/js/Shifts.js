@@ -286,12 +286,12 @@ export default class Shifts extends React.Component {
                 <Header title={"Shifts"}/>
                 <div style={{marginTop:"100px"}}/>
                 <div>
-                    <div className={"Content contentShifts yellowBordered"}>
+                    <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "black"}}>Open Shifts</h3>
                         <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with</p>
                     </div>
                     <ShiftsWrapper covered={0}/>
-                    <div className={"Content contentShifts yellowBordered"}>
+                    <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "black"}}>Picked Up Shifts</h3>
                         <p style={{color: "darkgrey"}}>Just for viewing</p>
                     </div>

@@ -15,7 +15,7 @@ const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
 
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
-const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.cr');
+const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
 const sslOptions = {
     key: key,
     cert: cert
@@ -69,9 +69,9 @@ app.use(express.static('client'));
 setInterval(() => {
     shiftServiceChild.send('CHECK');
 }, 20000);
-setInterval(() => {
+/*setInterval(() => {
     shiftServiceChild.send('PRUNE');
-}, 200000);
+}, 200000);*/
 
 shiftServiceChild.on('message', function (m) {
     console.log('[AUTO][SHIFT WORKER] : ' + m);
@@ -79,10 +79,7 @@ shiftServiceChild.on('message', function (m) {
 
 let apiService = new ApiKeyService();
 
-//let mailService = new Mail();
-/*mailService.sendMail(mailService.createShiftPosting({poster:"Joseph Manto"},
-    {start:new Date(),end:new Date(),type:"walk-in",id:2524},"joe.m.manto@wmich.edu"),
-    "helpdesk");*/
+let mailService = new Mail();
 
 //-------------------------ENDPOINTS--------------------------------------
 
@@ -191,26 +188,27 @@ app.post('/addUser', (req, res) => {
 });
 
 app.post('/postShift', (req, res) => {
-    let postUser = req.body.user;
+    let postUserID = req.body.user;
     let shift = req.body.shiftDetails;
 
-    if (apiService.validHashedKeyForUser(postUser, req.body.key)) {
-        let sqlUserLook = "select id,groupRole from users where empybnid = ?";
+    if (apiService.validHashedKeyForUser(postUserID, req.body.key)) {
+        let sqlUserLook = "select * from users where empybnid = ?";
         let sqlAddShift = "Insert into shifts (coveredBy,postedBy,availability,positionID," +
             "groupID,perm,shiftDateStart,shiftDateEnd,message) values (NULL,?,0,?,?,?,?,?,?)";
         let group;
 
-        sqlUserLook = mysql.format(sqlUserLook, [postUser]);
+        sqlUserLook = mysql.format(sqlUserLook, [postUserID]);
         db.query(sqlUserLook, (err, result) => {
             if (err) {
                 res.send({res: "shiftpost-error"});
                 return;
             }
-            postUser = result[0]['id'];
+            postUserID = result[0]['id'];
             group = result[0]['groupRole'];
+            let user = result[0];
             if (shift.selectedPosition === null) shift.selectedPosition = 1;
 
-            sqlAddShift = mysql.format(sqlAddShift, [postUser,
+            sqlAddShift = mysql.format(sqlAddShift, [postUserID,
                 parseInt(shift.selectedPosition),
                 group,
                 shift.permShiftPosting === "off" ? 0 : 1,
@@ -230,6 +228,7 @@ app.post('/postShift', (req, res) => {
                         let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
                         shiftServiceChild.send('ADD ' + message);
                     });
+                    mailService.sendMail(shift,user,group);
                     res.send({res: "success"});
                 }
             });

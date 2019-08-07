@@ -51,7 +51,7 @@ class ShiftService {
         return dupShiftStatus;
     }
 
-      static removeShifts(shifts){
+     removeShifts(shifts){
         let sql = "";
         for(let i = 0;i<shifts.length;i++){
             if(i === 0)
@@ -69,11 +69,13 @@ class ShiftService {
                 }
             });
         }
+        this.pruneOpenShifts()
     }
 
     search(){
         let shiftsToRemove = [];
         let now = new Date().getTime();
+        this.openShifts.filter(shift => shift !== null);
         for(let i = 0;i<this.openShifts.length;i++){
             console.log("[SHIFT WORKER] : validated shift with ID = "+this.openShifts[i].shiftID);
             if(this.openShifts[i].shiftDateEnd <= now){
@@ -81,8 +83,7 @@ class ShiftService {
                 this.openShifts[i] = null;
             }
         }
-        this.openShifts.filter(shift => shift !== null);
-        if(shiftsToRemove.length>0) ShiftService.removeShifts(shiftsToRemove);
+        if(shiftsToRemove.length>0) this.removeShifts(shiftsToRemove);
     }
 }
 

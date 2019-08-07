@@ -1,54 +1,52 @@
 const nodemailer = require("nodemailer");
+const mysql = require("mysql");
+const config = require("./SecretConfig");
+
+//DataBase Connection Config
+const db = mysql.createConnection(config.db_config());
+
+//Test DataBase Connection
+db.connect((err) => {
+    if (err) {
+        throw err;
+    }
+    console.log('mysql connected...');
+});
 
 class Mail {
     constructor(){
-        this.helpdeskTransport = nodemailer.createTransport({
-            host: "smtp.office365.com",
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: "jfj5666@wmich.edu",
-                pass: "",
-            },
-            tls: {
-                minVersion: 'TLSv1.1',
-            },
-        });
+        this.adminTransporter = nodemailer.createTransport(config.transporter_config());
     }
 
-    async sendMail(postData,sender){
-        let transporters = [];
-        switch (sender) {
-            case "helpdesk":
-                transporters.push(this.helpdeskTransport);
-            case "labs":
-                break;
-            case "calls":
-                break;
-            default:
-                break;
-        }
-        for(let i = 0;i<transporters.length;i++){
-            await transporters[i].sendMail(postData,()=>{
-                console.log("Mail Sent");
+    async sendMail(shiftData,UserData,groupID){
+        let gatherMailData = new Promise(function (resolve, reject) {
+            db.query(mysql.format("select emailList from groupRoles where groupID = ?"), [groupID], (err, result) => {
+                if (err) {
+                    reject({error:"couldn't fetch email lists"});
+                    return;
+                }
+                let target = result[0]['emailList'];
+                let mailData = {
+                    from: '"Joseph Manto" <joe.m.manto@wmich.edu>',
+                    to: target,
+                    subject: "OIT Shift Posting",
+                    text: "The Following shift was posted by " + UserData.surname + ", " + UserData.empyname +
+                    "\n\nShift Dates:\n" + new Date(shiftData.date).toLocaleString() + "\nto\n " + new Date(shiftData.endDate).toLocaleString() +
+                    "\n\nType: " + shiftData.selectedPosition +
+                    "\nStatus: Open" +
+                    "\nPermanent? " + (shiftData.permShiftPosting === 'off' ? "no" : "yes") + "\nDate Posted: " + new Date().toLocaleString(),
+                    html: ""
+                };
+                resolve({res:mailData})
             });
-        }
-    }
+        });
 
-    createShiftPosting(postInfo,shiftInfo,to){
-        let mailData = {
-            from:'"Joseph Manto" <joe.m.manto@wmich.edu>',
-            to:to,
-            subject: "Test Mail",
-            text:"The Following shift was posted by "+postInfo.poster+
-                "\n\nShift Dates:\n"+shiftInfo.start.toLocaleString()+"\nto\n "+shiftInfo.end.toLocaleString()+
-                "\n\nType: "+shiftInfo.type+
-                "\nStatus: Open"+
-                "\nDate Posted: "+new Date().toLocaleString()+
-                "\n\nShift ID: "+shiftInfo.id,
-            html:""
-        };
-        return mailData;
+        gatherMailData
+            .then(async (result) => {
+                //await this.adminTransporter.sendMail(result.res,()=>console.log("mail sent"));
+                console.log("mail sending is disabled");
+            })
+            .catch(error=>console.log(error));
     }
 }
 

@@ -40,7 +40,7 @@ export function Header(props) {
 
     return (
         <div id="HeaderCont">
-            <h2 style={{fontStyle: "italic"}} className={"left"}>{props.title}</h2>
+            <h2 style={{fontStyle: "oblique"}} className={"left"}>{props.title}</h2>
             <p onClick={handleLogout} id="logout" className={"right"}>{getCookie("user-bnid")} <a href={"/"}
                                                                                                   style={{color: '#282c34'}}>logout</a>
             </p>
