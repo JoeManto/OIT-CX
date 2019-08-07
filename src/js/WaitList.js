@@ -28,20 +28,19 @@ function Checkin(props) {
  * can handle logout actions
  * @constructor -
  */
-export function Header() {
+export function Header(props) {
     function handleLogout() {
         if (getCookie('user-bnid')) {
             logout().then(()=>{console.log("logout success")}).catch();
             //set the cookie to null so the page will auto redirect
             //to the LandingPage
             setCookie("user-bnid", null, 1);
-
         }
     }
 
     return (
         <div id="HeaderCont">
-            <h2 style={{fontStyle: "italic"}} className={"left"}>Cool Name</h2>
+            <h2 style={{fontStyle: "italic"}} className={"left"}>{props.title}</h2>
             <p onClick={handleLogout} id="logout" className={"right"}>{getCookie("user-bnid")} <a href={"/"}
                                                                                                   style={{color: '#282c34'}}>logout</a>
             </p>
@@ -139,7 +138,7 @@ class WaitList extends React.Component {
         return (
             <div id="scroll-wrap">
                 <div id="header-background"> </div>
-                <Header/>
+                <Header title={"WaitList"}/>
                 <div className={"Content"}>
                     <Checkin/>
                     <h2 className={"coloredButton"}>My Records</h2>

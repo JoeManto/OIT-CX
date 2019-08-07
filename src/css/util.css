@@ -31,7 +31,8 @@
 }
 
 .yellowBordered {
-    border: 2px solid #ffcc33;
+    border: none;
+    border-bottom: 2px solid #ffcc33;
 }
 
 .cautionText {

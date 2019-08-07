@@ -610,7 +610,7 @@ export default class PostShiftPage extends React.Component {
                 {confirmStatus === "wait-confirm" &&
                 <div id="scroll-wrap">
                     <div id="header-background"></div>
-                    <Header/>
+                    <Header title={"Shift Posting"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
                         <hr/>
