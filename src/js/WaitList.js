@@ -1,7 +1,7 @@
 import React from 'react';
 import {Footer} from './LandingPage';
 import {getCookie, setCookie} from "./Authentication";
-import {recordFetch} from "./DataFetchHandler";
+import {recordFetch,logout} from "./DataFetchHandler";
 import "../css/WaitList.css"
 import "../css/util.css"
 
@@ -31,9 +31,11 @@ function Checkin(props) {
 export function Header() {
     function handleLogout() {
         if (getCookie('user-bnid')) {
+            logout().then(()=>{console.log("logout success")}).catch();
             //set the cookie to null so the page will auto redirect
             //to the LandingPage
             setCookie("user-bnid", null, 1);
+
         }
     }
 

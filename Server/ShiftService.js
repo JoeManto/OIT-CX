@@ -1,12 +1,8 @@
 const mysql = require('mysql');
+const config = require('./SecretConfig');
 
 //DataBase Connection Config
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'nodemysql'
-});
+const db = mysql.createConnection(config.db_config());
 
 //Test DataBase Connection
 db.connect((err) => {
@@ -17,7 +13,6 @@ db.connect((err) => {
 });
 
 class ShiftService {
-
     constructor(){
         this.openShifts = [];
         this.gatherOpenShifts();
@@ -83,8 +78,10 @@ class ShiftService {
             console.log("[SHIFT WORKER] : validated shift with ID = "+this.openShifts[i].shiftID);
             if(this.openShifts[i].shiftDateEnd <= now){
                 shiftsToRemove.push(this.openShifts[i]);
+                this.openShifts[i] = null;
             }
         }
+        this.openShifts.filter(shift => shift !== null);
         if(shiftsToRemove.length>0) ShiftService.removeShifts(shiftsToRemove);
     }
 }

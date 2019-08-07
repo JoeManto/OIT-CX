@@ -51,6 +51,30 @@ export function shiftFetch(user = getCookie("user-bnid"), covered) {
     })();
 }
 
+export function logout() {
+    return (async () => {
+        const rawResponse = await fetch('/unAuth', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user: getCookie("user-bnid"),
+                key: getCookie("key"),
+            })
+        });
+        if (rawResponse.status !== 200)
+            return false;
+        const content = await rawResponse.json();
+        if (content.res === "apiKey-error") {
+            console.log("apikey-error");
+            //window.location = IP();
+        }
+        return (content);
+    })();
+}
+
 export function getPositionsForUser() {
     return (async () => {
         const rawResponse = await fetch('/getPositions', {

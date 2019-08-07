@@ -63,6 +63,7 @@ class ApiKeyService {
             if (this.openKeys[i].owner === user) {
                 console.log("key expired for user " + this.openKeys[i].owner);
                 this.openKeys[i] = null;
+                this.openKeys = this.openKeys.filter(key => key !== null);
             }
         }
     }
@@ -80,10 +81,8 @@ class ApiKeyService {
             console.log("checked for expired users");
 
             let nowMS = Math.floor(new Date().getTime()/1000.0);
-
             if (this.openKeys[i] && this.openKeys[i].endTimeStamp <= nowMS) {
                 this.expireOpenKeyForUser(this.openKeys[i].owner);
-                this.openKeys = this.openKeys.filter(key => key !== null);
             }
             if (i === this.openKeys.length - 1) {
                 i = 0;

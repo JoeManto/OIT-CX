@@ -1,22 +1,28 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
-const LDAPConfig = require('./LDAPConfig');
+const config = require('./SecretConfig');
 const ldapWrapper = require('./Ldapwrapper');
 const ApiKeyService = require('./ApiKeyService');
 const Mail = require('./Mail');
 
+//----------------------------SETUP----------------------------------
+
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
 
+const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
+const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.cr');
+const sslOptions = {
+    key: key,
+    cert: cert
+};
+
 //DataBase Connection Config
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'nodemysql'
-});
+const db = mysql.createConnection(config.db_config());
 
 //Test DataBase Connection
 db.connect((err) => {
@@ -35,7 +41,7 @@ db.connect((err) => {
     port: ':636',
     pw: 'x------x',
  */
-let ldapConfig = LDAPConfig.config();
+let ldapConfig = config.ldap_config();
 
 //---LDAP Connection options for a new LDAPAuth Object with LDAP config options
 /*
@@ -58,16 +64,16 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client'));
 
-//--------------------------------------------------------------
+//----------------------------SERVICES----------------------------------
 
-function callRecurringProcesses(){
+setInterval(() => {
     shiftServiceChild.send('CHECK');
-}
+}, 20000);
+setInterval(() => {
+    shiftServiceChild.send('PRUNE');
+}, 200000);
 
-setInterval(()=>{shiftServiceChild.send('CHECK');}, 20000);
-setInterval(()=>{shiftServiceChild.send('PRUNE');}, 200000);
-
-shiftServiceChild.on('message',function (m) {
+shiftServiceChild.on('message', function (m) {
     console.log('[AUTO][SHIFT WORKER] : ' + m);
 });
 
@@ -78,8 +84,22 @@ let apiService = new ApiKeyService();
     {start:new Date(),end:new Date(),type:"walk-in",id:2524},"joe.m.manto@wmich.edu"),
     "helpdesk");*/
 
+//-------------------------ENDPOINTS--------------------------------------
+
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + '/client'));
+    //res.sendFile(path.join(__dirname + '/client'));
+    res.send({res:"hello"});
+});
+
+app.post('/unAuth',(req,res) => {
+   console.log("attempting to remove access for user "+req.body.user);
+   if(apiService.validHashedKeyForUser(req.body.user,req.body.key)){
+       console.log("removed user");
+       apiService.expireOpenKeyForUser(req.body.user);
+       res.send({res:"success"});
+   }else{
+       res.send({res: "apiKey-error"});
+   }
 });
 
 app.post('/auth', (req, res) => {
@@ -116,27 +136,27 @@ app.post('/auth', (req, res) => {
     });
 });
 
-app.post('/getUsers',(req,res)=>{
+app.post('/getUsers', (req, res) => {
     let sqlUserLookUp = "select empyname,surname,empybnid from users";
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
         db.query(sqlUserLookUp, (err, result) => {
-            if(err || result.length === 0){
-                res.send({res: "user-error",error:"Couldn't search for user"});
+            if (err || result.length === 0) {
+                res.send({res: "user-error", error: "Couldn't search for user"});
                 return;
             }
-            res.send({res:result});
+            res.send({res: result});
         });
-    }else{
+    } else {
         res.send({res: "apiKey-error"});
     }
 });
 
-app.post('/addUser',(req,res)=>{
+app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
 
         let getInputMappingIndex = (key) => {
-            for(let i = 0;i<req.body.keys.length;i++){
-                if(key === req.body.keys[i]){
+            for (let i = 0; i < req.body.keys.length; i++) {
+                if (key === req.body.keys[i]) {
                     return req.body.inputs[i];
                 }
             }
@@ -146,26 +166,26 @@ app.post('/addUser',(req,res)=>{
         sqlUserLookUp = mysql.format(sqlUserLookUp, [getInputMappingIndex("bnid")]);
         db.query(sqlUserLookUp, (err, result) => {
             if (err) {
-                res.send({res: "user-error",error:"Couldn't search for user"});
+                res.send({res: "user-error", error: "Couldn't search for user"});
                 return;
             }
-            if(result.length !== 0){
-                res.send({res:"user-already-created",error:"user already exists"});
+            if (result.length !== 0) {
+                res.send({res: "user-already-created", error: "user already exists"});
                 return;
             }
             let createUser = "insert into users (empyname,empybnid,role,groupRole) values (?,?,?,?)";
-            createUser = mysql.format(createUser, [getInputMappingIndex("fstName"),getInputMappingIndex("bnid"),0,0]);
+            createUser = mysql.format(createUser, [getInputMappingIndex("fstName"), getInputMappingIndex("bnid"), 0, 0]);
             db.query(createUser, (err, result) => {
                 if (err) {
-                    res.send({res: "user-error",error:"Couldn't search for user"});
+                    res.send({res: "user-error", error: "Couldn't search for user"});
                     return;
                 }
-                if(result.length !== 0){
-                    res.send({res:"success"});
+                if (result.length !== 0) {
+                    res.send({res: "success"});
                 }
             });
         });
-    }else{
+    } else {
         res.send({res: "apiKey-error"});
     }
 });
@@ -198,17 +218,17 @@ app.post('/postShift', (req, res) => {
                 shift.endDate,
                 shift.message]);
 
-            db.query(sqlAddShift, (err, result) => {
+            db.query(sqlAddShift, (err, _) => {
                 if (err) {
                     console.log(err);
                     res.send({res: "shiftpost-error"});
                 } else {
-                    db.query("select shiftDateEnd,shiftID from shifts where shiftID = (Select MAX(shiftID) from shifts)",(err,result)=>{
-                       if(err){
-                           console.log(err);
-                       }
-                       let message = result[0]['shiftID']+" "+result[0]['shiftDateEnd'];
-                       shiftServiceChild.send('ADD '+message);
+                    db.query("select shiftDateEnd,shiftID from shifts where shiftID = (Select MAX(shiftID) from shifts)", (err, result) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                        let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
+                        shiftServiceChild.send('ADD ' + message);
                     });
                     res.send({res: "success"});
                 }
@@ -370,6 +390,8 @@ app.post('/rec', (req, res) => {
     }
 });
 
-app.listen('5000', () => {
-    console.log('Server started on port 5000');
+let server = https.createServer(sslOptions, app);
+server.listen(5000, () => {
+    console.log("server starting on port : " + 5000)
 });
+
