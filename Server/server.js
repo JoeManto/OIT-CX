@@ -81,6 +81,9 @@ let apiService = new ApiKeyService();
 
 let mailService = new Mail();
 
+//----------------------Helper Functions----------------------------------
+
+
 //-------------------------ENDPOINTS--------------------------------------
 
 app.get('/', function (req, res) {
@@ -103,6 +106,7 @@ app.post('/auth', (req, res) => {
     console.log("Attempting to auth user " + req.body.user);
     let user = req.body.user, pass = req.body.pass;
     let foundMatchForUser = false;
+    let userRole = 0;
     db.query("SELECT * FROM users", (err, result) => {
         if (err) {
             res.send({res: "auth-failed"});
@@ -110,8 +114,9 @@ app.post('/auth', (req, res) => {
             for (let i = 0; i < result.length; i++) {
                 if (result[i]["empybnid"] === user) {
                     foundMatchForUser = true;
+                    userRole = result[i]['role'];
                     if (result[i]['password'] === pass) {
-                        let key = apiService.createKeyForUser(user, 60);
+                        let key = apiService.createKeyForUser(user, result[i]['role'] === 1,60);
                         res.send({res: "auth-success", error: "no-error", key: key});
                         return;
                     }
@@ -121,7 +126,7 @@ app.post('/auth', (req, res) => {
         if (foundMatchForUser) {
             ldapWrapper.authUser(options, user, pass)
                 .then((_) => {
-                    let key = apiService.createKeyForUser(user, 60);
+                    let key = apiService.createKeyForUser(user, userRole === 1,60);
                     res.send({res: "auth-success", error: "no-error", key: key});
                 })
                 .catch((error) => {
@@ -135,7 +140,7 @@ app.post('/auth', (req, res) => {
 
 app.post('/getUsers', (req, res) => {
     let sqlUserLookUp = "select empyname,surname,empybnid from users";
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         db.query(sqlUserLookUp, (err, result) => {
             if (err || result.length === 0) {
                 res.send({res: "user-error", error: "Couldn't search for user"});
@@ -149,8 +154,7 @@ app.post('/getUsers', (req, res) => {
 });
 
 app.post('/addUser', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
-
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         let getInputMappingIndex = (key) => {
             for (let i = 0; i < req.body.keys.length; i++) {
                 if (key === req.body.keys[i]) {

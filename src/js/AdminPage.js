@@ -281,8 +281,10 @@ export default class BlockController extends React.Component {
     }
     componentWillMount() {
         getUsers()
-            .then(users=>this.setState({userData:users.res}))
-            .catch();
+            .then((users) => {
+                this.setState({userData:users.res})
+            })
+            .catch(_=>this.setState({userData:[]}));
     }
     render() {
         const inputSearchStyle = {

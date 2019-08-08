@@ -12,17 +12,20 @@ class ApiKeyService {
      * @param user The user is the bnid is the id of the user that went through the auth
      * The user id is used as the owner for the key. Both the owner and the hashed key need to be correct upon
      * key validation.
+     * @param admin if the user is admin account
      * @param timeLength is the length the key is going to be valid for. Time length is in seconds
      * @returns {Array} the hash key to be sent to the client for local storage.
      */
-    createKeyForUser(user, timeLength) {
+    createKeyForUser(user,admin,timeLength) {
         let actual = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
         const endTime = timeLength + Math.floor(new Date().getTime()/1000.0);
         let key = {
             hash: sha(actual),
             endTimeStamp: endTime,
             owner: user,
+            admin:admin,
         };
+        console.log(key);
         for (let i = 0; i < this.openKeys.length; i++) {
             if (this.openKeys[i].owner === user) {
                 this.openKeys[i] = key;
@@ -40,14 +43,21 @@ class ApiKeyService {
      * owner and key match any of the open keys
      * @param user user requesting data
      * @param hash local cookie key
+     * @param adminNeeded if validation is for an admin account
      * @returns {boolean} validation status
      */
-    validHashedKeyForUser(user, hash) {
+    validHashedKeyForUser(user, hash,adminNeeded = false) {
         for (let i = 0; i < this.openKeys.length; i++) {
             if (this.openKeys[i].owner === user) {
                 if (this.openKeys[i].hash === hash) {
                     console.log("key found for user " + user);
-                    return true;
+                    if(adminNeeded){
+                        if(this.openKeys[i].admin)
+                            return true;
+                    }else{
+                        return true;
+                    }
+                    return false;
                 }
             }
         }
