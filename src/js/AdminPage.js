@@ -3,7 +3,8 @@ import '../css/AdminPage.css';
 import '../css/util.css';
 import {DatePicker} from './PostShiftPage.js';
 import {getCookie} from './Authentication'
-import {adminOperation,getUsers} from "./DataFetchHandler";
+import {adminOperation,getUsers,getPositionsForUser} from "./DataFetchHandler";
+import {Header} from "./WaitList";
 
 /**
  *[BLOCK TYPE]
@@ -57,7 +58,7 @@ const blocks = [
                 },
                 {
                     labelVal: "Position",
-                    comp: {type: "select", options: ["", "Helpdesk", "Calls", "Labs"], index: 3},
+                    comp: {type: "select", options: "positionData", index: 3},
                     subLabelVal: "",
                 },
                 {
@@ -105,6 +106,7 @@ class Block extends React.Component {
             }
         }
         this.state = {
+            positionData:[""],
             inputValues: inputValues,
             error: {status: "untested", message: ""},
             showProgress: false,
@@ -114,6 +116,13 @@ class Block extends React.Component {
         this.handleDateChange = this.handleDateChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSelection = this.handleSelection.bind(this);
+    }
+
+    componentWillMount() {
+        getPositionsForUser(true)
+            .then((positionData)=>{
+                this.setState({positionData:[" ",...positionData.res]});
+            }).catch(err=>console.log(err));
     }
 
     /*All functions below are event handlers for the onChange call back for all the editable components.
@@ -160,6 +169,9 @@ class Block extends React.Component {
         await delay(2000);
 
         let values = this.state.inputValues;
+
+        console.log("values : "+values);
+
         let errorStatus = {status: "confirmed", message: this.props.data.confirmMessage};
         for (let i = 0; i < values.length; i++) {
             if (values[i] === "") {
@@ -197,13 +209,22 @@ class Block extends React.Component {
                                className={"inputBox-1-normal"}
                                placeholder={data.placeholder} type="text"/>);
             case "select":
+                let mappedData = [""];
+
+                if(data.options === "positionData"){
+                    mappedData = this.state.positionData.map((obj,i)=>{
+                        return (<option key={i} value={obj.id} id={obj.id}>{obj.posName}</option>);
+                    });
+                }else{
+                    mappedData = data.options.map((obj,i)=>{
+                        return (<option key={i} value={i-1} id={obj}>{obj}</option>);
+                    });
+                }
                 return (
                     <select onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
                             style={{margin: "auto 0", marginLeft: "20px"}}
                             value={this.state.inputValues[data.index]}
-                            name={data.index}>{
-                        data.options.map((obj, i) => {
-                            return (<option key={i} value={obj} id={obj}>{obj}</option>);
+                            name={data.index}>{mappedData
                         })
                     }
                     </select>
@@ -291,7 +312,6 @@ export default class BlockController extends React.Component {
             width: "20em",
             height: "6.5em",
         };
-        console.log(this.state.userData);
         return (
             <div>
                 <HeaderContainer title={"User Search"} subtitle={"Type in a user's first name, surname or bnid"}/>
@@ -444,7 +464,6 @@ export class ExpandableInput extends React.Component {
                                 <a className={"matchLink"}>view</a>
                             </div>);
                         })}
-
                     </div>
                 )
                 }

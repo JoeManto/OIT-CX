@@ -34,7 +34,8 @@ class Mail {
                     "\n\nShift Dates:\n" + new Date(shiftData.date).toLocaleString() + "\nto\n " + new Date(shiftData.endDate).toLocaleString() +
                     "\n\nType: " + shiftData.selectedPosition +
                     "\nStatus: Open" +
-                    "\nPermanent? " + (shiftData.permShiftPosting === 'off' ? "no" : "yes") + "\nDate Posted: " + new Date().toLocaleString(),
+                    "\nPermanent? " + (shiftData.permShiftPosting === 'off' ? "no" : "yes") + "\nDate Posted: " + new Date().toLocaleString()+
+                    "\n\n Message:\n"+shiftData.message,
                     html: ""
                 };
                 resolve({res:mailData})
@@ -43,7 +44,7 @@ class Mail {
 
         gatherMailData
             .then(async (result) => {
-                //await this.adminTransporter.sendMail(result.res,()=>console.log("mail sent"));
+                await this.adminTransporter.sendMail(result.res,()=>console.log("mail sent"));
                 console.log("mail sending is disabled");
             })
             .catch(error=>console.log(error));

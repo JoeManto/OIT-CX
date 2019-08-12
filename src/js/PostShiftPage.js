@@ -326,7 +326,7 @@ export default class PostShiftPage extends React.Component {
             overNightWarning: {status: false, message: ""},
             longShiftWarning: {status: false, message: ""},
             shiftInputFailure: {status: false, message: "", pointer: null},
-            message: "",
+            message: "Message",
             permShiftPosting: "off",
             confirmStatus: "untested",
         };
@@ -338,6 +338,7 @@ export default class PostShiftPage extends React.Component {
         this.handlePost = this.handlePost.bind(this);
         this.handleConfirmPost = this.handleConfirmPost.bind(this);
         this.handleUnConfirm = this.handleUnConfirm.bind(this);
+        this.handleMessageChange = this.handleMessageChange.bind(this);
     }
 
     componentWillMount() {
@@ -445,7 +446,6 @@ export default class PostShiftPage extends React.Component {
         let shiftName = "Default";
         for (let i = 0; i < positions.length; i++) {
             console.log(typeof shiftType);
-
             if (Number(shiftType) === positions[i].id) {
                 return positions[i].posName;
             }
@@ -523,12 +523,16 @@ export default class PostShiftPage extends React.Component {
     handleConfirmPost = () => {
         this.setState({confirmStatus: "untested"}, function () {
             postShift(getCookie("user-bnid"), this.state);
-            //window.location.href = IP()+"/shifts";
+            window.location.href = IP()+"/shifts";
         });
     };
 
     handleUnConfirm = () => {
         this.setState({confirmStatus: "untested"})
+    };
+
+    handleMessageChange = (e) => {
+        this.setState({message:e.target.value});
     };
 
     //Main render function for the page.
@@ -555,8 +559,8 @@ export default class PostShiftPage extends React.Component {
             <div>
                 {confirmStatus === "untested" &&
                 <div id="scroll-wrap">
-                    <div id="header-background"></div>
-                    <Header/>
+                    <div id="header-background"/>
+                    <Header title = {"Shift Posting"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Post Shift</h2>
                         <p style={{color: "grey", fontSize: ".7em"}}>After a posted shift has been picked up, all
@@ -589,8 +593,7 @@ export default class PostShiftPage extends React.Component {
                             message that describes why
                             you are posting your shift. <br/><span style={{color: "red"}}>*This message will be attached in the mass email.</span>
                         </p>
-                        <textarea rows={"4"} cols={"47"}/>
-
+                        <textarea value = {this.state.message} onChange={(e)=>{e.persist();this.handleMessageChange(e)}}/*onChange={({nativeEvent: {target}}) => this.handleMessageChange(target)}*/ rows={"4"} cols={"47"}/>
                         <div style={permanentCnt} className={"flexRow"}>
                             <label className={"marginLess"}>Permanent?&nbsp;</label>
                             <input value={this.state.permShiftPosting} onChange={this.handlePermShiftChange}
@@ -601,7 +604,7 @@ export default class PostShiftPage extends React.Component {
                             the working schedule.</p>
                         {shiftInputFailure.status && <p className={"failureText"}>{shiftInputFailure.message}</p>}
                         <div style={{paddingTop: "20px"}} className={"flexRow"}>
-                            <div style={{width: "80%"}}></div>
+                            <div style={{width: "80%"}}/>
                             <button onClick={this.handlePost} className={"fadingButton right"}>Post</button>
                         </div>
                     </div>
@@ -609,7 +612,7 @@ export default class PostShiftPage extends React.Component {
                 }
                 {confirmStatus === "wait-confirm" &&
                 <div id="scroll-wrap">
-                    <div id="header-background"></div>
+                    <div id="header-background"/>
                     <Header title={"Shift Posting"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
@@ -629,7 +632,7 @@ export default class PostShiftPage extends React.Component {
                             but, after a posted shift has been picked up all
                             previous actions are final.</p>
                         <div style={{paddingTop: "20px"}} className={"flexRow"}>
-                            <div style={{width: "80%"}}></div>
+                            <div style={{width: "80%"}}/>
                             <button onClick={this.handleUnConfirm} style={{marginTop: "3px"}}
                                     className={"clearButton"}>back
                             </button>

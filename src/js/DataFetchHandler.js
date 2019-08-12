@@ -75,7 +75,7 @@ export function logout() {
     })();
 }
 
-export function getPositionsForUser() {
+export function getPositionsForUser(fetchAll = false) {
     return (async () => {
         const rawResponse = await fetch('/getPositions', {
             method: 'POST',
@@ -86,6 +86,7 @@ export function getPositionsForUser() {
             body: JSON.stringify({
                 user: getCookie("user-bnid"),
                 key: getCookie("key"),
+                fetchAll:fetchAll,
             })
         });
         if (rawResponse.status !== 200)

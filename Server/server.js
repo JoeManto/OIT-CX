@@ -6,10 +6,13 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const config = require('./SecretConfig');
 const ldapWrapper = require('./Ldapwrapper');
+
+const ldapSearch = require('./LdapSearch');
 const ApiKeyService = require('./ApiKeyService');
 const Mail = require('./Mail');
 
 //----------------------------SETUP----------------------------------
+
 
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
@@ -42,6 +45,7 @@ db.connect((err) => {
     pw: 'x------x',
  */
 let ldapConfig = config.ldap_config();
+const ldapSearchClient = new ldapSearch();
 
 //---LDAP Connection options for a new LDAPAuth Object with LDAP config options
 /*
@@ -155,6 +159,8 @@ app.post('/getUsers', (req, res) => {
 
 app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        console.log(req.body.inputs);
+        console.log(req.body.keys);
         let getInputMappingIndex = (key) => {
             for (let i = 0; i < req.body.keys.length; i++) {
                 if (key === req.body.keys[i]) {
@@ -171,20 +177,30 @@ app.post('/addUser', (req, res) => {
                 return;
             }
             if (result.length !== 0) {
-                res.send({res: "user-already-created", error: "user already exists"});
+                res.send({res: "user-error", error: "user already exists"});
                 return;
             }
             let createUser = "insert into users (empyname,empybnid,role,groupRole) values (?,?,?,?)";
-            createUser = mysql.format(createUser, [getInputMappingIndex("fstName"), getInputMappingIndex("bnid"), 0, 0]);
-            db.query(createUser, (err, result) => {
-                if (err) {
-                    res.send({res: "user-error", error: "Couldn't search for user"});
-                    return;
-                }
-                if (result.length !== 0) {
+
+            ldapSearchClient.search(getInputMappingIndex("bnid")).then(ldapResult =>{
+                if(ldapResult.data.length === 0){
+                    res.send({res:"user-error",error:"User couldn't be found in LDAP server"});
+                }else{
                     res.send({res: "success"});
+                   /* createUser = mysql.format(createUser, [getInputMappingIndex("fstName"), getInputMappingIndex("bnid"), 0, 0]);
+                    db.query(createUser, (err, result) => {
+                        if (err) {
+                            res.send({res: "user-error", error: "Couldn't search for user"});
+                            return;
+                        }
+                        if (result.length !== 0) {
+                            res.send({res: "success"});
+                        }
+                    });*/
                 }
             });
+
+
         });
     } else {
         res.send({res: "apiKey-error"});
@@ -332,6 +348,8 @@ app.post('/getShifts', (req, res) => {
     }
 });
 
+
+
 app.post('/getPositions', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
         let user = req.body.user;
@@ -343,19 +361,31 @@ app.post('/getPositions', (req, res) => {
                 return;
             }
             let userInfo = {user: user, role: result[0]['role'], groupId: result[0]['groupRole']};
-            if (userInfo.role === 1 || userInfo.role === 2) {
+            if ((userInfo.role === 1 || userInfo.role === 2) && !req.body.fetchAll) {
                 res.send({res: []});
                 return;
             }
-            console.log(userInfo.groupId);
-            let positionsSql = "Select id,posName from positions where groupId = ?";
-            positionsSql = mysql.format(positionsSql, [userInfo.groupId]);
-            db.query(positionsSql, (err, result) => {
-                if (err) {
-                    res.send({"res": "User-Missing"});
-                }
-                res.send({res: result});
-            });
+            if(req.body.fetchAll){
+                console.log("this this ran");
+                let positionsSql = "Select id,posName from positions";
+                positionsSql = mysql.format(positionsSql, [userInfo.groupId]);
+                db.query(positionsSql, (err, result) => {
+                    if (err) {
+                        res.send({"res": "User-Missing"});
+                    }
+                    console.log("this is the result from the server"+result);
+                    res.send({res: result});
+                });
+            }else{
+                let positionsSql = "Select id,posName from positions where groupId = ?";
+                positionsSql = mysql.format(positionsSql, [userInfo.groupId]);
+                db.query(positionsSql, (err, result) => {
+                    if (err) {
+                        res.send({"res": "User-Missing"});
+                    }
+                    res.send({res: result});
+                });
+            }
         });
     } else {
         res.send({res: "apiKey-error"});
