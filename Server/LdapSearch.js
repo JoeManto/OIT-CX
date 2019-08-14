@@ -16,8 +16,6 @@ let options = {
 let client = new LdapClient({url: options.url,tlsOptions: options.tlsOptions});
 
 class LdapSearch {
-
-
     async bind() {
         try {
             await client.bind(options.bindDN, options.bindCredentials);
@@ -52,6 +50,7 @@ class LdapSearch {
                 }
             })
             .then((_) => {
+                console.log(_);
                 return {data: _, unbind: this.unbind()}
             })
             .catch(error => console.log(error));

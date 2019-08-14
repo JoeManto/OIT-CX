@@ -253,6 +253,7 @@ class ShiftsWrapper extends React.Component {
         let elements = [];
         let posMapping = this.state.posMapping;
 
+        // eslint-disable-next-line array-callback-return
         this.state.unCoveredShifts.map(function (obj, i) {
             elements.push(<div key={i} id="shiftCont" className={"Content contentShifts"}>{
                 <div>

@@ -185,7 +185,7 @@ class Block extends React.Component {
                     this.setState({showProgress: false, error: errorStatus});
                 })
                 .catch((obj) => {
-                    errorStatus = {status: "error", message: "error creating new user:"};
+                    errorStatus = {status: "error", message: "Error when creating user. Please make sure the user doesn't already exist"};
                     this.setState({showProgress: false, error: errorStatus});
                 })
         } else {

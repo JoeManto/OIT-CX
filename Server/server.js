@@ -180,23 +180,25 @@ app.post('/addUser', (req, res) => {
                 res.send({res: "user-error", error: "user already exists"});
                 return;
             }
-            let createUser = "insert into users (empyname,empybnid,role,groupRole) values (?,?,?,?)";
+            let createUser = "insert into users (empyname,surname,empybnid,role,groupRole) values (?,?,?,?,?)";
 
             ldapSearchClient.search(getInputMappingIndex("bnid")).then(ldapResult =>{
                 if(ldapResult.data.length === 0){
                     res.send({res:"user-error",error:"User couldn't be found in LDAP server"});
                 }else{
                     res.send({res: "success"});
-                   /* createUser = mysql.format(createUser, [getInputMappingIndex("fstName"), getInputMappingIndex("bnid"), 0, 0]);
-                    db.query(createUser, (err, result) => {
+                    createUser = mysql.format(createUser,
+                        [getInputMappingIndex("fstName"),ldapResult.data[0].sn,
+                        getInputMappingIndex("bnid"),getInputMappingIndex('role'), getInputMappingIndex('pos')]);
+                        db.query(createUser, (err, result) => {
                         if (err) {
-                            res.send({res: "user-error", error: "Couldn't search for user"});
+                            res.send({res: "user-error", error: "Couldn't add user"});
                             return;
                         }
                         if (result.length !== 0) {
                             res.send({res: "success"});
                         }
-                    });*/
+                        });
                 }
             });
 

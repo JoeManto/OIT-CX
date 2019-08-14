@@ -1,33 +1,57 @@
 import {getCookie} from "./Authentication";
 import {IP} from "./Util";
 
-export function recordFetch(date = Date.now(), user = getCookie("user-bnid")) {
-    return (async () => {
-        const rawResponse = await fetch('/rec', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                date: date,
-                user: user,
-                cookieUser: getCookie("user-bnid"),
-                key: getCookie("key"),
-            })
-        });
-        if (rawResponse.status !== 200)
-            return false;
+const BASIC_HEADER = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+};
 
-        const content = await rawResponse.json();
+async function apiResponse(method,header,body,endPoint) {
+      let response = await fetch(endPoint,
+          {
+                method: method,
+                headers: header,
+                body: JSON.stringify(body),
+          });
+
+        const content = await response.json();
+
+        if (response.status !== 200) {
+            return false;
+        }
         if (content.res === "apiKey-error") {
             window.location = IP();
         }
-        return (content);
-    })();
+        return content;
+
+}
+
+export function recordFetch(date = Date.now(), user = getCookie("user-bnid")) {
+    return apiResponse(
+        'POST',
+          BASIC_HEADER,
+            {
+                    date: date,
+                    user: user,
+                    cookieUser: getCookie("user-bnid"),
+                    key: getCookie("key"),
+                },
+        '/rec')
 }
 
 export function shiftFetch(user = getCookie("user-bnid"), covered) {
+    return apiResponse(
+        'POST',
+                BASIC_HEADER,
+        {
+            user: user,
+            covered: covered,
+            key: getCookie("key"),
+        },
+        '/getShifts',
+    );
+    /*
+
     return (async () => {
         const rawResponse = await fetch('/getShifts', {
             method: 'POST',
@@ -48,7 +72,7 @@ export function shiftFetch(user = getCookie("user-bnid"), covered) {
             window.location = IP();
         }
         return (content);
-    })();
+    })();*/
 }
 
 export function logout() {
@@ -166,17 +190,19 @@ export function adminOperation(endpoint, keys, inputs) {
                 key: getCookie("key"),
             })
         });
-        if (rawResponse.status !== 200)
-            return this.reject();
-
         const content = await rawResponse.json();
+        if (rawResponse.status !== 200){
+            this.reject();
+        }
         if (content.res === "apiKey-error") {
             window.location = IP();
         }
-        if (content.res === "success") {
-            return content;
-        } else {
+        if(content.error){
             this.reject();
+            console.log(content.error);
+            return content;
+        }
+        if (content.res === "success") {
             return content;
         }
     })();
