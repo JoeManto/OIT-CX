@@ -326,7 +326,7 @@ export default class PostShiftPage extends React.Component {
             overNightWarning: {status: false, message: ""},
             longShiftWarning: {status: false, message: ""},
             shiftInputFailure: {status: false, message: "", pointer: null},
-            message: "Message",
+            message: "",
             permShiftPosting: "off",
             confirmStatus: "untested",
         };
@@ -593,7 +593,7 @@ export default class PostShiftPage extends React.Component {
                             message that describes why
                             you are posting your shift. <br/><span style={{color: "red"}}>*This message will be attached in the mass email.</span>
                         </p>
-                        <textarea value = {this.state.message} onChange={(e)=>{e.persist();this.handleMessageChange(e)}}/*onChange={({nativeEvent: {target}}) => this.handleMessageChange(target)}*/ rows={"4"} cols={"47"}/>
+                        <textarea placeholder={"Message..."} value = {this.state.message} onChange={(e)=>{e.persist();this.handleMessageChange(e)}}/*onChange={({nativeEvent: {target}}) => this.handleMessageChange(target)}*/ rows={"4"} cols={"47"}/>
                         <div style={permanentCnt} className={"flexRow"}>
                             <label className={"marginLess"}>Permanent?&nbsp;</label>
                             <input value={this.state.permShiftPosting} onChange={this.handlePermShiftChange}
