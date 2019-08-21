@@ -1,7 +1,7 @@
 {
   "name": "oit_waitlist",
   "version": "0.1.0",
-  "proxy": "https://localhost:5000/",
+  "proxy": "https://localhost:443/",
   "private": true,
   "dependencies": {
     "body-parser": "^1.18.3",
