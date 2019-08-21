@@ -14,6 +14,10 @@
     display: flex;
     flex-direction: row;
 }
+.flexColumn {
+    display: flex;
+    flex-direction: column;
+}
 
 .coloredButton {
     margin-top: 35px;
@@ -147,7 +151,7 @@
 }
 
 #scroll-wrap {
-    margin-bottom: 30px;
+    margin-bottom: 100px;
 }
 
 #header-background {
