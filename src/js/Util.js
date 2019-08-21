@@ -1,4 +1,4 @@
-export let IP = () => {return "https://localhost:3000";};
+export let IP = () => {return "https://localhost:443";};
 
 export let formatAMPM = (date) => {
     var hours = date.getHours();
@@ -20,3 +20,18 @@ export function wait(ms){
 export var getDaysInMonth = function(month,year) {
     return new Date(year, month, 0).getDate();
 };
+
+export function checkWindowHeight() {
+    let elem = document.getElementById("FooterCont");
+    if(!elem)
+        return;
+    window.onscroll = function () {
+        if (document.documentElement.scrollTop + document.documentElement.clientHeight > document.body.offsetHeight) {
+            if(elem.style.display !== "")
+                elem.style.display = "";
+        } else {
+            if(elem.style.display !== "none")
+                elem.style.display = "none";
+        }
+    }
+}

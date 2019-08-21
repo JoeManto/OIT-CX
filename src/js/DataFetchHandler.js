@@ -1,4 +1,4 @@
-import {getCookie} from "./Authentication";
+import {getCookie,setCookie} from "./Authentication";
 import {IP} from "./Util";
 
 const BASIC_HEADER = {
@@ -46,6 +46,7 @@ export function shiftFetch(user = getCookie("user-bnid"), covered) {
 }
 
 export function logout() {
+    setCookie("github-repo-data",null,1);
     return apiResponse('POST', BASIC_HEADER,
         {
             user: getCookie("user-bnid"),
@@ -131,6 +132,52 @@ export function adminOperation(endpoint, keys, inputs) {
             return content;
         }
     })();
+}
+
+export function getLastCommit() {
+    let githubKeys = getCookie("github-repo-keys");
+    if(githubKeys != null && githubKeys.length !== 0){
+        githubKeys = githubKeys.split(",");
+        return new Promise(function (resolve,reject) {
+            let commitData = {};
+            for(let i = 0;i<githubKeys.length;i++){
+                let savedValue = getCookie(githubKeys[i]);
+                if(savedValue === null) {
+                    reject({error: "cookie error: while fetching cached github commit data please reset your cache"});
+                    return;
+                }
+                commitData[githubKeys[i]] = savedValue;
+            }
+            resolve(commitData);
+        });
+    }
+    return new Promise(function (resolve, reject) {
+        const request = new XMLHttpRequest();
+        request.open('get', 'https://api.github.com/repos/joemanto/OIT-CX/commits/master', true);
+        request.send();
+        request.onreadystatechange = function () {
+            if(request.readyState === 4){
+                if(request.responseText === ""){
+                    reject({error:"Bad github response: Can't parse"});
+                    return;
+                }
+                let out = JSON.parse(request.responseText);
+                let commitData = {
+                    author: out.commit.author.name,
+                    date: out.commit.author.date,
+                    message: out.commit.message,
+                    profileImgUrl: out.committer.avatar_url,
+                };
+
+                setCookie("github-repo-keys","author,date,message,profileImgUrl",1);
+                setCookie("author",commitData.author,1);
+                setCookie("date",commitData.date,1);
+                setCookie("message",commitData.message,1);
+                setCookie("profileImgUrl",commitData.profileImgUrl,1);
+                resolve(commitData);
+            }
+        };
+    });
 }
 
 

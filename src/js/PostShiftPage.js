@@ -8,6 +8,7 @@ import {Header} from "./WaitList";
 import {getPositionsForUser, postShift} from "./DataFetchHandler";
 import {getDaysInMonth, formatAMPM, IP} from "./Util";
 import {getCookie} from "./Authentication";
+import {Footer} from "./LandingPage";
 
 /**
  * basic Date Picker that renders 3 HTML selections for the respected items (month,day, and year)
@@ -641,6 +642,7 @@ export default class PostShiftPage extends React.Component {
                     </div>
                 </div>
                 }
+                <Footer showgitstatus={true}/>
             </div>
         );
     }

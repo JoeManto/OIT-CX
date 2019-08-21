@@ -15,6 +15,7 @@ import { CookiesProvider } from 'react-cookie';
 import {validateCookie} from "./js/Authentication";
 import {IP} from "./js/Util";
 
+
 function ProtectedRoute(props){
     let routePath = validateCookie();
     if(routePath){
@@ -43,5 +44,6 @@ function App() {
         </CookiesProvider>
     );
 }
+
 
 export default App;

@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap');
+
+#body {
+    background: #f6f5f7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: -20px 0 50px;
+}
+
+h5 {
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    margin: 0;
+}
+
+input {
+    height: 20px;
+    border-color: black;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#signin {
+    margin-top: 35px;
+    border-radius: 20px;
+    border: 1px solid #ffb347;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 80ms ease-in;
+}
+
+#FooterCont {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    padding: 20px;
+    width: 100%;
+    margin-top: 100px;
+    margin-right: 5px;
+    color: black;
+    text-align: center;
+    justify-content: center;
+}
+
+#FooterCont img{
+    border-radius: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 1px;
+    background-color: #282c34;
+}
+#FooterCont:hover{
+    box-shadow: 0 -1px 8px rgba(168,168,168,20);
+    background-color: white;
+}
+#footLinks{
+    color:black;
+    margin: auto 0;
+    font-weight: lighter;
+    font-size: 0.9em;
+}
+#footerTitle{
+    font-weight: lighter;
+    font-size: 1.3em;
+    margin: 0;
+}
+.footerElemCnt{
+    margin-right: 20px;
+}
+
+.orange-gradient {
+    background: #ffb347; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #ffcc33, #ffb347); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #ffcc33, #ffb347); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.Cont {
+    width: 80vw;
+    min-height: 420px;
+    max-width: 748px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.Flex-Column-Center {
+    display: flex;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+}
+
+.Flex-Row-Fill {
+    display: flex;
+    flex-direction: row;
+}
+
+.LeftFormCont {
+    z-index: 2;
+    width: 50%;
+    float: left;
+    padding: 20px 10px 10px;
+
+    background-color: white;
+    box-shadow: 12px 0px 12px rgba(0, 0, 0, .25), 0 10px 10px rgba(0, 0, 0, .22);
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+}
+
+.RightFormCont {
+    z-index: 1;
+    width: 50%;
+    float: right;
+    padding: 20px 10px 10px;
+
+    color: white;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .25), 0 10px 10px rgba(0, 0, 0, .22);
+}
+
+#errorCnt {
+    margin: 20px;
+    width: 100%;
+    border-radius: 5px;
+    background-color: white;
+}
+
+#errorTitle {
+    color: red;
+}

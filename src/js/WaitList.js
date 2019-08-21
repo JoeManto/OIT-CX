@@ -2,8 +2,10 @@ import React from 'react';
 import {Footer} from './LandingPage';
 import {getCookie, setCookie} from "./Authentication";
 import {recordFetch,logout} from "./DataFetchHandler";
+import {checkWindowHeight} from "./Util";
 import "../css/WaitList.css"
 import "../css/util.css"
+
 
 
 /**
@@ -134,6 +136,7 @@ class WaitList extends React.Component {
     }
 
     render() {
+        checkWindowHeight();
         const dataHeaders = ["Name", "WIN", "BNID", "Fulfilled by", "Time"];
         return (
             <div id="scroll-wrap">
@@ -151,21 +154,14 @@ class WaitList extends React.Component {
                         color: "lightgray"
                     }}>{new Date().toLocaleString()}</p>
                 </div>
-                <Footer/>
+                <Footer showgitstatus = {true}/>
             </div>
         );
     }
 }
 
+
+
 export default WaitList;
 
-function checkWindowHeight() {
-    let elem = document.getElementById("HeaderCont");
-    window.onscroll = function () {
-        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-            elem.style.display = "none";
-        } else {
-            elem.style.display = "";
-        }
-    }
-}
+

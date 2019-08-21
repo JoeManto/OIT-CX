@@ -14,6 +14,11 @@ const Mail = require('./Mail');
 //----------------------------SETUP----------------------------------
 
 
+async function pause() {
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    await delay(5000);
+}
+
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
 
@@ -426,7 +431,7 @@ app.post('/rec', (req, res) => {
 });
 
 let server = https.createServer(sslOptions, app);
-server.listen(5000, () => {
-    console.log("server starting on port : " + 5000)
+server.listen(443, () => {
+    console.log("server starting on port : " + 443)
 });
 

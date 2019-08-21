@@ -1,0 +1,8 @@
+#!/bin/bash
+
+while ! mysql -u root -p123456 -e "SELECT VERSION();SELECT NOW()"; do
+    sleep 5;
+    echo "mysql is not connected";
+
+done;
+echo "mysql connected";
