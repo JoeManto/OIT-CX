@@ -50,6 +50,8 @@ a {
     margin-top: 80px;
 }
 
+
+
 #CheckInCont h3 {
     color: #292929;
     margin-bottom: 10px;
@@ -81,6 +83,13 @@ a {
     transition: transform 80ms ease-in;
 }
 
+
+
+
+
+
+
+
 .Table-Cont {
     margin-bottom: 30px;
     border-radius: 20px;
@@ -110,5 +119,3 @@ tbody td:first-child {
 table {
     width: 800px;
 }
-
-

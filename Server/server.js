@@ -430,7 +430,21 @@ app.post('/rec', (req, res) => {
     }
 });
 
+app.post('/locations',(req,res)=>{
+  if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    db.query("select * from location",(err,result)=>{
+      if(err){
+        res.send({res: "sql-error"});
+      }else{
+        res.send({res:result});
+      }
+    });
+  }else{
+    res.send({res: "apiKey-error"});
+  }
+});
+
 let server = https.createServer(sslOptions, app);
-server.listen(5001, () => {
-    console.log("server starting on port : " + 5001)
+server.listen(443, () => {
+    console.log("server starting on port : " + 443)
 });

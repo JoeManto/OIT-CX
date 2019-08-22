@@ -1,12 +1,12 @@
 import {getCookie,setCookie} from "./Authentication";
 import {IP} from "./Util";
 
-const BASIC_HEADER = {
+export const BASIC_HEADER = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 };
 
-async function apiResponse(method,header,body,endPoint) {
+export async function apiResponse(method,header = BASIC_HEADER,body,endPoint) {
       let response = await fetch(endPoint,
           {
                 method: method,
@@ -179,5 +179,3 @@ export function getLastCommit() {
         };
     });
 }
-
-

@@ -1,19 +1,17 @@
 import React from 'react';
 import {Footer} from './LandingPage';
 import {getCookie, setCookie} from "./Authentication";
-import {recordFetch,logout} from "./DataFetchHandler";
+import {apiResponse,BASIC_HEADER,recordFetch,logout} from "./DataFetchHandler";
 import {checkWindowHeight} from "./Util";
 import "../css/WaitList.css"
 import "../css/util.css"
-
-
 
 /**
  * Returns a checkin view for users
  *  @param {[Obj]} props Component data
  * @constructor -
  */
-function Checkin(props) {
+/*function Checkin(props) {
     return (
         <div className={"Row-Element"} id={"CheckInCont"}>
             <h3 className={"coloredButton"}>Check In</h3>
@@ -23,6 +21,67 @@ function Checkin(props) {
             </div>
         </div>
     )
+}*/
+
+class CheckIn extends React.Component {
+  constructor(props) {
+    super(props);
+    let locCookie = getCookie('pref-location');
+    console.log(locCookie);
+    this.state = {
+      locationData:[],
+      selectedLocation:locCookie !== "" ? locCookie:0,
+    }
+
+    this.handleSelection = this.handleSelection.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentWillMount(){
+    apiResponse('POST',BASIC_HEADER,
+      {
+        user: getCookie("user-bnid"),
+        key: getCookie("key")
+      },'/locations')
+      .then((result)=>{
+        this.setState({locationData:result.res})
+      })
+      .catch((e)=>{
+        console.log(e);
+      })
+  }
+
+  renderLocationOptions = () =>{
+      let elems = [];
+      this.state.locationData.map((obj,i)=>{
+        elems.push(<option key={i} value={obj.id} id={obj.id}>{obj.locationName}</option>);
+      });
+      return elems;
+  }
+
+  handleSelection = (e) =>{
+    this.setState({selectedLocation:e.value});
+    if(getCookie('pref-location') !== e.value){
+      console.log('cookie set');
+      setCookie('pref-location',e.value,1);
+    }
+  }
+
+  render(){
+    return(
+      <div id = "checkin-cnt">
+        <input id = "checkin-input"/>
+        <select
+          onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
+          value = {this.state.selectedLocation}>
+          {
+            this.renderLocationOptions()
+          }
+        </select>
+        <button onClick={}>CheckIn</button>
+      </div>
+    );
+  }
 }
 
 /**
@@ -129,7 +188,7 @@ class WaitList extends React.Component {
             .then(userRecords => this.setState({userRecords: userRecords["res"]}))
             .catch(err => console.error('error', err.toString()));
 
-        //Gather all record for the day
+        //Gather all records for the day
         recordFetch("2008-10-10")
             .then(allRecordsjson => this.setState({allRecordsjson: allRecordsjson["res"]}))
             .catch(err => console.error('error', err.toString()));
@@ -143,7 +202,8 @@ class WaitList extends React.Component {
                 <div id="header-background"> </div>
                 <Header title={"WaitList"}/>
                 <div className={"Content"}>
-                    <Checkin/>
+                    <h2 className={"coloredButton"}>CheckIn</h2>
+                    <CheckIn/>
                     <h2 className={"coloredButton"}>My Records</h2>
                     <Chart dataHeaders={dataHeaders} data={this.state.userRecords}/>
                     <h2 className={"coloredButton"}>All Today</h2>
@@ -163,5 +223,3 @@ class WaitList extends React.Component {
 
 
 export default WaitList;
-
-

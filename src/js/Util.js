@@ -1,4 +1,4 @@
-export let IP = () => {return "https://localhost:443";};
+export let IP = () => {return "http://localhost:3000";};
 
 export let formatAMPM = (date) => {
     var hours = date.getHours();
