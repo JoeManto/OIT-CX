@@ -1,14 +1,31 @@
-FROM node:8
+###############################################################################
+# Step 1 : Builder image
+#
+FROM node:9-alpine AS builder
 
-ADD . /app
-WORKDIR /app
+# Define working directory and copy source
+WORKDIR /home/node/app
+COPY . .
+# Install dependencies and build whatever you have to build
+# (babel, grunt, webpack, etc.)
+RUN npm install && npm run build
 
-RUN npm install
+###############################################################################
+# Step 2 : Run image
+#
+FROM node:9-alpine
+ENV NODE_ENV=production
+WORKDIR /home/node/app
 
-ENV NODE_ENV production
-ENV HTTP_PORT 5000
-ENV UPDATE_INTERVAL 1
+# Install deps for production only
+COPY ./package* ./
+RUN npm install && \
+    npm cache clean --force
+# Copy builded source from the upper builder stage
+COPY --from=builder /home/node/app/build ./build
 
+# Expose ports (for orchestrators and dynamic reverse proxies)
 EXPOSE 5000
 
-CMD ["node","Server/server.js"]
+# Start the app
+CMD node Server/server.js

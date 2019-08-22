@@ -1,22 +1,40 @@
 version: '3'
 
 services:
-  db:
-    image: mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
+  reverse-proxy:
+    image: traefik # The official Traefik docker image
+    command: --api --docker.exposedbydefault=false # Enables the web UI and tells Træfik to listen to docker, without exposing by default
+    ports:
+      - "80:80"     # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-  web:
-    build: .
+  db:
+    image: mysql:5
     restart: always
     environment:
-      - NODE_ENV=dev
-    ports:
-      - "5000:5000"
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+
+  redis:
+    image: redis:alpine
+
+  app:
+    build:
+      context: .
+    command: node Server/server.js
+    volumes:
+      - "./src:/home/node/app/src"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=root
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - REDIS_HOST=redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:app.test.localhost.tv"
+    depends_on:
+      - db
+      - redis
