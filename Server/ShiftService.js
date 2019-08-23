@@ -12,12 +12,18 @@ db.connect((err) => {
     console.log('mysql connected...');
 });
 
+/*
+  Manages all the active shifts in the database.
+*/
 class ShiftService {
     constructor(){
         this.openShifts = [];
         this.gatherOpenShifts();
     }
 
+    /*
+      Config function to first gather all the open shifts in the database
+    */
     gatherOpenShifts(){
         db.query("select * from shifts",(err,values) => {
             if(err){
@@ -30,11 +36,20 @@ class ShiftService {
         });
     }
 
+    /*
+      Refreshing the open shifts
+      This accounts for shift getting manually delete.
+    */
     pruneOpenShifts(){
         this.openShifts = [];
         this.gatherOpenShifts();
     }
 
+    /*
+      Adds shift into the open shifts array.
+      The all the shift details are pushed as an object into the open shift
+      arrays.
+    */
     addShiftTracking(shift){
         let dupShiftStatus = false;
         for(let i = 0;i<this.openShifts.length;i++){
@@ -51,7 +66,10 @@ class ShiftService {
         return dupShiftStatus;
     }
 
-     removeShifts(shifts){
+    /*
+      Removes a collection [1..any] of selected shifts from the open shifts array.
+    */
+    removeShifts(shifts){
         let sql = "";
         for(let i = 0;i<shifts.length;i++){
             if(i === 0)
@@ -72,6 +90,10 @@ class ShiftService {
         this.pruneOpenShifts()
     }
 
+    /*
+      Searches all the open shifts and compares the endTime of the shift to the
+      current date and adds the shift to be removed if the condition is true.
+    */
     search(){
         let shiftsToRemove = [];
         let now = new Date().getTime();
@@ -89,6 +111,8 @@ class ShiftService {
 
 let service = new ShiftService();
 
+//listen for interval messages from the parent
+//This process message check handles calling all the functions in 'ShiftService'
 process.on("message",function (m) {
     let split = m.split(' ');
     if(split[0] === 'ADD'){
@@ -107,5 +131,3 @@ process.on("message",function (m) {
         process.send('UNKNOWN OPT');
     }
 });
-
-

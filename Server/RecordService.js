@@ -12,7 +12,9 @@ db.connect((err) => {
     console.log('mysql connected...');
 });
 
-
+/**
+  Manages all the active records in the data base.
+*/
 class RecordService {
   constructor(){
     this.startDate = new Date();
