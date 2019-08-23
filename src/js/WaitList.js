@@ -167,8 +167,8 @@ export function Header(props) {
     return (
         <div id="HeaderCont">
             <h2 style={{fontStyle: "oblique"}} className={"left"}>{props.title}</h2>
-            <p onClick={handleLogout} id="logout" className={"right"}>{getCookie("user-bnid")} <a href={"/"}
-                                                                                                  style={{color: '#282c34'}}>logout</a>
+            <p onClick={handleLogout} id="logout" className={"right"}>{getCookie("user-bnid")}
+            <a href={"/"} style={{color: '#282c34'}}>logout</a>
             </p>
         </div>
     );
@@ -200,6 +200,14 @@ function Row(props) {
  * @extends React.Component
  */
 export class Chart extends React.Component {
+
+    constructor(props){
+      super(props);
+      this.state = {
+        hiddenToggle:false,
+      }
+    }
+
     //build all the header elements
     renderHeader = () => {
         return (
@@ -212,12 +220,35 @@ export class Chart extends React.Component {
     };
     //build all the record rows
     renderBody = () => {
+        let rowData = this.props.data;
+        if(this.state.hiddenToggle && this.props.data.length > 5){
+          rowData = rowData.filter((obj,i) => i < 5);
+        }
         return (
-            <tbody>{this.props.data.map(function (obj, i) {
+            <tbody>{rowData.map(function (obj, i) {
                 return <Row data={obj} key={i}/>
             })}</tbody>
         );
     };
+
+    renderblurryRow = () => {
+      let obj = this.props.data;
+      if(obj.length > 5 && this.state.hiddenToggle){
+        return(<tr className={"blurry-text"}>
+        <td>{obj[5].name}</td>
+        <td>{obj[5].win}</td>
+        <td>{obj[5].bnid}</td>
+        <td>{obj[5].empyname}</td>
+        <td>{formatAMPM(new Date(obj[5].date))}</td>
+        </tr>);
+      }else{
+        return null;
+      }
+    }
+
+    handleHideToggle = () => {
+      this.setState({hiddenToggle:!this.state.hiddenToggle});
+    }
 
     render() {
         return (
@@ -225,8 +256,15 @@ export class Chart extends React.Component {
                 <table>
                     {this.renderHeader()}
                     {this.renderBody()}
+                    {this.renderblurryRow()}
                 </table>
-                <p>Total: {this.props.data.length}</p>
+                <div className={"flexRow left"}>
+                  <p>Total: {this.props.data.length}</p>
+                  {this.props.data.length > 5 &&
+                    <p id = "chart-showToggle" onClick={this.handleHideToggle}>{this.state.hiddenToggle ? "Show More" : "Show Less"}</p>
+                  }
+                </div>
+
             </div>
         );
     }

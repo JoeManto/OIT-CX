@@ -219,3 +219,7 @@
     background-color: #212121;
     border-bottom: #e53935 solid 5px;
 }
+.blurry-text {
+   color: rgba(60,60,60,0.2);
+   text-shadow: 0 0 3px rgba(0,0,0,0.9);
+}

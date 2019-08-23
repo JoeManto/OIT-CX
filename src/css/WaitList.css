@@ -71,9 +71,6 @@ a {
   background-color: #F3F3F3;
 }
 
-
-
-
 #CheckIn-Button {
     margin-left: 5px;
     border-radius: 20px;
@@ -87,11 +84,6 @@ a {
     text-transform: uppercase;
     transition: transform 80ms ease-in;
 }
-
-
-
-
-
 
 
 
@@ -123,4 +115,7 @@ tbody td:first-child {
 
 table {
     width: 800px;
+}
+#chart-showToggle{
+  margin-left: 15px;
 }
