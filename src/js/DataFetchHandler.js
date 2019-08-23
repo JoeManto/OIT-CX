@@ -8,11 +8,11 @@ export const BASIC_HEADER = {
 
 export async function apiResponse(method,header = BASIC_HEADER,body,endPoint) {
       let response = await fetch(endPoint,
-          {
-                method: method,
-                headers: header,
-                body: JSON.stringify(body),
-          });
+        {
+              method: method,
+              headers: header,
+              body: JSON.stringify(body),
+        });
 
         const content = await response.json();
 
@@ -25,7 +25,7 @@ export async function apiResponse(method,header = BASIC_HEADER,body,endPoint) {
         return content;
 }
 
-export function recordFetch(date = Date.now(), user = getCookie("user-bnid")) {
+export function recordFetch(date = Date.now(), user = null) {
     return apiResponse('POST', BASIC_HEADER,
         {
             date: date,

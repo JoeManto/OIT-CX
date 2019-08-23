@@ -52,22 +52,27 @@ a {
 
 
 
-#CheckInCont h3 {
-    color: #292929;
-    margin-bottom: 10px;
+.checkin-elem{
+  margin-bottom: 10px;
+}
+#checkin-cnt{
+  margin-left: 50px;
+  margin-top: 50px;
+  max-width: 50%;
+  padding-bottom: 50px;
+}
+#checkin-input{
+  border: none;
+  border-bottom: 3px solid #ffb347;
+  border-radius: 0;
+  height: 30px;
+}
+#checkin-input:hover{
+  background-color: #F3F3F3;
 }
 
-#CheckIn-InputCnt {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
 
-#Check-Input {
-    margin-top: 3px;
-    min-width: 200px;
-    height: 10px;
-}
+
 
 #CheckIn-Button {
     margin-left: 5px;

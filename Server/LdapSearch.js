@@ -31,48 +31,30 @@ class LdapSearch {
             await client.unbind();
             return "unbinded";
         } catch (e) {
-            console.log("un bind failed");
+            console.log("un-bind failed");
         }
     }
 
     async search (user) {
         return this.bind()
-            .then(async () => {
-                try {
-                    const searchOptions = {
-                        scope: "sub",
-                        filter: "(uid=" + user + ")",
-                        sizeLimit: 2,
-                    };
-                    return await client.search(options.searchBase, searchOptions);
-                } catch (e) {
-                    console.log(e);
-                }
-            })
-            .then((_) => {
-                console.log(_);
-                return {data: _, unbind: this.unbind()}
-            })
-            .catch(error => console.log(error));
+        .then(async () => {
+            try {
+                const searchOptions = {
+                    scope: "sub",
+                    filter: "(uid=" + user + ")",
+                    sizeLimit: 2,
+                };
+                return await client.search(options.searchBase, searchOptions);
+            } catch (e) {
+                console.log(e);
+            }
+        })
+        .then((_) => {
+            console.log(_);
+            return {data: _}
+        })
+        .catch(error => console.log(error));
     }
 }
 
 module.exports = LdapSearch;
-/*
-search("jfj5666").then((_)=>{
-    console.log(_.data);
-    _.unbind.then(bind=>console.log(bind));
-});*/
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,39 +2,27 @@ import React from 'react';
 import {Footer} from './LandingPage';
 import {getCookie, setCookie} from "./Authentication";
 import {apiResponse,BASIC_HEADER,recordFetch,logout} from "./DataFetchHandler";
-import {checkWindowHeight} from "./Util";
+import {checkWindowHeight,formatAMPM,sqlTimeStampFormat,sqlDateFormat} from "./Util";
 import "../css/WaitList.css"
 import "../css/util.css"
 
-/**
- * Returns a checkin view for users
- *  @param {[Obj]} props Component data
- * @constructor -
- */
-/*function Checkin(props) {
-    return (
-        <div className={"Row-Element"} id={"CheckInCont"}>
-            <h3 className={"coloredButton"}>Check In</h3>
-            <div id="CheckIn-InputCnt">
-                <input id="Check-Input" type={"text"} placeholder={"Bronco-NetID or WIN"}/>
-                <button id="CheckIn-Button">Check In</button>
-            </div>
-        </div>
-    )
-}*/
 
 class CheckIn extends React.Component {
   constructor(props) {
     super(props);
     let locCookie = getCookie('pref-location');
-    console.log(locCookie);
+
     this.state = {
       locationData:[],
+      userLookUp:{status:false,user:"",data:[]},
       selectedLocation:locCookie !== "" ? locCookie:0,
+      error:{status:false,message:""},
     }
 
     this.handleSelection = this.handleSelection.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleReturn = this.handleReturn.bind(this);
   }
 
   componentWillMount(){
@@ -51,7 +39,46 @@ class CheckIn extends React.Component {
       })
   }
 
-  renderLocationOptions = () =>{
+  requestRecord = (id,locationId) =>{
+    apiResponse('POST',BASIC_HEADER,
+    {
+      user: getCookie("user-bnid"),
+      key: getCookie("key"),
+      date: sqlTimeStampFormat(),
+      customerID: id,
+      location: locationId,
+    },'/addRec')
+    .then(result=>{
+
+    })
+    .catch(error=>{
+
+    })
+  }
+
+  userSearch = (id) =>{
+    apiResponse('POST',BASIC_HEADER,
+    {
+      user: getCookie("user-bnid"),
+      userToLookUp: id,
+      key: getCookie("key"),
+    },'/searchUser')
+    .then((result)=>{
+      if(result.error){
+        this.setState({error:{status:true,message:"No account found for "+id}})
+        return;
+      }
+      let newUserLookUp = {status:true,user:id,data:result};
+      this.requestRecord(newUserLookUp.data.customerID,this.state.selectedLocation);
+      this.setState({userLookUp:newUserLookUp});
+    })
+    .catch((e)=>{
+      console.log("error");
+      console.log(e);
+    })
+  }
+
+  renderLocationOptions = () => {
       let elems = [];
       this.state.locationData.map((obj,i)=>{
         elems.push(<option key={i} value={obj.id} id={obj.id}>{obj.locationName}</option>);
@@ -59,7 +86,7 @@ class CheckIn extends React.Component {
       return elems;
   }
 
-  handleSelection = (e) =>{
+  handleSelection = (e) => {
     this.setState({selectedLocation:e.value});
     if(getCookie('pref-location') !== e.value){
       console.log('cookie set');
@@ -67,18 +94,56 @@ class CheckIn extends React.Component {
     }
   }
 
+  handleInputChange = (e) => {
+    let tempState = this.state;
+    tempState.userLookUp.user = e.value;
+    this.setState(tempState);
+  }
+
+  handleReturn = (e) => {
+    this.setState({
+      userLookUp:{status:false,user:"",data:[]},
+      error:{status:false,message:""},
+    });
+  }
+
+  handleSubmit = (e) => {
+    if(this.state.userLookUp.user.length === 0){
+        this.setState({error:{status:true,message:"Please add a Bronco NetID to search"}});
+        return;
+    }
+    this.userSearch(this.state.userLookUp.user);
+  }
+
   render(){
     return(
-      <div id = "checkin-cnt">
-        <input id = "checkin-input"/>
-        <select
-          onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
-          value = {this.state.selectedLocation}>
-          {
-            this.renderLocationOptions()
-          }
-        </select>
-        <button onClick={}>CheckIn</button>
+      <div>
+        {this.state.error.status &&
+          <p>{this.state.error.message}</p>
+        }
+        {!this.state.userLookUp.status &&
+          <div id = "checkin-cnt">
+          <div className = {"flexColumn"}>
+          <input id = "checkin-input" className = {"checkin-elem"} placeholder={"Bronco NetID"} value = {this.state.userLookUp.user} onChange={({nativeEvent: {target}}) => this.handleInputChange(target)} id = "checkin-input"/>
+          <select
+            className = {"checkin-elem"}
+            onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
+            value = {this.state.selectedLocation}>
+            {
+              this.renderLocationOptions()
+            }
+              </select>
+            </div>
+            <button id = "checkin-button" style={{fontWeight: "bolder",background:"white"}}
+            className={"fadingButtonGrey right"} onClick={this.handleSubmit}>Check In</button>
+          </div>
+        }
+        {this.state.userLookUp.status &&
+          <div id = "checkin-cnt">
+            <p>User <strong>{this.state.userLookUp.user}</strong> is now checked in</p>
+            <button id = "checkin-button" className = {"checkin-elem"} onClick={this.handleReturn}>Go Back</button>
+          </div>
+        }
       </div>
     );
   }
@@ -123,7 +188,7 @@ function Row(props) {
             <td><a href={"https://itdirect.wmich.edu/WorkOrder.do?reqTemplate=1502"} target={"_blank"}>{data.bnid}</a>
             </td>
             <td>{data.empyname}</td>
-            <td>{data.date}</td>
+            <td>{formatAMPM(new Date(data.date))}</td>
         </tr>
     );
 }
@@ -184,12 +249,12 @@ class WaitList extends React.Component {
 
     componentWillMount() {
         //Gather records JUST for a ID
-        recordFetch("2008-10-10", "xjk5932")
+        recordFetch(sqlDateFormat(), getCookie('user-bnid'))
             .then(userRecords => this.setState({userRecords: userRecords["res"]}))
             .catch(err => console.error('error', err.toString()));
 
         //Gather all records for the day
-        recordFetch("2008-10-10")
+        recordFetch(sqlDateFormat())
             .then(allRecordsjson => this.setState({allRecordsjson: allRecordsjson["res"]}))
             .catch(err => console.error('error', err.toString()));
     }

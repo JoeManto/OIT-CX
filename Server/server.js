@@ -162,6 +162,48 @@ app.post('/getUsers', (req, res) => {
     }
 });
 
+app.post('/searchUser',(req,res) => {
+  if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    let sql = 'select * from customer where bnid = ?';
+
+    db.query(mysql.format(sql,[req.body.userToLookUp]),(err,result) =>{
+      if(err){
+        console.log(sql+" \n"+err);
+        res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+        return;
+      }else if(result.length > 0){
+        res.send({customerID:result[0].id,otherData:result[0]});
+        return;
+      }
+
+      ldapSearchClient.search(req.body.userToLookUp)
+      .then(result => {
+        let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
+        db.query(mysql.format(insertSql,[result.data[0].wmuFullName,result.data[0].wmuUID,result.data[0].wmuBannerID]),(err,result) =>{
+          if(err){
+            res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+            return;
+          }
+          db.query("Select Max(id) from customer",(err,result) =>{
+            if(err){
+              res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+              return;
+            }
+            res.send({customerID:result[0].id,otherData:result})
+          })
+        });
+
+      })
+      .catch(error => {
+        res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+        return;
+      });
+    });
+  }else{
+    res.send({res: "apiKey-error"});
+  }
+});
+
 app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         console.log(req.body.inputs);
@@ -402,8 +444,10 @@ app.post('/getPositions', (req, res) => {
 app.post('/rec', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key)) {
         if (req.body.user) {
+            //let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
+            //    " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ? && empybnid = ?) ORDER BY date ASC";
             let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
-                " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ? && empybnid = ?);";
+                " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && empybnid = ?) ORDER BY date DESC";
             sql = mysql.format(sql, [req.body.date, req.body.user]);
             db.query(sql, (err, result) => {
                 if (err) {
@@ -414,8 +458,10 @@ app.post('/rec', (req, res) => {
                 res.send({res: result});
             });
         } else {
-            let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
-                " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ?);";
+          //  let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
+          //      " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ?) ORDER BY date ASC";
+          let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
+               " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id) ORDER BY date DESC";
             sql = mysql.format(sql, [req.body.date]);
             db.query(sql, (err, result) => {
                 if (err) {
@@ -426,6 +472,27 @@ app.post('/rec', (req, res) => {
             });
         }
     } else {
+        res.send({res: "apiKey-error"});
+    }
+});
+
+app.post('/addRec',(req,res) =>{
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+        let userIdSql = "select id from users where empybnid = ?"
+        db.query(mysql.format(userIdSql,[req.body.user]),(err,result) => {
+            if(err || result.length === 0){
+              res.send({error:"mysql-error"});
+              return;
+            }
+            let insertSql = "insert into records (cosID,empyID,location,date) values (?,?,?,?)";
+            db.query(mysql.format(insertSql,[req.body.customerID,result[0].id,req.body.location,req.body.date]),(err,result) => {
+              if(err){
+                console.log(err);
+                res.send({error:"mysql-error"});
+              }
+            })
+        });
+    }else {
         res.send({res: "apiKey-error"});
     }
 });

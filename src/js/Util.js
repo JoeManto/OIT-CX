@@ -10,6 +10,15 @@ export let formatAMPM = (date) => {
     var strTime = hours + ':' + minutes + ' ' + ampm;
     return strTime;
 };
+export function sqlTimeStampFormat(){
+  let date = new Date();
+  let isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+  return isoDate.slice(0, 19).replace('T', ' ')
+}
+export function sqlDateFormat(){
+  return sqlTimeStampFormat().substring(0,10);
+}
+
 export function wait(ms){
     var start = new Date().getTime();
     var end = start;
