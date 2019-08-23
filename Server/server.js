@@ -21,6 +21,7 @@ async function pause() {
 
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
+const recordServiceChild = cp.fork('Server/RecordService.js');
 
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
 const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
@@ -78,16 +79,18 @@ app.use(express.static('client'));
 setInterval(() => {
     shiftServiceChild.send('CHECK');
 }, 20000);
-/*setInterval(() => {
-    shiftServiceChild.send('PRUNE');
-}, 200000);*/
+setInterval(() => {
+    recordServiceChild.send('CHECK');
+}, 20000);
 
 shiftServiceChild.on('message', function (m) {
     console.log('[AUTO][SHIFT WORKER] : ' + m);
 });
+recordServiceChild.on('message',function (m) {
+    console.log('[AUTO][Record WORKER] : ' + m)
+});
 
 let apiService = new ApiKeyService();
-
 let mailService = new Mail();
 
 //----------------------Helper Functions----------------------------------
