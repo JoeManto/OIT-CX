@@ -317,7 +317,7 @@ class WaitList extends React.Component {
                         color: "lightgray"
                     }}>{new Date().toLocaleString()}</p>
                 </div>
-                <Footer showgitstatus = {true}/>
+                <Footer showgitcont={false} showgitstatus = {true}/>
             </div>
         );
     }

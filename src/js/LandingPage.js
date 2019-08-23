@@ -2,7 +2,7 @@ import React from 'react';
 import '../css/LandingPage.css';
 import '../css/util.css';
 import {IP} from '../js/Util.js';
-import {getLastCommit} from "./DataFetchHandler";
+import {getLastCommit,getContributorsList} from "./DataFetchHandler";
 import {Auth} from '../js/Authentication.js';
 
 class LandingSignIn extends React.Component {
@@ -92,6 +92,7 @@ export class Footer extends React.Component {
         super(props);
         this.state = {
             githubData: [],
+            githubContribList:[],
             error: "",
             showMoreInfo: false,
         };
@@ -101,6 +102,13 @@ export class Footer extends React.Component {
     componentDidMount() {
         getLastCommit().then(res => {
             this.setState({githubData: res});
+        }).catch(e => {
+            this.setState({error: e.error});
+        });
+
+        getContributorsList().then(res => {
+            res = res.filter((obj,i) => i<= 3);
+            this.setState({githubContribList: res});
         }).catch(e => {
             this.setState({error: e.error});
         });
@@ -124,17 +132,27 @@ export class Footer extends React.Component {
                     <a id="footLinks" href={"/Docs"}>Docs</a>
                 </div>
                 <div className={"footerElemCnt flexColumn"}>
-                    <a id="footLinks" href={"https://github.com/JoeManto/OIT-CX"}>Repo</a>
+                    <a id="footLinks" href={"https://github.com/JoeManto/OIT-CX"}>Contribute <span role={"img"}>👻</span></a>
                 </div>
                 <div className={"footerElemCnt flexColumn"}>
-                    <p id="footLinks">Maintained by: Joe.m.manto@wmich.edu</p>
-                    <p id="footLinks">Wait-List v1.0 &copy; 2019 OIT MIT Licence</p>
+                  {state.error !== "" || !this.props.showgitcont ? (
+                        <p id="footLinks">Maintained by: Joe.m.manto@wmich.edu</p>
+                      ):(
+                        <div className={"flexRow"}>
+                        <p id="footLinks">Contributors</p>
+                        {this.state.githubContribList.map((obj,i)=>{
+                          return (<img src={obj} alt={"githubImage"} height={25} width={25}/>);
+                        })}
+                        </div>
+                      )
+                  }
+                  <p id="footLinks">Wait-List v1.0 &copy; 2019 OIT MIT Licence</p>
                 </div>
                 {state.error !== "" ? (
                     <div className={"footerElemCnt flexColumn"}>
                         {state.error}
                     </div>
-                ) : ([
+                 ):([
                         (this.props.showgitstatus && state.showMoreInfo && (
                             <div className={"footerElemCnt flexColumn"}>
                                 <div className={"flexRow"}>
@@ -159,7 +177,7 @@ class LandingPage extends React.Component {
         return (
             <div id="body">
                 <LandingSignIn/>
-                <Footer showgitstatus={true}/>
+                <Footer showgitcont={true} showgitstatus={true}/>
             </div>
         );
     }

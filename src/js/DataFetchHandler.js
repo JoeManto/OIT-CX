@@ -134,6 +134,43 @@ export function adminOperation(endpoint, keys, inputs) {
     })();
 }
 
+
+export function getContributorsList(){
+  return new Promise(function (resolve,reject) {
+    let githubCont = getCookie("github-contributors");
+    if(githubCont != null && githubCont.length !== 0){
+        githubCont = githubCont.split(",");
+        console.log("hello");
+        resolve(githubCont);
+        return;
+    }
+    const request = new XMLHttpRequest();
+    request.open('get', 'https://api.github.com/repos/joemanto/oit-cx/contributors', true);
+    request.send();
+    request.onreadystatechange = function () {
+      if(request.readyState === 4){
+        if(request.responseText === ""){
+          reject({error:"Bad github response: Can't parse"});
+          return;
+        }
+        let out = JSON.parse(request.responseText);
+        let urls = [];
+        let cookie = ""
+        for(let i = 0;i<out.length;i++){
+          console.log(out[i].avatar_url);
+          urls.push(out[i].avatar_url);
+          cookie+=out[i].avatar_url;
+          if(i !== out.length-1){
+            cookie+=",";
+          }
+        }
+        setCookie('github-contributors',cookie,1);
+        resolve(urls);
+      }
+    }
+  });
+}
+
 export function getLastCommit() {
     let githubKeys = getCookie("github-repo-keys");
     if(githubKeys != null && githubKeys.length !== 0){
@@ -161,7 +198,9 @@ export function getLastCommit() {
                     reject({error:"Bad github response: Can't parse"});
                     return;
                 }
+
                 let out = JSON.parse(request.responseText);
+                console.log(out);
                 let commitData = {
                     author: out.commit.author.name,
                     date: out.commit.author.date,

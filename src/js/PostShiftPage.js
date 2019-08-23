@@ -642,7 +642,7 @@ export default class PostShiftPage extends React.Component {
                     </div>
                 </div>
                 }
-                <Footer showgitstatus={true}/>
+                <Footer showgitcont={false} showgitstatus={true}/>
             </div>
         );
     }
