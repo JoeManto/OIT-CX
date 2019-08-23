@@ -444,22 +444,17 @@ app.post('/getPositions', (req, res) => {
 app.post('/rec', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key)) {
         if (req.body.user) {
-            //let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
-            //    " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ? && empybnid = ?) ORDER BY date ASC";
             let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
                 " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && empybnid = ?) ORDER BY date DESC";
-            sql = mysql.format(sql, [req.body.date, req.body.user]);
+            sql = mysql.format(sql, [req.body.user]);
             db.query(sql, (err, result) => {
                 if (err) {
-                    console.log(err);
                     res.send({res: "date-invalid"});
                     return;
                 }
                 res.send({res: result});
             });
         } else {
-          //  let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
-          //      " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && date = ?) ORDER BY date ASC";
           let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
                " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id) ORDER BY date DESC";
             sql = mysql.format(sql, [req.body.date]);

@@ -615,7 +615,6 @@ export default class PostShiftPage extends React.Component {
                 <div id="scroll-wrap">
                     <Header title={"Shift Posting"} subtitle={"The spot to share a shift"}/>
                     <div id="header-background"/>
-
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
                         <hr/>
