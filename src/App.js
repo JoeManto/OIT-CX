@@ -11,10 +11,9 @@ import PostShiftPage from './js/PostShiftPage'
 
 //function imports
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import { CookiesProvider } from 'react-cookie';
+import {CookiesProvider } from 'react-cookie';
 import {validateCookie} from "./js/Authentication";
 import {IP} from "./js/Util";
-
 
 function ProtectedRoute(props){
     let routePath = validateCookie();

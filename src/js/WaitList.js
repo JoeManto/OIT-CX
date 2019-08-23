@@ -166,9 +166,13 @@ export function Header(props) {
 
     return (
         <div id="HeaderCont">
-            <h2 style={{fontStyle: "oblique"}} className={"left"}>{props.title}</h2>
-            <p onClick={handleLogout} id="logout" className={"right"}>{getCookie("user-bnid")}
-            <a href={"/"} style={{color: '#282c34'}}>logout</a>
+            <div id = "header-titleBlock" className={"left flexColumn"}>
+                <h2 style={{fontStyle: "oblique"}}>{props.title}</h2>
+                <p id = "header-subTitle">{props.subtitle}</p>
+            </div>
+
+            <p onClick={handleLogout} id="logout" className={"right"}><strong>{getCookie("user-bnid")}</strong>
+            <a href={"/"} style={{color: '#282c34',marginLeft:"10px"}}>logout</a>
             </p>
         </div>
     );
@@ -302,8 +306,8 @@ class WaitList extends React.Component {
         const dataHeaders = ["Name", "WIN", "BNID", "Fulfilled by", "Time"];
         return (
             <div id="scroll-wrap">
-                <div id="header-background"> </div>
-                <Header title={"WaitList"}/>
+                <div id="header-background"/>
+                <Header title={"Waitlist"} subtitle = {"helpdesk record keeping of walk-in and mobile coustumers"}/>
                 <div className={"Content"}>
                     <h2 className={"coloredButton"}>CheckIn</h2>
                     <CheckIn/>
@@ -317,12 +321,10 @@ class WaitList extends React.Component {
                         color: "lightgray"
                     }}>{new Date().toLocaleString()}</p>
                 </div>
-                <Footer showgitcont={false} showgitstatus = {true}/>
+                <Footer showgitcont={true} showgitstatus = {true}/>
             </div>
         );
     }
 }
-
-
 
 export default WaitList;

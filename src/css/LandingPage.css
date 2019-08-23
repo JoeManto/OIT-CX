@@ -140,3 +140,9 @@ input {
 #errorTitle {
     color: red;
 }
+
+#user,#pass{
+  border:none;
+  border-bottom: 3px solid #ffb347;
+  border-radius: 0;
+}

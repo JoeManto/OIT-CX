@@ -284,7 +284,7 @@ export default class Shifts extends React.Component {
             <div id="scroll-wrap">
                 <div id="header-background"/>
                 <div id = "ShiftWrapper-cnt">
-                <Header title={"Shifts"}/>
+                <Header title={"Shifts"} subtitle = {"The spot to view and manage all shifts."}/>
                 <div style={{marginTop:"100px"}}/>
                 <div>
                     <div className={"Content contentShifts yellowBottomBordered"}>
@@ -298,7 +298,7 @@ export default class Shifts extends React.Component {
                     </div>
                     <ShiftsWrapper covered={1}/>
                 </div>
-                <Footer showgitcont={false} showgitstatus={true}/>
+                <Footer showgitcont={true} showgitstatus={true}/>
                 </div>
             </div>
         );

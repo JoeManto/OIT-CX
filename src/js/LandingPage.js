@@ -66,10 +66,10 @@ class LandingSignIn extends React.Component {
                     }
                 </div>
                 <div className={"Flex-Column-Center RightFormCont orange-gradient"}>
-                    <h1>Wait List Sign In</h1>
-                    <p>New WMU generic customer tracking web app made by the OIT HelpDesk</p>
+                    <h1>OIT - CX</h1>
+                    <p>WMU's new generic customer tracking web app and internal tool made by the OIT HelpDesk</p>
                     <h3>Trouble Signing In?</h3>
-                    <p>Contact the Help Desk (269) 387-4357</p>
+                    <p>Contact your supervisor<br/>or Help Desk (269) 387-4357</p>
                 </div>
             </div>
         );
@@ -135,7 +135,7 @@ export class Footer extends React.Component {
                     <a id="footLinks" href={"https://github.com/JoeManto/OIT-CX"}>Contribute <span role={"img"}>👻</span></a>
                 </div>
                 <div className={"footerElemCnt flexColumn"}>
-                  {state.error !== "" || !this.props.showgitcont ? (
+                  {state.error !== "" || this.props.showMoreInfo || !this.props.showgitcont ? (
                         <p id="footLinks">Maintained by: Joe.m.manto@wmich.edu</p>
                       ):(
                         <div className={"flexRow"}>

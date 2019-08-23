@@ -613,8 +613,9 @@ export default class PostShiftPage extends React.Component {
                 }
                 {confirmStatus === "wait-confirm" &&
                 <div id="scroll-wrap">
+                    <Header title={"Shift Posting"} subtitle={"The spot to share a shift"}/>
                     <div id="header-background"/>
-                    <Header title={"Shift Posting"}/>
+
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
                         <hr/>
@@ -642,7 +643,7 @@ export default class PostShiftPage extends React.Component {
                     </div>
                 </div>
                 }
-                <Footer showgitcont={false} showgitstatus={true}/>
+                <Footer showgitcont={true} showgitstatus={true}/>
             </div>
         );
     }
