@@ -6,7 +6,7 @@ import "../css/util.css"
 import "../css/PostShiftPage.css"
 import {Header} from "./WaitList";
 import {getPositionsForUser, postShift} from "./DataFetchHandler";
-import {getDaysInMonth, formatAMPM, IP} from "./Util";
+import {getDaysInMonth, formatAMPM, IP,checkWindowHeight} from "./Util";
 import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 
@@ -538,6 +538,7 @@ export default class PostShiftPage extends React.Component {
 
     //Main render function for the page.
     render() {
+        checkWindowHeight();
         //check if the shift type selected is of type mobile
         const isMobile = () => {
             return this.state.selectedPosition !== null && this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData) === "Mobile";

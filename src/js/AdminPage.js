@@ -3,6 +3,7 @@ import '../css/AdminPage.css';
 import '../css/util.css';
 import {DatePicker} from './PostShiftPage.js';
 import {getCookie} from './Authentication'
+import {checkWindowHeight} from './Util'
 import {adminOperation,getUsers,getPositionsForUser} from "./DataFetchHandler";
 import {Header} from "./WaitList";
 
@@ -445,6 +446,7 @@ export class ExpandableInput extends React.Component {
      * @returns {*}
      */
     render() {
+        checkWindowHeight();
         const state = this.state;
         return (
             <div className={"expandable-inp-cnt"}>
@@ -471,5 +473,3 @@ export class ExpandableInput extends React.Component {
         );
     }
 }
-
-

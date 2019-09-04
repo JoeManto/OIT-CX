@@ -87,7 +87,45 @@ class ShiftService {
                 }
             });
         }
+        this.migrateShiftData(shifts)
+        .then(res => console.log("[SHIFT WORKER] : "+res.res))
+        .catch(err => console.log("[SHIFT WORKER] : "+err.error));
         this.pruneOpenShifts()
+    }
+
+    /*
+      MigrateData shift records that are going to be remove and achive them to the legacy shift records table
+    */
+    migrateShiftData(shifts){
+      return new Promise(function (reslove,reject){
+        let sql = "";
+        for(let i = 0;i<shifts.length;i++){
+          let curShift = shifts[i];
+          if(i === 0){
+            sql += "Insert into legacyShifts (shiftID,coveredBy,postedBy,postedDate," +
+              "availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values ";
+          }
+          //Javascript/mysql fuckery because dates get returned has date object instead of strings...
+          let date = new Date(shifts[i].postedDate.getTime() - (shifts[i].postedDate.getTimezoneOffset() * 60000)).toISOString();
+          date = date.slice(0, 19).replace('T', ' ');
+
+          sql += "("+curShift.shiftID+","+curShift.coveredBy+","+curShift.postedBy+",'"
+              +date+"',"+curShift.availability+","+curShift.positionID
+              +","+curShift.groupID+","+curShift.perm+",'"+curShift.message+"',"+curShift.shiftDateEnd
+              +","+curShift.shiftDateStart+")";
+
+          if(i!==shifts.length-1){
+            sql+=","
+          }
+        }
+        db.query(sql,(err,result) => {
+          if(err){
+            reject({error:"Error While Migrating Shift Data"});
+          }else{
+            reslove({res:"Migration Success"});
+          }
+        });
+      });
     }
 
     /*
@@ -97,15 +135,18 @@ class ShiftService {
     search(){
         let shiftsToRemove = [];
         let now = new Date().getTime();
-        this.openShifts.filter(shift => shift !== null);
+
         for(let i = 0;i<this.openShifts.length;i++){
-            console.log("[SHIFT WORKER] : validated shift with ID = "+this.openShifts[i].shiftID);
+            console.log("[SHIFT WORKER] : checking shift with ID = "+this.openShifts[i].shiftID);
             if(this.openShifts[i].shiftDateEnd <= now){
                 shiftsToRemove.push(this.openShifts[i]);
                 this.openShifts[i] = null;
             }
         }
-        if(shiftsToRemove.length>0) this.removeShifts(shiftsToRemove);
+        if(shiftsToRemove.length>0){
+          this.openShifts.filter(shift => shift !== null);
+          this.removeShifts(shiftsToRemove);
+        }
     }
 }
 

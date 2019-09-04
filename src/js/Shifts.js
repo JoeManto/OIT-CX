@@ -5,7 +5,7 @@ import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
-import {formatAMPM} from "./Util";
+import {formatAMPM,checkWindowHeight} from "./Util";
 
 function ShiftListItem(props) {
     return (
@@ -280,6 +280,7 @@ class ShiftsWrapper extends React.Component {
 
 export default class Shifts extends React.Component {
     render() {
+        checkWindowHeight();
         return (
             <div id="scroll-wrap">
                 <div id="header-background"/>
