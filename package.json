@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.18.3",
+    "dotenv": "^8.1.0",
     "express": "^4.16.4",
     "ldapauth-fork": "^4.2.0",
     "ldapjs-client": "^0.1.1",

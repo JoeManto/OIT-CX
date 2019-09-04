@@ -1,31 +1,25 @@
-###############################################################################
-# Step 1 : Builder image
-#
-FROM node:9-alpine AS builder
+FROM node:9
 
-# Define working directory and copy source
-WORKDIR /home/node/app
-COPY . .
-# Install dependencies and build whatever you have to build
-# (babel, grunt, webpack, etc.)
-RUN npm install && npm run build
+WORKDIR /app
 
-###############################################################################
-# Step 2 : Run image
-#
-FROM node:9-alpine
-ENV NODE_ENV=production
-WORKDIR /home/node/app
+COPY package*.json ./
 
-# Install deps for production only
-COPY ./package* ./
 RUN npm install && \
     npm cache clean --force
-# Copy builded source from the upper builder stage
-COPY --from=builder /home/node/app/build ./build
 
-# Expose ports (for orchestrators and dynamic reverse proxies)
-EXPOSE 5000
+#Install the mysql command line tool into the parent docker file
+#Used for the bash mysql health check.
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+    mysql-client
 
-# Start the app
-CMD node Server/server.js
+COPY . .
+
+#Set some node environment variables
+ENV NODE_ENV development
+ENV HTTP_PORT 7304
+ENV UPDATE_INTERVAL 1
+
+# Expose ports
+EXPOSE 7304

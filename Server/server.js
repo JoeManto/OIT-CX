@@ -8,8 +8,8 @@ const config = require('./SecretConfig');
 const ldapWrapper = require('./Ldapwrapper');
 
 const ldapSearch = require('./LdapSearch');
-const ApiKeyService = require('./ApiKeyService');
-const Mail = require('./Mail');
+//const ApiKeyService = require('./ApiKeyService');
+//const Mail = require('./Mail');
 
 //----------------------------SETUP----------------------------------
 
@@ -19,9 +19,9 @@ async function pause() {
     await delay(5000);
 }
 
-const cp = require('child_process');
-const shiftServiceChild = cp.fork('Server/ShiftService.js');
-const recordServiceChild = cp.fork('Server/RecordService.js');
+//const cp = require('child_process');
+//const shiftServiceChild = cp.fork('Server/ShiftService.js');
+//const recordServiceChild = cp.fork('Server/RecordService.js');
 
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
 const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
@@ -32,6 +32,8 @@ const sslOptions = {
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
+
+console.log(config.db_config());
 
 //Test DataBase Connection
 db.connect((err) => {
@@ -75,7 +77,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client'));
 
 //----------------------------SERVICES----------------------------------
-
+/*
 setInterval(() => {
     shiftServiceChild.send('CHECK');
 }, 20000);
@@ -88,10 +90,10 @@ shiftServiceChild.on('message', function (m) {
 });
 recordServiceChild.on('message',function (m) {
     console.log('[AUTO][Record WORKER] : ' + m)
-});
+});*/
 
-let apiService = new ApiKeyService();
-let mailService = new Mail();
+//let apiService = new ApiKeyService();
+//let mailService = new Mail();
 
 //----------------------Helper Functions----------------------------------
 

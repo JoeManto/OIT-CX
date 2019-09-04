@@ -1,40 +1,31 @@
+#--build and run
+#docker-compose up --build
+
+#--connection via node container
+#mysql -h <DATABASE_SEVERICE_NAME> -u <DATA_BASE_USER> -P <EXPOSED PORT> -p <ROOT_PASS>
+
+#--connection via host
+#mysql -h 127.0.0.1 -u <DATA_BASE_USER> -P <EXPOSED PORT> -p <ROOT_PASS>
+
 version: '3'
-
 services:
-  reverse-proxy:
-    image: traefik # The official Traefik docker image
-    command: --api --docker.exposedbydefault=false # Enables the web UI and tells Træfik to listen to docker, without exposing by default
-    ports:
-      - "80:80"     # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-
   db:
-    image: mysql:5
+    image: mysql:5.7
+    volumes:
+      - "./.mysql-data/db:/var/lib/mysql"
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD
-      - MYSQL_DATABASE
-
-  redis:
-    image: redis:alpine
-
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
   app:
+    environment:
+      - NODE_ENV=dev
+    ports:
+      - "7304:7304"
     build:
       context: .
-    command: node Server/server.js
-    volumes:
-      - "./src:/home/node/app/src"
-    environment:
-      - DB_HOST=db
-      - DB_NAME=${MYSQL_DATABASE}
-      - DB_USER=root
-      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - REDIS_HOST=redis
-    labels:
-      - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:app.test.localhost.tv"
-    depends_on:
-      - db
-      - redis
+    #calling the mysql health script and then starting the express server
+    command: ["bash", "./dbwait-script.sh"]
