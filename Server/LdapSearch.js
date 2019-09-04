@@ -1,5 +1,5 @@
 const LdapClient = require('ldapjs-client');
-const ldapConfig = require('./SecretConfig').ldap_config();
+const ldapConfig = require('./SecertConfig.js').ldap_config();
 
 let options = {
     url: ldapConfig.url + ldapConfig.port,

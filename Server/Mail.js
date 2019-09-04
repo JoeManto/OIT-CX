@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const mysql = require("mysql");
-const config = require("./SecretConfig");
+const config = require('./SecertConfig.js');
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
