@@ -25,15 +25,23 @@ class RecordService {
   This check determines if the records table needs to be emptied because of
   the start of a new day.
   */
-  checkForDataMigration(){
+ checkForDataMigration(){
     let now = new Date();
-    if(this.startDate.getDate()<now.getDate()){
-      //Run the migration and return the error status
-      return migrateData()
-      .then(res => {this.stateDate = now;return res;})
-      .catch(error => {return error});
+    if(this.startDate.getDate() < now.getDate()){
+      console.log("Starting Record Data Migration");
+      //Run the migration and return the completion status
+
+       this.migrateData()
+      .then(res => {
+        this.stateDate = now;
+      })
+      .catch(error => {
+        console.log("[AUTO][Record WORKER] :"+error);
+      });
+      return true;
+    }else{
+      return false;
     }
-    return false;
   }
 
   /*
@@ -45,11 +53,12 @@ class RecordService {
     return new Promise(function (resolve, reject) {
       db.query("Select * from records",(err,result) =>{
         if(err){
-          console.log("mysql not connected");
-          reject(false);
+          reject("mysql not connected");
+          return;
         }
         if(result.length === 0)
-          reject(false);
+          return reject("No Records Found");
+
         let migrateQuery = "Insert into legacyRecords (cosID,empyID,location,date) values ";
         for(let i = 0;i<result.length;i++){
 
@@ -65,21 +74,18 @@ class RecordService {
 
         //Performs the migration of the record data
         db.query(migrateQuery,(err,result) => {
-          if(err){
-            console.log("err during data migration");
-            reject(false);
-          }
+          if(err)
+            return reject("err during data migration");
         });
 
         //Flushes the data out of the records table
         db.query("Delete from records where cosID > -1",(err,result) =>{
-          if(err){
-            console.log("err during flushing records");
-            reject(false);
-          }
+          if(err)
+            return reject("err during flushing records");
+
+          resolve(true);
         });
       });
-      reslove(true);
     });
   }
 }

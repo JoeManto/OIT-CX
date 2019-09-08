@@ -29,4 +29,6 @@ Server/SecertConfig.js
 
 .mysql-data/
 
+
+bugreport.txt
 db-dump/

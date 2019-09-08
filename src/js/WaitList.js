@@ -48,15 +48,12 @@ class CheckIn extends React.Component {
       customerID: id,
       location: locationId,
     },'/addRec')
-    .then(result=>{
-
-    })
-    .catch(error=>{
-
-    })
+    .then()
+    .catch()
   }
 
   userSearch = (id) =>{
+    console.log("user search");
     apiResponse('POST',BASIC_HEADER,
     {
       user: getCookie("user-bnid"),
@@ -68,12 +65,13 @@ class CheckIn extends React.Component {
         this.setState({error:{status:true,message:"No account found for "+id}})
         return;
       }
+      console.log(result);
       let newUserLookUp = {status:true,user:id,data:result};
+
       this.requestRecord(newUserLookUp.data.customerID,this.state.selectedLocation);
       this.setState({userLookUp:newUserLookUp});
     })
     .catch((e)=>{
-      console.log("error");
       console.log(e);
     })
   }
@@ -105,6 +103,7 @@ class CheckIn extends React.Component {
       userLookUp:{status:false,user:"",data:[]},
       error:{status:false,message:""},
     });
+    //window.location.reload(true);
   }
 
   handleSubmit = (e) => {
@@ -268,7 +267,6 @@ export class Chart extends React.Component {
                     <p id = "chart-showToggle" onClick={this.handleHideToggle}>{this.state.hiddenToggle ? "Show More" : "Show Less"}</p>
                   }
                 </div>
-
             </div>
         );
     }
@@ -289,16 +287,19 @@ class WaitList extends React.Component {
         };
     }
 
-    componentWillMount() {
-        //Gather records JUST for a ID
-        recordFetch(sqlDateFormat(), getCookie('user-bnid'))
-            .then(userRecords => this.setState({userRecords: userRecords["res"]}))
-            .catch(err => console.error('error', err.toString()));
+    requestUpdatedRecord(){
+      //Gather records JUST for a ID
+      recordFetch(sqlDateFormat(), getCookie('user-bnid'))
+          .then(userRecords => this.setState({userRecords: userRecords["res"]}))
+          .catch(err => console.error('error', err.toString()));
 
-        //Gather all records for the day
-        recordFetch(sqlDateFormat())
-            .then(allRecordsjson => this.setState({allRecordsjson: allRecordsjson["res"]}))
-            .catch(err => console.error('error', err.toString()));
+      //Gather all records for the day
+      recordFetch(sqlDateFormat())
+          .then(allRecordsjson => this.setState({allRecordsjson: allRecordsjson["res"]}))
+          .catch(err => console.error('error', err.toString()));
+    }
+    componentWillMount() {
+      this.requestUpdatedRecord();
     }
 
     render() {
@@ -321,7 +322,7 @@ class WaitList extends React.Component {
                         color: "lightgray"
                     }}>{new Date().toLocaleString()}</p>
                 </div>
-                <Footer showgitcont={true} showgitstatus = {true}/>
+                <Footer showgitcont={false} showgitstatus = {false}/>
             </div>
         );
     }

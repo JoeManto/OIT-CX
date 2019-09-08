@@ -61,7 +61,7 @@ class ApiKeyService {
                 }
             }
         }
-        return false
+        return false;
     }
 
     /**

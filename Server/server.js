@@ -78,9 +78,9 @@ app.use(express.static('client'));
 
 //----------------------------SERVICES----------------------------------
 
-setInterval(() => {
-    shiftServiceChild.send('CHECK');
-}, 20000);
+//setInterval(() => {
+  //  shiftServiceChild.send('CHECK');
+//}, 20000);
 setInterval(() => {
     recordServiceChild.send('CHECK');
 }, 20000);
@@ -189,15 +189,14 @@ app.post('/searchUser',(req,res) => {
             res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
             return;
           }
-          db.query("Select Max(id) from customer",(err,result) =>{
+          db.query("Select Max(id) from customer",(err,id) =>{
             if(err){
               res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
               return;
-            }
-            res.send({customerID:result[0].id,otherData:result})
+            res.send({customerID:id[0]['Max(id)'],otherData:result});
+            return;
           })
         });
-
       })
       .catch(error => {
         res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
