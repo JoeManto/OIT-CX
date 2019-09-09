@@ -5,6 +5,8 @@ import {apiResponse,BASIC_HEADER,recordFetch,logout} from "./DataFetchHandler";
 import {checkWindowHeight,formatAMPM,sqlTimeStampFormat,sqlDateFormat} from "./Util";
 import "../css/WaitList.css"
 import "../css/util.css"
+import "../css/Media.css";
+
 
 
 class CheckIn extends React.Component {
@@ -65,7 +67,6 @@ class CheckIn extends React.Component {
         this.setState({error:{status:true,message:"No account found for "+id}})
         return;
       }
-      console.log(result);
       let newUserLookUp = {status:true,user:id,data:result};
 
       this.requestRecord(newUserLookUp.data.customerID,this.state.selectedLocation);
@@ -303,7 +304,6 @@ class WaitList extends React.Component {
     }
 
     render() {
-        checkWindowHeight();
         const dataHeaders = ["Name", "WIN", "BNID", "Fulfilled by", "Time"];
         return (
             <div id="scroll-wrap">

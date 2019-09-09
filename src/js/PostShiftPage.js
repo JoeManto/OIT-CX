@@ -538,7 +538,7 @@ export default class PostShiftPage extends React.Component {
 
     //Main render function for the page.
     render() {
-        checkWindowHeight();
+        
         //check if the shift type selected is of type mobile
         const isMobile = () => {
             return this.state.selectedPosition !== null && this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData) === "Mobile";

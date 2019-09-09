@@ -1,5 +1,5 @@
 .contentPostShifts {
-    position: relative;
+    position: static;
     max-width: 400px;
     min-width: auto;
     padding: 20px;

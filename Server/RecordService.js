@@ -37,6 +37,7 @@ class RecordService {
       })
       .catch(error => {
         console.log("[AUTO][Record WORKER] :"+error);
+        this.stateDate = now;
       });
       return true;
     }else{

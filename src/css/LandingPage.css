@@ -41,13 +41,13 @@ input {
 }
 
 #FooterCont {
-    position: fixed;
+    position: relative;
     left: 0;
     bottom: 0;
-    padding: 20px;
     width: 100%;
-    margin-top: 100px;
+    margin-top: 50px;
     margin-right: 5px;
+    margin-bottom: 20px;
     color: black;
     text-align: center;
     justify-content: center;
@@ -61,8 +61,8 @@ input {
     background-color: #282c34;
 }
 #FooterCont:hover{
-    box-shadow: 0 -1px 8px rgba(168,168,168,20);
-    background-color: white;
+    /*box-shadow: 0 -1px 8px rgba(168,168,168,20);
+    background-color: white;*/
 }
 #footLinks{
     color:black;

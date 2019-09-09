@@ -1,11 +1,13 @@
 import React from 'react'
 import "../css/Shifts.css"
 import "../css/util.css"
+import "../css/Media.css"
 import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
 import {formatAMPM,checkWindowHeight} from "./Util";
+
 
 function ShiftListItem(props) {
     return (
@@ -280,13 +282,12 @@ class ShiftsWrapper extends React.Component {
 
 export default class Shifts extends React.Component {
     render() {
-        checkWindowHeight();
         return (
             <div id="scroll-wrap">
                 <div id="header-background"/>
                 <div id = "ShiftWrapper-cnt">
                 <Header title={"Shifts"} subtitle = {"The spot to view and manage all shifts."}/>
-                <div style={{marginTop:"100px"}}/>
+                <div id = "shifts-headerSpacer"style={{marginTop:"100px"}}/>
                 <div>
                     <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "black"}}>Open Shifts</h3>

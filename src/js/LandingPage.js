@@ -174,7 +174,6 @@ export class Footer extends React.Component {
 
 class LandingPage extends React.Component {
     render() {
-        checkWindowHeight();
         return (
             <div id="body">
                 <LandingSignIn/>

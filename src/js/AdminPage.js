@@ -446,7 +446,6 @@ export class ExpandableInput extends React.Component {
      * @returns {*}
      */
     render() {
-        checkWindowHeight();
         const state = this.state;
         return (
             <div className={"expandable-inp-cnt"}>

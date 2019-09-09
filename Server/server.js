@@ -193,6 +193,7 @@ app.post('/searchUser',(req,res) => {
             if(err){
               res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
               return;
+            }
             res.send({customerID:id[0]['Max(id)'],otherData:result});
             return;
           })

@@ -1,3 +1,5 @@
+
+
 .contentShifts {
     margin-bottom: 0;
     margin-top: 20px;
@@ -20,6 +22,7 @@
 
 .ShiftListItem {
     margin-left: 20px;
+    font-size: 80%;
 }
 
 .shiftListItemHeader {
@@ -30,4 +33,7 @@
     padding-top: 20px;
     padding-left: 10px;
     padding-bottom: 20px;
+}
+#ShiftWrapper{
+    height: 100%;
 }

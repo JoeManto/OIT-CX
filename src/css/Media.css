@@ -1,0 +1,72 @@
+/*
+mobileS: '320px',
+mobileM: '375px',
+mobileL: '425px',
+tablet: '768px',
+laptop: '1024px',
+laptopL: '1440px',
+desktop: '2560px'
+*/
+
+@media screen and (max-width: 425px) {
+  /*-------------------ALL PAGES/*-------------------*/
+  #header-titleBlock{
+    margin: 0;
+    width: 100%;
+    padding: 0;
+    padding-bottom: 20px;
+    background-color: rgb(41,44,52);
+    color:white;
+  }
+  #HeaderCont h2 {
+    margin-left: 20px;
+  }
+  #HeaderCont #header-subTitle{
+    margin-left: 20px;
+  }
+  #logout{
+    position: fixed;
+    text-align: right;
+    color:white;
+    margin: 0;
+    top: 8px;
+    left: 65%;
+  }
+  #logout a{
+    color:white !important;
+  }
+  #footLinks{
+    font-size: 70%;
+  }
+  #FooterCont p {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #FooterCont{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .footerElemCnt{
+    margin-top: 10px;
+    margin-right: 0 !important;
+  }
+  .footerElemCnt .flexRow{
+    justify-content: center !important;
+  }
+  /*/*-------------------Shifts Page-------------------*/
+  #shifts-headerSpacer{
+    margin: 0px !important;
+    margin-top: 20px !important;
+  }
+  .contentShifts{
+    min-width: 0 !important;
+  }
+  /*-------------------Post Shift Page-------------------*/
+  .contentPostShifts{
+    margin: 0 !important;
+    border: none;
+  }
+  /*-------------------LandingPage-------------------*/
+
+}
