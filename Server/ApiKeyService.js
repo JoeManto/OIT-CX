@@ -71,6 +71,7 @@ class ApiKeyService {
     expireOpenKeyForUser(user) {
         for (let i = 0; i < this.openKeys.length; i++) {
             if (this.openKeys[i].owner === user) {
+                console.log(new Date().toTimeString());
                 console.log("key expired for user " + this.openKeys[i].owner);
                 this.openKeys[i] = null;
                 this.openKeys = this.openKeys.filter(key => key !== null);

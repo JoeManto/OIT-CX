@@ -130,7 +130,7 @@ app.post('/auth', (req, res) => {
                     foundMatchForUser = true;
                     userRole = result[i]['role'];
                     if (result[i]['password'] === pass) {
-                        let key = apiService.createKeyForUser(user, result[i]['role'] === 1,60);
+                        let key = apiService.createKeyForUser(user, result[i]['role'] === 1,18000);
                         res.send({res: "auth-success", error: "no-error", key: key});
                         return;
                     }
@@ -140,7 +140,7 @@ app.post('/auth', (req, res) => {
         if (foundMatchForUser) {
             ldapWrapper.authUser(options, user, pass)
                 .then((_) => {
-                    let key = apiService.createKeyForUser(user, userRole === 1,60);
+                    let key = apiService.createKeyForUser(user, userRole === 1,18000);
                     res.send({res: "auth-success", error: "no-error", key: key});
                 })
                 .catch((error) => {
@@ -373,6 +373,12 @@ app.post('/getShifts', (req, res) => {
     let groupRole = null;
     let userId = null;
     let covered = req.body.covered;
+    let isPermPosting = 0;
+
+    if(covered === 2){
+      isPermPosting = 1;
+      covered = 0;
+    }
 
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
         let sqlGroupRole = "Select groupRole,id from users where empybnid = ?";
@@ -387,9 +393,9 @@ app.post('/getShifts', (req, res) => {
 
             let sqlShifts = "Select shiftId,coveredBy,postedBy,postedDate,availability,positionID," +
                 "perm,shiftDateStart,shiftDateEnd,empyname,empybnid from shifts t1,users t2 where" +
-                " groupId = ? AND t1.postedBy = t2.id AND availability = ? ORDER BY shiftDateStart ASC;";
+                " groupId = ? AND t1.postedBy = t2.id AND availability = ? AND perm = ? ORDER BY shiftDateStart ASC;";
 
-            sqlShifts = mysql.format(sqlShifts, [groupRole, covered]);
+            sqlShifts = mysql.format(sqlShifts, [groupRole, covered,isPermPosting]);
             db.query(sqlShifts, (err, result) => {
                 if (err) {
                     res.send({res: "User-Missing"});
@@ -397,6 +403,8 @@ app.post('/getShifts', (req, res) => {
                 res.send({res: result})
             });
         });
+
+
     } else {
         res.send({res: "apiKey-error"});
     }

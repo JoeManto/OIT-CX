@@ -15,10 +15,12 @@ desktop: '2560px'
     width: 100%;
     padding: 0;
     padding-bottom: 20px;
-    background-color: rgb(41,44,52);
+    background-color: #292c34;
+    box-shadow: 0 12px 2px #F5F5F5 !important;
     color:white;
   }
   #HeaderCont h2 {
+    margin-top: 40px;
     margin-left: 20px;
   }
   #HeaderCont #header-subTitle{
@@ -46,6 +48,7 @@ desktop: '2560px'
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0;
   }
   .footerElemCnt{
     margin-top: 10px;
@@ -53,6 +56,7 @@ desktop: '2560px'
   }
   .footerElemCnt .flexRow{
     justify-content: center !important;
+
   }
   /*/*-------------------Shifts Page-------------------*/
   #shifts-headerSpacer{
@@ -68,5 +72,15 @@ desktop: '2560px'
     border: none;
   }
   /*-------------------LandingPage-------------------*/
-
+  .RightFormCont{
+    display: none;
+  }
+  .LeftFormCont{
+    border-radius: 25px;
+    padding-bottom: 10px;
+    width: 100%;
+  }
+  .Cont{
+    margin-bottom: 100px;
+  }
 }

@@ -138,7 +138,7 @@ class ShiftService {
 
         for(let i = 0;i<this.openShifts.length;i++){
             console.log("[SHIFT WORKER] : checking shift with ID = "+this.openShifts[i].shiftID);
-            if(this.openShifts[i].shiftDateEnd <= now){
+            if(this.openShifts[i].shiftDateEnd <= now && this.openShifts[i].perm === 0){
                 shiftsToRemove.push(this.openShifts[i]);
                 this.openShifts[i] = null;
             }

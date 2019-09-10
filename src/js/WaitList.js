@@ -104,7 +104,7 @@ class CheckIn extends React.Component {
       userLookUp:{status:false,user:"",data:[]},
       error:{status:false,message:""},
     });
-    //window.location.reload(true);
+    window.location.reload(true);
   }
 
   handleSubmit = (e) => {
@@ -124,18 +124,19 @@ class CheckIn extends React.Component {
         {!this.state.userLookUp.status &&
           <div id = "checkin-cnt">
           <div className = {"flexColumn"}>
-          <input id = "checkin-input" className = {"checkin-elem"} placeholder={"Bronco NetID"} value = {this.state.userLookUp.user} onChange={({nativeEvent: {target}}) => this.handleInputChange(target)} id = "checkin-input"/>
-          <select
-            className = {"checkin-elem"}
-            onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
-            value = {this.state.selectedLocation}>
-            {
-              this.renderLocationOptions()
-            }
-              </select>
-            </div>
-            <button id = "checkin-button" style={{fontWeight: "bolder",background:"white"}}
-            className={"fadingButtonGrey right"} onClick={this.handleSubmit}>Check In</button>
+          <div className = {"flexRow"}>
+            <input id = "checkin-input" className = {"checkin-elem"} placeholder={"Bronco NetID"} value = {this.state.userLookUp.user} onChange={({nativeEvent: {target}}) => this.handleInputChange(target)} id = "checkin-input"/>
+            <select style = {{maxWidth:"52%",margin:"auto 20px"}}
+              className = {"checkin-elem"}
+              onChange={({nativeEvent: {target}}) => this.handleSelection(target)}
+              value = {this.state.selectedLocation}>
+              {
+                this.renderLocationOptions()
+              }
+            </select>
+          </div>
+          <button id = "checkin-button" style = {{margin:"auto"}}className={"buttonType1 right"} onClick={this.handleSubmit}>Check In</button>
+          </div>
           </div>
         }
         {this.state.userLookUp.status &&

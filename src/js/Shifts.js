@@ -207,7 +207,7 @@ class CoveredShift extends React.Component {
                         <ShiftListItem header={"Requester"} objToRender={
                             <h3>{this.props.data['empyname']}({this.props.data['empybnid']})</h3>}/>
                         <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
-                        <ShiftListItem header={""} objToRender={<img style={{marginTop: "30px"}} width={25} height={25}
+                        <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}} width={25} height={25}
                                                                      src={require('../rightArrow.png')}/>}/>
                         <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
                         <ShiftListItem header={"Type"} objToRender={
@@ -299,6 +299,11 @@ export default class Shifts extends React.Component {
                         <p style={{color: "darkgrey"}}>Just for viewing</p>
                     </div>
                     <ShiftsWrapper covered={1}/>
+                    <div className={"Content contentShifts yellowBottomBordered"}>
+                        <h3 style={{color: "black"}}>Permanent Shifts</h3>
+                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with</p>
+                    </div>
+                    <ShiftsWrapper covered={2}/>
                 </div>
                 <Footer showgitcont={true} showgitstatus={true}/>
                 </div>

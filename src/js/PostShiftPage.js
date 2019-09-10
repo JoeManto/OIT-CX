@@ -301,7 +301,7 @@ class PositionList extends React.Component {
         if (this.props.data) {
             return (
                 <div onChange={this.handlePosChange}>
-                    <h3>Shift Type</h3>
+                    <h3 style={{color: "#292c34"}}>Shift Type</h3>
                     {this.props.data.map((obj, i) => {
                         return this.renderPosition(i);
                     })}
@@ -463,8 +463,8 @@ export default class PostShiftPage extends React.Component {
         let {start, end} = {start: this.state.date, end: this.state.endDate};
 
         let correctName = this.getCorrectPosNameFromPosMapping(e, this.state.positionData);
-        console.log(correctName);
-        console.log(this.state.positionData);
+        //console.log(correctName);
+        //console.log(this.state.positionData);
         if (correctName === "Call-In") {
             start.setHours(17);
             start.setMinutes(0);
@@ -478,7 +478,7 @@ export default class PostShiftPage extends React.Component {
             end.setMinutes(0);
         }
 
-        console.log("set state");
+        //console.log("set state");
         this.setState({date: start, endDate: end, selectedPosition: e, shiftInputFailure: shiftInputFailure});
     };
 
@@ -513,12 +513,12 @@ export default class PostShiftPage extends React.Component {
             return;
         }
         this.setState({confirmStatus: "wait-confirm"});
-        console.log("----------------");
+        /*console.log("----------------");
         console.log(this.state);
         console.log("Start Date");
         console.log(this.state.date);
         console.log("End Date");
-        console.log(this.state.endDate);
+        console.log(this.state.endDate);*/
     };
 
     handleConfirmPost = () => {
@@ -538,7 +538,7 @@ export default class PostShiftPage extends React.Component {
 
     //Main render function for the page.
     render() {
-        
+
         //check if the shift type selected is of type mobile
         const isMobile = () => {
             return this.state.selectedPosition !== null && this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData) === "Mobile";
@@ -562,16 +562,16 @@ export default class PostShiftPage extends React.Component {
                 {confirmStatus === "untested" &&
                 <div id="scroll-wrap">
                     <div id="header-background"/>
-                    <Header title = {"Shift Posting"}/>
+                    <Header title = {"Shift Posting"} subtitle = {"The spot to trade shifts"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
-                        <h2 style={{color: "black"}}>Post Shift</h2>
+                        <h2 style={{color: "#292c34"}}>Post Shift</h2>
                         <p style={{color: "grey", fontSize: ".7em"}}>After a posted shift has been picked up, all
                             previous actions are final.</p>
                         <hr/>
                         <PositionList onChange={this.handlePosChange} data={this.state.positionData}/>
-                        <h3>Shift Date</h3>
+                        <h3 style={{color: "#292c34"}}>Shift Date</h3>
                         <DatePicker onChange={this.handleDateChange}/>
-                        <h3>Shift Time</h3>
+                        <h3 style={{color: "#292c34"}}>Shift Time</h3>
                         {/*If mobile or call-in are selected, display that the time is already been changed*/}
                         {isMobile() ?
                             (
@@ -588,7 +588,7 @@ export default class PostShiftPage extends React.Component {
                             //set long shift warning
                             longShiftWarning.status && <p className={"cautionText"}>{longShiftWarning.message}</p>
                         }
-                        <h3 style={{marginBottom: "5px"}}>Other Info</h3>
+                        <h3 style={{marginBottom: "5px",color: "#292c34"}}>Other Info</h3>
                         <p className={"smallLineHeight"}
                            style={{color: "grey", fontSize: ".7em", margin: "0", marginBottom: "5px"}}>Please add a
                             short
@@ -619,7 +619,7 @@ export default class PostShiftPage extends React.Component {
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
                         <hr/>
-                        <h3>Shift Type : <span
+                        <h3 style={{color: "#292c34"}}>Shift Type : <span
                             className={"cautionText"}>{this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData)}</span>
                         </h3>
                         <h3>Indefinite : <span
