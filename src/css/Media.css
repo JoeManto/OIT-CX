@@ -17,6 +17,9 @@ desktop: '2560px'
     padding-bottom: 20px;
     background-color: #292c34;
     box-shadow: 0 12px 2px #F5F5F5 !important;
+    border-radius: 0;
+    border-bottom-left-radius: 25px !important;
+    border-bottom-right-radius: 25px !important;
     color:white;
   }
   #HeaderCont h2 {

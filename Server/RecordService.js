@@ -17,7 +17,7 @@ db.connect((err) => {
 */
 class RecordService {
   constructor(){
-    this.startDate = new Date();
+    Object.assign(this, {startDate:new Date()});
   }
 
   /*
@@ -27,17 +27,18 @@ class RecordService {
   */
  checkForDataMigration(){
     let now = new Date();
+
     if(this.startDate.getDate() < now.getDate()){
       console.log("Starting Record Data Migration");
       //Run the migration and return the completion status
 
        this.migrateData()
       .then(res => {
-        this.stateDate = now;
+        Object.assign(this,{startDate:new Date()});
       })
       .catch(error => {
         console.log("[AUTO][Record WORKER] :"+error);
-        this.stateDate = now;
+        Object.assign(this,{startDate:new Date()});
       });
       return true;
     }else{

@@ -78,9 +78,9 @@ app.use(express.static('client'));
 
 //----------------------------SERVICES----------------------------------
 
-//setInterval(() => {
-  //  shiftServiceChild.send('CHECK');
-//}, 20000);
+setInterval(() => {
+    shiftServiceChild.send('CHECK');
+}, 20000);
 setInterval(() => {
     recordServiceChild.send('CHECK');
 }, 20000);

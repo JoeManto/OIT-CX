@@ -73,7 +73,7 @@ class ShiftService {
         let sql = "";
         for(let i = 0;i<shifts.length;i++){
             if(i === 0)
-                sql += "DELETE FROM SHIFTS WHERE ";
+                sql += "DELETE FROM shifts WHERE ";
             if(i !== shifts.length-1){
                 sql += "shiftID = "+shifts[i].shiftID+" OR ";
             }else{
@@ -85,12 +85,13 @@ class ShiftService {
                 if(err){
                     console.log("[SHIFT WORKER] error deleting shifts");
                 }
+                this.migrateShiftData(shifts)
+                .then(res => console.log("[SHIFT WORKER] : "+res.res))
+                .catch(err => console.log("[SHIFT WORKER] : "+err.error));
+                this.pruneOpenShifts()
             });
         }
-        this.migrateShiftData(shifts)
-        .then(res => console.log("[SHIFT WORKER] : "+res.res))
-        .catch(err => console.log("[SHIFT WORKER] : "+err.error));
-        this.pruneOpenShifts()
+
     }
 
     /*
@@ -139,11 +140,13 @@ class ShiftService {
         for(let i = 0;i<this.openShifts.length;i++){
             console.log("[SHIFT WORKER] : checking shift with ID = "+this.openShifts[i].shiftID);
             if(this.openShifts[i].shiftDateEnd <= now && this.openShifts[i].perm === 0){
+                console.log("adding shift to delete");
                 shiftsToRemove.push(this.openShifts[i]);
                 this.openShifts[i] = null;
             }
         }
         if(shiftsToRemove.length>0){
+          console.log("calling remove shifts");
           this.openShifts.filter(shift => shift !== null);
           this.removeShifts(shiftsToRemove);
         }

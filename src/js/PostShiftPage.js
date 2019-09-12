@@ -446,7 +446,6 @@ export default class PostShiftPage extends React.Component {
         let shiftType = selectedPos;
         let shiftName = "Default";
         for (let i = 0; i < positions.length; i++) {
-            console.log(typeof shiftType);
             if (Number(shiftType) === positions[i].id) {
                 return positions[i].posName;
             }
@@ -465,20 +464,20 @@ export default class PostShiftPage extends React.Component {
         let correctName = this.getCorrectPosNameFromPosMapping(e, this.state.positionData);
         //console.log(correctName);
         //console.log(this.state.positionData);
+        console.log(correctName);
         if (correctName === "Call-In") {
             start.setHours(17);
             start.setMinutes(0);
             end.setHours(22);
             end.setMinutes(0);
         }
-        if (correctName === "Moblie") {
+        if (correctName === "Mobile") {
             start.setHours(18);
             start.setMinutes(45);
             end.setHours(22);
             end.setMinutes(0);
         }
-
-        //console.log("set state");
+        console.log("set state");
         this.setState({date: start, endDate: end, selectedPosition: e, shiftInputFailure: shiftInputFailure});
     };
 
@@ -566,7 +565,11 @@ export default class PostShiftPage extends React.Component {
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "#292c34"}}>Post Shift</h2>
                         <p style={{color: "grey", fontSize: ".7em"}}>After a posted shift has been picked up, all
-                            previous actions are final.</p>
+                            previous actions are final.
+                            <br/>
+                            <a href={IP()+"/shifts"} style={{color: "#292c34", fontSize: "1.2em"}}>Find Open Shifts</a>
+                        </p>
+
                         <hr/>
                         <PositionList onChange={this.handlePosChange} data={this.state.positionData}/>
                         <h3 style={{color: "#292c34"}}>Shift Date</h3>
