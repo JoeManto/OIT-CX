@@ -118,7 +118,7 @@ app.post('/unAuth',(req,res) => {
 
 app.post('/auth', (req, res) => {
     console.log("Attempting to auth user " + req.body.user);
-    let user = req.body.user, pass = req.body.pass;
+    let user = req.body.user.toLowerCase(), pass = req.body.pass;
     let foundMatchForUser = false;
     let userRole = 0;
     db.query("SELECT * FROM users", (err, result) => {

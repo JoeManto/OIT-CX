@@ -6,7 +6,7 @@ import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
-import {formatAMPM,checkWindowHeight} from "./Util";
+import {formatAMPM,checkWindowHeight,IP} from "./Util";
 
 
 function ShiftListItem(props) {
@@ -205,7 +205,7 @@ class CoveredShift extends React.Component {
                     <div className={"shiftFlexCont"}>
                         <ShiftListItem header={"ShiftID"} objToRender={<h3>{this.props.data['shiftId']}</h3>}/>
                         <ShiftListItem header={"Requester"} objToRender={
-                            <h3>{this.props.data['empyname']}({this.props.data['empybnid']})</h3>}/>
+                            <h3>{this.props.data['empyname']}</h3>}/>
                         <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
                         <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}} width={25} height={25}
                                                                      src={require('../rightArrow.png')}/>}/>
@@ -217,7 +217,7 @@ class CoveredShift extends React.Component {
                                 this.shiftTimes.posted.getMonth() + 1
                             }/{this.shiftTimes.posted.getDate()
                             }/{this.shiftTimes.posted.getFullYear()
-                            }:{formatAMPM(this.shiftTimes.posted)}
+                            } {formatAMPM(this.shiftTimes.posted)}
                             </h3>}/>
                     </div>
                 </div>
@@ -275,7 +275,7 @@ class ShiftsWrapper extends React.Component {
             );
         } else {
             // eslint-disable-next-line jsx-a11y/accessible-emoji
-            return (<div className={"Content contentShifts"}>{<h3>No Shifts <span role={"img"}>🍺</span></h3>}</div>);
+            return (<div className={"Content contentShifts"}>{<h3>No Shifts</h3>}</div>);
         }
     }
 }
@@ -286,12 +286,14 @@ export default class Shifts extends React.Component {
             <div id="scroll-wrap">
                 <div id="header-background"/>
                 <div id = "ShiftWrapper-cnt">
-                <Header title={"Shifts"} subtitle = {"The spot to view and manage all shifts."}/>
+                <Header title={"Shifts"} subtitle = {"View and manage shifts"}/>
                 <div id = "shifts-headerSpacer"style={{marginTop:"100px"}}/>
                 <div>
                     <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "black"}}>Open Shifts</h3>
-                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with</p>
+                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with
+                        <a href={IP()+'/post-shift'} style={{fontStyle:"bolder",marginLeft:"15px"}}>Post a shift</a>
+                        </p>
                     </div>
                     <ShiftsWrapper covered={0}/>
                     <div className={"Content contentShifts yellowBottomBordered"}>

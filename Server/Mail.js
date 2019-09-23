@@ -27,7 +27,7 @@ class Mail {
                 }
                 let target = result[0]['emailList'];
                 let mailData = {
-                    from: '"Joseph Manto" <joe.m.manto@wmich.edu>',
+                    from: '"oit-shifts" <oit_shifts@wmich.edu>',
                     to: target,
                     subject: "OIT Shift Posting",
                     text: "The Following shift was posted by " + UserData.surname + ", " + UserData.empyname +
@@ -44,8 +44,8 @@ class Mail {
 
         gatherMailData
             .then(async (result) => {
-                await this.adminTransporter.sendMail(result.res,()=>console.log("mail sent"));
-                console.log("mail sending is disabled");
+                await this.adminTransporter.sendMail(result.res,(err)=>console.log(err));
+                //console.log("mail sending is disabled");
             })
             .catch(error=>console.log(error));
     }

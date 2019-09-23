@@ -186,6 +186,8 @@ export function Header(props) {
  */
 function Row(props) {
     const data = props.data;
+    let date = new Date(data.date);
+    date.setHours(date.getHours()+4);
     return (
         <tr>
             <td>{data.name}</td>
@@ -193,7 +195,7 @@ function Row(props) {
             <td><a href={"https://itdirect.wmich.edu/WorkOrder.do?reqTemplate=1502"} target={"_blank"}>{data.bnid}</a>
             </td>
             <td>{data.empyname}</td>
-            <td>{formatAMPM(new Date(data.date))}</td>
+            <td>{formatAMPM(date)}</td>
         </tr>
     );
 }
@@ -237,6 +239,7 @@ export class Chart extends React.Component {
     };
 
     renderblurryRow = () => {
+
       let obj = this.props.data;
       if(obj.length > 5 && this.state.hiddenToggle){
         return(<tr className={"blurry-text"}>
@@ -309,9 +312,9 @@ class WaitList extends React.Component {
         return (
             <div id="scroll-wrap">
                 <div id="header-background"/>
-                <Header title={"Waitlist"} subtitle = {"helpdesk record keeping of walk-in and mobile coustumers"}/>
+                <Header title={"Waitlist"} subtitle = {"Help Desk customer tracking"}/>
                 <div className={"Content"}>
-                    <h2 className={"coloredButton"}>CheckIn</h2>
+                    <h2 className={"coloredButton"}>Check In</h2>
                     <CheckIn/>
                     <h2 className={"coloredButton"}>My Records</h2>
                     <Chart dataHeaders={dataHeaders} data={this.state.userRecords}/>

@@ -150,8 +150,8 @@ class TimePicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            startTimeIndex: 0,
-            endTimeIndex: 0,
+            startTimeIndex: this.getTimeIndexForDate(new Date()),
+            endTimeIndex: this.getTimeIndexForDate(new Date()),
         };
         this.handleTimeChange = this.handleTimeChange.bind(this);
     }
@@ -219,6 +219,26 @@ class TimePicker extends React.Component {
         }
         return elems;
     };
+
+    getTimeIndexForDate = (date) => {
+      let {hours,min} = {hours:0,min:0};
+      date.getMinutes() >= 30 ? date.setMinutes(30) : date.setMinutes(0);
+      for (let i = 0; i < 48;++i) {
+        if(hours === date.getHours() && min === date.getMinutes())
+          return i;
+          if (i !== 0) {
+              if (i % 2 === 0) {
+                  hours += 1;
+                  min = 0;
+              } else if (min === 0) {
+                  min = 30;
+              } else if (min === 30) {
+                  min = 0;
+              }
+          }
+      }
+      return 0;
+    }
 
     /**
      * Input event handler used to manage the local state and the state of the parent component
@@ -462,9 +482,6 @@ export default class PostShiftPage extends React.Component {
         let {start, end} = {start: this.state.date, end: this.state.endDate};
 
         let correctName = this.getCorrectPosNameFromPosMapping(e, this.state.positionData);
-        //console.log(correctName);
-        //console.log(this.state.positionData);
-        console.log(correctName);
         if (correctName === "Call-In") {
             start.setHours(17);
             start.setMinutes(0);
@@ -477,7 +494,6 @@ export default class PostShiftPage extends React.Component {
             end.setHours(22);
             end.setMinutes(0);
         }
-        console.log("set state");
         this.setState({date: start, endDate: end, selectedPosition: e, shiftInputFailure: shiftInputFailure});
     };
 
@@ -561,13 +577,13 @@ export default class PostShiftPage extends React.Component {
                 {confirmStatus === "untested" &&
                 <div id="scroll-wrap">
                     <div id="header-background"/>
-                    <Header title = {"Shift Posting"} subtitle = {"The spot to trade shifts"}/>
+                    <Header title = {"Shift Posting"} subtitle = {"Offer a shift once or permanently"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "#292c34"}}>Post Shift</h2>
                         <p style={{color: "grey", fontSize: ".7em"}}>After a posted shift has been picked up, all
                             previous actions are final.
                             <br/>
-                            <a href={IP()+"/shifts"} style={{color: "#292c34", fontSize: "1.2em"}}>Find Open Shifts</a>
+                            <a href={IP()+"/shifts"} style={{color: "#292c34 !important", fontSize: "1.2em"}}>Find Open Shifts</a>
                         </p>
 
                         <hr/>
@@ -596,7 +612,7 @@ export default class PostShiftPage extends React.Component {
                            style={{color: "grey", fontSize: ".7em", margin: "0", marginBottom: "5px"}}>Please add a
                             short
                             message that describes why
-                            you are posting your shift. <br/><span style={{color: "red"}}>*This message will be attached in the mass email.</span>
+                            you're posting your shift. <br/><span style={{color: "red"}}>*This message will be attached in the mass email.</span>
                         </p>
                         <textarea placeholder={"Message..."} value = {this.state.message} onChange={(e)=>{e.persist();this.handleMessageChange(e)}}/*onChange={({nativeEvent: {target}}) => this.handleMessageChange(target)}*/ rows={"4"} cols={"47"}/>
                         <div style={permanentCnt} className={"flexRow"}>
@@ -613,11 +629,12 @@ export default class PostShiftPage extends React.Component {
                             <button onClick={this.handlePost} className={"fadingButton right"}>Post</button>
                         </div>
                     </div>
+                    <Footer style={{marginTop:"50px"}} showgitcont={true} showgitstatus={true}/>
                 </div>
                 }
                 {confirmStatus === "wait-confirm" &&
                 <div id="scroll-wrap">
-                    <Header title={"Shift Posting"} subtitle={"The spot to share a shift"}/>
+                    <Header title={"Shift Posting"} subtitle={"Offer a shift once or permanently"}/>
                     <div id="header-background"/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
                         <h2 style={{color: "black"}}>Confirm Posting</h2>
@@ -625,7 +642,7 @@ export default class PostShiftPage extends React.Component {
                         <h3 style={{color: "#292c34"}}>Shift Type : <span
                             className={"cautionText"}>{this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData)}</span>
                         </h3>
-                        <h3>Indefinite : <span
+                        <h3>Permanent : <span
                             className={"cautionText"}>{this.state.permShiftPosting === "on" ? "Yes" : "No"}</span></h3>
                         <div className={"flexRow"}>
                             <p>{this.state.date.toDateString() + " " + formatAMPM(this.state.date)}</p>
@@ -637,16 +654,18 @@ export default class PostShiftPage extends React.Component {
                             but, after a posted shift has been picked up all
                             previous actions are final.</p>
                         <div style={{paddingTop: "20px"}} className={"flexRow"}>
-                            <div style={{width: "80%"}}/>
-                            <button onClick={this.handleUnConfirm} style={{marginTop: "3px"}}
+
+                            <button onClick={this.handleUnConfirm} style={{marginTop: "3px",float:"left"}}
                                     className={"clearButton"}>back
                             </button>
+                            <div style={{width: "80%"}}/>
                             <button onClick={this.handleConfirmPost} className={"fadingButton right"}>Confirm</button>
                         </div>
                     </div>
+                    <Footer style={{marginTop:"50px"}} showgitcont={true} showgitstatus={true}/>
                 </div>
                 }
-                <Footer showgitcont={true} showgitstatus={true}/>
+
             </div>
         );
     }

@@ -139,7 +139,12 @@ class ShiftService {
 
         for(let i = 0;i<this.openShifts.length;i++){
             console.log("[SHIFT WORKER] : checking shift with ID = "+this.openShifts[i].shiftID);
-            if(this.openShifts[i].shiftDateEnd <= now && this.openShifts[i].perm === 0){
+            console.log(this.openShifts[i]);
+            if(this.openShifts[i].availability === 1 && this.openShifts[i].perm === 1){
+                console.log("adding shift to delete");
+                shiftsToRemove.push(this.openShifts[i]);
+                this.openShifts[i] = null;
+            }else if(this.openShifts[i].shiftDateEnd <= now && this.openShifts[i].perm === 0){
                 console.log("adding shift to delete");
                 shiftsToRemove.push(this.openShifts[i]);
                 this.openShifts[i] = null;
@@ -150,6 +155,7 @@ class ShiftService {
           this.openShifts.filter(shift => shift !== null);
           this.removeShifts(shiftsToRemove);
         }
+        this.pruneOpenShifts();
     }
 }
 

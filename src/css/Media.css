@@ -18,8 +18,8 @@ desktop: '2560px'
     background-color: #292c34;
     box-shadow: 0 12px 2px #F5F5F5 !important;
     border-radius: 0;
-    border-bottom-left-radius: 25px !important;
-    border-bottom-right-radius: 25px !important;
+    border-bottom-left-radius: 15px !important;
+    border-bottom-right-radius: 15px !important;
     color:white;
   }
   #HeaderCont h2 {
@@ -30,7 +30,7 @@ desktop: '2560px'
     margin-left: 20px;
   }
   #logout{
-    position: fixed;
+    position: absolute;
     text-align: right;
     color:white;
     margin: 0;

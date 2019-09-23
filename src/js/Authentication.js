@@ -35,7 +35,7 @@ export function validateCookie(){
     console.log(window.location.href);
     if(window.location.href === landing){
         if(cookie && cookie !== "null"){
-            return {route:IP()+"/WaitList"};
+            return {route:IP()+"/shifts"};
         }
     }else if(window.location.href !== landing){
         if(!cookie || cookie === "null"){

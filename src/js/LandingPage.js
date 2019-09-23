@@ -25,7 +25,7 @@ class LandingSignIn extends React.Component {
                 .then(function (result) {
                     if (result.status) {
                         if (window.location.href === IP() || window.location.href === IP() + "/") {
-                            window.location = IP() + "/WaitList";
+                            window.location = IP() + "/shifts";
                         } else {
                             window.location = window.location.href;
                         }
@@ -55,7 +55,7 @@ class LandingSignIn extends React.Component {
                     <h1>Sign In</h1>
                     <p>Sign in with your Bronco NetID</p>
                     <input onChange={this.handleInputChange} onKeyDown={this.handleInputChange} id="user" type={"text"}
-                           placeholder={"Bronco-Net ID"}/>
+                           placeholder={"Bronco NetID"}/>
                     <div style={{marginTop: '20px'}}/>
                     <input onChange={this.handleInputChange} onKeyDown={this.handleInputChange} id="pass"
                            type={"password"} placeholder={"Password"}/>
@@ -66,8 +66,8 @@ class LandingSignIn extends React.Component {
                     }
                 </div>
                 <div className={"Flex-Column-Center RightFormCont orange-gradient"}>
-                    <h1>OIT - CX</h1>
-                    <p>WMU's new generic customer tracking web app and internal tool made by the OIT HelpDesk</p>
+                    <h1>OIT-CX</h1>
+                    <p>Shift Management and Customer Tracking tool for the Office of Information Technology</p>
                     <h3>Trouble Signing In?</h3>
                     <p>Contact your supervisor<br/>or Help Desk (269) 387-4357</p>
                 </div>
