@@ -3,6 +3,7 @@ import {IP} from '../js/Util.js';
  * @return {boolean}
  */
 export function Auth(cred) {
+    cred.user = cred.user.toLowerCase();
     return (async () => {
         const rawResponse = await fetch('/auth', {
             method: 'POST',
@@ -11,7 +12,7 @@ export function Auth(cred) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user: cred.user,
+                user: cred.user.toLowerCase(),
                 pass: cred.pass,})
         });
         const content = await rawResponse.json();

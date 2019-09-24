@@ -21,8 +21,9 @@ export class DatePicker extends React.Component {
         this.state = {
             validDate: false,
             now: new Date(),
-            date: new Date()
+            date: new Date(),
         };
+
         this.handleSelectionChange = this.handleSelectionChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -153,6 +154,9 @@ class TimePicker extends React.Component {
             startTimeIndex: this.getTimeIndexForDate(new Date()),
             endTimeIndex: this.getTimeIndexForDate(new Date()),
         };
+
+        this.props.onChange({type: 0, time: this.timeIndexToMili(this.state.startTimeIndex)});
+        this.props.onChange({type: 1, time: this.timeIndexToMili(this.state.endTimeIndex)});
         this.handleTimeChange = this.handleTimeChange.bind(this);
     }
 
