@@ -423,10 +423,10 @@ app.post('/getPositions', (req, res) => {
                 return;
             }
             let userInfo = {user: user, role: result[0]['role'], groupId: result[0]['groupRole']};
-            if ((userInfo.role === 1 || userInfo.role === 2) && !req.body.fetchAll) {
+            /*if ((userInfo.role === 1 || userInfo.role === 2) && !req.body.fetchAll) {
                 res.send({res: []});
                 return;
-            }
+            }*/
             if(req.body.fetchAll){
                 console.log("this this ran");
                 let positionsSql = "Select id,posName from positions";
