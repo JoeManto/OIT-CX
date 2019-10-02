@@ -28,7 +28,6 @@ CREATE TABLE `customer` (
   `win` mediumtext,
   PRIMARY KEY (`id`)
 );
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `customer`
