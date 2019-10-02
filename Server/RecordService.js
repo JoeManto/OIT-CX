@@ -5,19 +5,22 @@ const config = require('./SecertConfig.js');
 const db = mysql.createConnection(config.db_config());
 
 //Test DataBase Connection
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('mysql connected...');
-});
+
 
 /**
   Manages all the active records in the data base.
 */
 class RecordService {
-  constructor(){
+  constructor(dbRequest = false){
     Object.assign(this, {startDate:new Date()});
+    if(dbRequest){
+        db.connect((err) => {
+          if (err) {
+              throw err;
+          }
+          console.log('mysql connected...');
+      });
+    }
   }
 
   /*
@@ -91,7 +94,7 @@ class RecordService {
     });
   }
 }
-
+module.exports = RecordService;
 let recordsService = new RecordService();
 
 //listen for interval messages from the parent
