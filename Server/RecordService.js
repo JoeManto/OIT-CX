@@ -11,7 +11,7 @@ const db = mysql.createConnection(config.db_config());
   Manages all the active records in the data base.
 */
 class RecordService {
-  constructor(dbRequest = false){
+  constructor(dbRequest = true){
     Object.assign(this, {startDate:new Date()});
     if(dbRequest){
         db.connect((err) => {

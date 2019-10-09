@@ -30,7 +30,7 @@
 : expected results
  */
  const RecordService = require('../Server/RecordService.js');
- let records_service = new RecordService();
+ let records_service = new RecordService(false);
 
  class Tests {
    constructor(){
@@ -136,6 +136,7 @@
      }
    }
  }
+
 
  /*
   Example on how to run testcase with all there types
