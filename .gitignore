@@ -20,7 +20,7 @@
 .env.test.local
 .env.production.local
 
-.dj
+./env
 .pem
 
 npm-debug.log*
