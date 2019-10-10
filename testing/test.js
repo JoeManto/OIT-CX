@@ -1,7 +1,20 @@
  const RecordService = require('../Server/RecordService.js');
+
  let records_service = new RecordService(false);
 
- class Tests {
+ const ApiKeyService = require('../Server/ApiKeyService.js');
+ let apiService = new ApiKeyService();
+
+
+ //let api_service = new ApiKeyService();
+
+ //console.log(api_service);
+
+ //let tests = api_service.exports;
+ //console.log(tests);
+ //console.log(tests);
+
+export class Tests {
    constructor(){
      this.subroutines = new Map();
      this.subroutines.set("default",[]);
@@ -28,7 +41,7 @@
 
    runTestCase(subroutine = 'default'){
      //subroutine is empty or doesnt exist in the map
-     if(!this.subroutines.has(subroutine) || this.subroutine.get(subroutine).length === 0){
+     if(!this.subroutines.has(subroutine) || this.subroutines.get(subroutine).length === 0){
        console.log("Skipping...failed to start tests for missing subroutine or empty");
        return;
      }
@@ -112,10 +125,10 @@
    }
  }
 
+ module.exports = TestCase;
 
- /*
-  Example on how to run testcase with all there types
- */
+/*
+
  class Example {
    testFunction1(arr){
      if(arr.length > 5){
@@ -145,4 +158,4 @@ let test3 = new TestCase(example,"testFunction3",[{name:"hi",number:5}],[{name:"
 
 let test = new Tests();
 test.addTestCase('default',test3);
-test.runTestsForAllSubroutines();
+test.runTestsForAllSubroutines();*/

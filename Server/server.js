@@ -92,7 +92,8 @@ recordServiceChild.on('message',function (m) {
     console.log('[AUTO][Record WORKER] : ' + m)
 });
 
-let apiService = new ApiKeyService();
+
+let apiService = new ApiKeyService();//.api();
 let mailService = new Mail();
 
 //----------------------Helper Functions----------------------------------
