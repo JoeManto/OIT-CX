@@ -2,25 +2,25 @@ const mysql = require('mysql');
 const config = require('./SecertConfig.js');
 
 //DataBase Connection Config
+
+//let config1 = config.db_config();
+//console.log(config1);
 const db = mysql.createConnection(config.db_config());
 
-//Test DataBase Connection
-
+//Create DataBase Connection
+db.connect((err) => {
+  if (err) {
+      throw err;
+  }
+  console.log('mysql connected...');
+});
 
 /**
   Manages all the active records in the data base.
 */
 class RecordService {
-  constructor(dbRequest = true){
+  constructor(){
     Object.assign(this, {startDate:new Date()});
-    if(dbRequest){
-        db.connect((err) => {
-          if (err) {
-              throw err;
-          }
-          console.log('mysql connected...');
-      });
-    }
   }
 
   /*

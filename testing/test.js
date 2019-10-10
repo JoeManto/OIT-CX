@@ -1,20 +1,20 @@
+ const dotenv = require('dotenv');
  const RecordService = require('../Server/RecordService.js');
-
- let records_service = new RecordService(false);
-
  const ApiKeyService = require('../Server/ApiKeyService.js');
- let apiService = new ApiKeyService();
+ let api_service = new ApiKeyService();
+ let records_service = new RecordService();
 
+ const db = mysql.createConnection(config.db_config());
 
- //let api_service = new ApiKeyService();
+ //Create DataBase Connection
+ db.connect((err) => {
+   if (err) {
+       throw err;
+   }
+   console.log('mysql connected...');
+ });
 
- //console.log(api_service);
-
- //let tests = api_service.exports;
- //console.log(tests);
- //console.log(tests);
-
-export class Tests {
+ class Tests {
    constructor(){
      this.subroutines = new Map();
      this.subroutines.set("default",[]);
@@ -24,6 +24,10 @@ export class Tests {
    Adds a testcase object to a mapped subroutine
    */
    addTestCase(subroutine = 'defualt', testCase = {}){
+     if(process.env.DEV_STATE !== 1){
+       console.log("Unable to add test case: DEV_STATE is not set to the testing state");
+       return;
+     }
      //if the testcase is missing return
      if(!testCase || testCase === {})
         return;
@@ -127,8 +131,9 @@ export class Tests {
 
  module.exports = TestCase;
 
-/*
-
+ /*
+ * Example of how to perfom a unit test
+ */
  class Example {
    testFunction1(arr){
      if(arr.length > 5){
@@ -150,7 +155,7 @@ export class Tests {
      return input;
    }
  }
-
+/*
 let example = new Example();
 let test1 = new TestCase(example,"testFunction1",[[1,2,3,4,5,6],[1,3,5,6]],[true,false]);
 let test2 = new TestCase(example,"testFunction2",["hello%joe","what%%test"],(input,output) => {return true});
@@ -158,4 +163,5 @@ let test3 = new TestCase(example,"testFunction3",[{name:"hi",number:5}],[{name:"
 
 let test = new Tests();
 test.addTestCase('default',test3);
-test.runTestsForAllSubroutines();*/
+test.runTestsForAllSubroutines();
+*/

@@ -1,6 +1,4 @@
 let sha = require("sha256");
-const TestCase = require("../testing/test.js");
-console.log(TestCase);
 
 class ApiKeyService {
     constructor() {
@@ -106,33 +104,4 @@ class ApiKeyService {
     }
 }
 
-
-class Example {
-  testFunction1(arr){
-    if(arr.length > 5){
-      return true;
-    }
-    return false;
-  }
-
-  testFunction2(str){
-    for(let i = 0;i<str.length; i++){
-      if(str[i] === '%'){
-
-      }
-    }
-    return str;
-  }
-
-  testFunction3(input){
-    return input;
-  }
-}
-
-let example = new Example();
-//let testcase1 = new TestCase(example,"testFunction1",[[1,2,3,4,5,6],[1,3,5,6]],[true,false]);
-//let testcases = [testcase1];
-
-
-
-module.exports = ApiKeyService;//{api:ApiKeyService,tests:testcases};
+module.exports = ApiKeyService;
