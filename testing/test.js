@@ -1,34 +1,3 @@
-/*
-[Tests]
-
-: run test by testcase name
-: run test by subroutine
-: run all testcases
-: run optimize tests
-  that only run testcase on functions that have been changed
-
-: addTestCase(@TestCase)
-  'defualt subroutine'
-: addTestCaseForSubroutine(@TestCase)
-
---succuess--
-- succuess message
-- print the test case name
-- current input
-
---OnError--
-- Print the test case name
-- function pointer
-- line number
-[current input : expected result]
-*/
-/*
-[TestCase]
-: name
-: fucntion pointer
-: inputs
-: expected results
- */
  const RecordService = require('../Server/RecordService.js');
  let records_service = new RecordService(false);
 
@@ -38,14 +7,19 @@
      this.subroutines.set("default",[]);
    }
 
+   /**
+   Adds a testcase object to a mapped subroutine
+   */
    addTestCase(subroutine = 'defualt', testCase = {}){
+     //if the testcase is missing return
      if(!testCase || testCase === {})
         return;
+     //subroutine was found
      if(this.subroutines.has(subroutine)){
        let testCases = this.subroutines.get(subroutine);
        testCases.push(testCase);
-
        this.subroutines.set(subroutine,testCases);
+     //subroutine was not found
      }else{
         let testCases = [testCase];
         this.subroutines.set(subroutine,testCases);
@@ -53,19 +27,20 @@
    }
 
    runTestCase(subroutine = 'default'){
-     if(!this.subroutines.has(subroutine)){
-       console.log("Skipping...failed to start tests for missing subroutine");
+     //subroutine is empty or doesnt exist in the map
+     if(!this.subroutines.has(subroutine) || this.subroutine.get(subroutine).length === 0){
+       console.log("Skipping...failed to start tests for missing subroutine or empty");
        return;
      }
-
      console.log(".".repeat(2)+"starting executing tests from subroutine "+subroutine+" ")
+     //Gather each testcase and run all tests in the subroutine
      let testCases = this.subroutines.get(subroutine);
-
      for(let i = 0; i<testCases.length; i++){
        testCases[i].runTest();
      }
    }
 
+   //Gathers all subroutine keys in the map and runs all the testcases in each
    runTestsForAllSubroutines(){
      let keys = this.subroutines[Symbol.iterator]();
      for(let subroutine of keys){
