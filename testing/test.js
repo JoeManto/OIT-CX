@@ -30,8 +30,6 @@
    Adds a testcase object to a mapped subroutine
    */
    addTestCases(testCase,subroutine = 'default'){
-
-     console.log(subroutine);
      if(process.env.DEV_STATE !== "1"){
        console.log("Unable to add test case: DEV_STATE is not set to the testing state");
        return;
@@ -54,6 +52,7 @@
      //subroutine was not found
      }else{
         let testCases;
+        //if there are more than one test case
         if(testCase === 'object')
           testCases = testCase;
         else
@@ -153,6 +152,11 @@
      }
    }
 
+   /**
+    *
+    * @param  {[type]} data input or ouput data
+    * @return {[type]} inline string of the objects keys paired with the value
+    */
    getFormatInputOutputString(data){
       let output = [];
       if(typeof data === "object"){
@@ -218,15 +222,7 @@ let test = new Tests();
 let apiKeyServiceTestCases = [];
 
 apiKeyServiceTestCases.push(new TestCase(api_service,'createKeyForUser',[["jfj5666",false,18000]],
-(input,output) => {
-  let result = false;
-  for(let i = 0;i<api_service.openKeys.length;i++){
-    if(api_service.openKeys[i].owner === input[0]){
-      result = true;
-    }
-  }
-  return result;
-},3));
+(input,output)=>{return api_service.apiKeyInsertionTest(input,output)},3));
 
 test.addTestCases(apiKeyServiceTestCases,'api');
 

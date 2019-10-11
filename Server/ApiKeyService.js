@@ -122,6 +122,23 @@ class ApiKeyService {
             if (i === this.openKeys.length) i = 0;
         }
     }
+
+    //-----------------------------test functions-------------------------------
+    apiKeyInsertionTest(input,output){
+      let result = false;
+      let key = {
+        owner:input[0],
+        admin:input[1],
+        endTimeStamp:input[2],
+      };
+      let keys = this.openKeys;
+      for(let i = 0;i<this.openKeys.length;i++){
+        if(keys[i].owner === key.owner){
+          result = true;
+        }
+      }
+      return result;
+    }
 }
 
 module.exports = ApiKeyService;
