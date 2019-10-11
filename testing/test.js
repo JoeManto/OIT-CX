@@ -29,7 +29,9 @@
    /**
    Adds a testcase object to a mapped subroutine
    */
-   addTestCases(testCase,subroutine = 'defualt'){
+   addTestCases(testCase,subroutine = 'default'){
+
+     console.log(subroutine);
      if(process.env.DEV_STATE !== "1"){
        console.log("Unable to add test case: DEV_STATE is not set to the testing state");
        return;
@@ -67,7 +69,7 @@
        await sleep(500);
      }
      if(!this.subroutines.has(subroutine) || this.subroutines.get(subroutine).length === 0){
-       console.log("Skipping...failed to start tests for missing or empty subroutine");
+       console.log("Skipping...failed to start tests for missing or empty subroutine "+subroutine);
        return;
      }
      console.log(".".repeat(2)+"starting executing tests from subroutine "+subroutine+" ")
@@ -226,5 +228,6 @@ apiKeyServiceTestCases.push(new TestCase(api_service,'createKeyForUser',[["jfj56
   return result;
 },3));
 
-test.addTestCases(apiKeyServiceTestCases);
+test.addTestCases(apiKeyServiceTestCases,'api');
+
 test.runTestsForAllSubroutines();
