@@ -1,10 +1,14 @@
 let sha = require("sha256");
+let sleep = require("../Util/Util.js").sleep;
 
 class ApiKeyService {
-    constructor() {
+    /**
+     * @param {[object]} options {startAutomaticCheck | starts a never ending search expired users}
+     */
+    constructor(options = {startAutomaticCheck:true}) {
         this.openKeys = [];
         //start the constant check of api keys
-        this.startSearch();
+        if(options.startAutomaticCheck) this.startSearch();
     }
 
     /**
@@ -80,6 +84,20 @@ class ApiKeyService {
     }
 
     /**
+     * determines if a given key's time is out and if so that key is expired
+     * @param  {[type]}  key [openKeys]
+     * @return {Boolean}     [description]
+     */
+    isKeyExpired(key){
+      if(!key)
+        return;
+      let nowMS = Math.floor(new Date().getTime()/1000.0);
+      if(key.endTimeStamp <= nowMS){
+        this.expireOpenKeyForUser(key.owner);
+      }
+    }
+
+    /**
      * A never ending search for expired key
      * The waits the exc thread every 20 seconds between each check.
      * @returns {Promise<void>}
@@ -87,19 +105,21 @@ class ApiKeyService {
     async startSearch() {
         let i = 0;
         while (1) {
-            const delay = ms => new Promise(res => setTimeout(res, ms));
-            await delay(20000);
-            console.log("checked for expired users");
+            await sleep(20000);
+            //if(this.openKeys.length === 0)
+            //continue;
+            console.log(this.openKeys.length);
+            console.log("checking for expired users");
 
-            let nowMS = Math.floor(new Date().getTime()/1000.0);
+            /*let nowMS = Math.floor(new Date().getTime()/1000.0);
             if (this.openKeys[i] && this.openKeys[i].endTimeStamp <= nowMS) {
                 this.expireOpenKeyForUser(this.openKeys[i].owner);
-            }
-            if (i === this.openKeys.length - 1) {
-                i = 0;
-            } else {
-                i += 1;
-            }
+            }*/
+            this.isKeyExpired(this.openKeys[i]);
+
+            i++;
+
+            if (i === this.openKeys.length) i = 0;
         }
     }
 }

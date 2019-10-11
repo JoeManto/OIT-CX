@@ -2,9 +2,6 @@ const mysql = require('mysql');
 const config = require('./SecertConfig.js');
 
 //DataBase Connection Config
-
-//let config1 = config.db_config();
-//console.log(config1);
 const db = mysql.createConnection(config.db_config());
 
 //Create DataBase Connection
