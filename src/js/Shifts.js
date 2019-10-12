@@ -177,7 +177,10 @@ class CoveredShift extends React.Component {
                              className={"contentShifts shadow yellowBordered"}>
                             <div style={{justifyContent: 'center'}} className={"shiftFlexCont"}>
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
-                                <h3>Delete this shift? <span role="img">🙇🏽‍♂️</span></h3>
+                                <div className = {"flexColumn"}>
+                                  <h3>Delete this shift? <span role="img">🙇🏽‍♂️</span></h3>
+                                  <p style={{color:"#ffb347"}}>Cancel</p>
+                                </div>
                                 <button onClick={this.handleShiftDelete} style={{marginLeft: "50%", marginTop: "15px"}}
                                         className={"fadingButton"}>Delete Shift
                                 </button>
@@ -188,7 +191,10 @@ class CoveredShift extends React.Component {
                              className={"contentShifts shadow yellowBordered"}>
                             <div style={{justifyContent: 'left'}} className={"shiftFlexCont"}>
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
-                                <h3>Hello, picking this shift up? <span role="img">🙇🏽‍♂️</span></h3>
+                                <div className = {"flexColumn"}>
+                                  <h3>Hello, picking this shift up? <span role="img">🙇🏽‍♂️</span></h3>
+                                  <p style = {{color:"#ffb347"}}>Cancel</p>
+                                </div>
                                 <button onClick={this.handleShiftPickUp} style={{marginLeft: "50%", marginTop: "15px"}}
                                         className={"fadingButton"}>Pick up
                                 </button>
@@ -225,7 +231,6 @@ class CoveredShift extends React.Component {
         }
     }
 }
-
 class ShiftsWrapper extends React.Component {
     constructor(props) {
         super(props);
@@ -236,7 +241,6 @@ class ShiftsWrapper extends React.Component {
         };
         this.renderAllUnCoveredShifts = this.renderAllUnCoveredShifts.bind(this);
     }
-
     componentWillMount() {
         getPositionsForUser()
             .then((res) => {
@@ -245,16 +249,13 @@ class ShiftsWrapper extends React.Component {
             .catch((err) => {
                 console.log("error cant get positions for user:\n" + err)
             });
-
         shiftFetch(getCookie("user-bnid"), this.props.covered)
             .then(shifts => this.setState({unCoveredShifts: shifts['res']}))
             .catch(err => console.error('error', err.toString()));
     }
-
     renderAllUnCoveredShifts = () => {
         let elements = [];
         let posMapping = this.state.posMapping;
-
         // eslint-disable-next-line array-callback-return
         this.state.unCoveredShifts.map(function (obj, i) {
             elements.push(<div key={i} id="shiftCont" className={"Content contentShifts"}>{
@@ -265,7 +266,6 @@ class ShiftsWrapper extends React.Component {
         });
         return elements;
     };
-
     render() {
         if (this.state.unCoveredShifts && this.state.unCoveredShifts.length > 0) {
             return (
@@ -279,7 +279,6 @@ class ShiftsWrapper extends React.Component {
         }
     }
 }
-
 export default class Shifts extends React.Component {
     render() {
         return (
