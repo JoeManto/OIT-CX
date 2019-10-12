@@ -396,12 +396,24 @@ app.post('/getShifts', (req, res) => {
                 "perm,shiftDateStart,shiftDateEnd,empyname,empybnid from shifts t1,users t2 where" +
                 " groupId = ? AND t1.postedBy = t2.id AND availability = ? AND perm = ? ORDER BY shiftDateStart ASC;";
 
+            let sqlUsers = "SELECT * FROM users where groupRole = "+groupRole;
+
             sqlShifts = mysql.format(sqlShifts, [groupRole, covered,isPermPosting]);
             db.query(sqlShifts, (err, result) => {
                 if (err) {
                     res.send({res: "User-Missing"});
                 }
-                res.send({res: result})
+                db.query(sqlUsers,(err,result2) => {
+                    result.map((obj,i) => {
+                      for(let i = 0;i<result2.length;i++){
+                        if(result2[i].id === obj.coveredBy){
+                          obj.coveredBy = result2[i].empybnid;
+                          Object.assign(obj,{coveredByName:result2[i].empyname});
+                        }
+                      }
+                   })
+                   res.send({res: result})
+                })
             });
         });
 

@@ -33,6 +33,9 @@ class CoveredShift extends React.Component {
             this.shiftTimes.end = new Date(Number(props.data['shiftDateEnd']));
             this.shiftTimes.posted = new Date(props.data['postedDate']);
         }
+
+        console.log(props);
+
         this.handleShiftClick = this.handleShiftClick.bind(this);
         this.handleShiftPickUp = this.handleShiftPickUp.bind(this);
         this.handleShiftDelete = this.handleShiftDelete.bind(this);
@@ -210,8 +213,15 @@ class CoveredShift extends React.Component {
                         <h2>{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>}/>
                     <div className={"shiftFlexCont"}>
                         <ShiftListItem header={"ShiftID"} objToRender={<h3>{this.props.data['shiftId']}</h3>}/>
-                        <ShiftListItem header={"Requester"} objToRender={
-                            <h3>{this.props.data['empyname']}</h3>}/>
+                        {this.props.data['coveredBy'] === null ? (
+                            <ShiftListItem header={"Requester"} objToRender={
+                                <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.props.data['empyname']}</h3>}/>
+                          ):(
+                            <ShiftListItem header={"Covered By"} objToRender={
+                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredBy']}</h3>}/>
+                          )
+                        }
+
                         <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
                         <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}} width={25} height={25}
                                                                      src={require('../rightArrow.png')}/>}/>
