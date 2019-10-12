@@ -158,6 +158,8 @@
     * @return {[type]} inline string of the objects keys paired with the value
     */
    getFormatInputOutputString(data){
+      if(!data)
+        return "empty";
       let output = [];
       if(typeof data === "object"){
         let keys = Object.keys(data);
@@ -221,8 +223,14 @@ let test = new Tests();
 
 let apiKeyServiceTestCases = [];
 
-apiKeyServiceTestCases.push(new TestCase(api_service,'createKeyForUser',[["jfj5666",false,18000]],
+apiKeyServiceTestCases.push(new TestCase(api_service,'createKeyForUser',[["jfj5666",false,18000],["mmm5666",true,0]],
 (input,output)=>{return api_service.apiKeyInsertionTest(input,output)},3));
+
+//apiKeyServiceTestCases.push(new TestCase(api_service,'validHashedKeyForUser',
+//[[api_service.openKeys[0].owner,api_service.openKeys[0].hash,api_service.openKeys[0].admin]],[true],3));
+
+apiKeyServiceTestCases.push(new TestCase(api_service,'expireOpenKeyForUser',['jfj5666','mmm5666','notfoundowner'],
+(input,output)=>{return api_service.apiKeyExpireTest(input,output)},1));
 
 test.addTestCases(apiKeyServiceTestCases,'api');
 
