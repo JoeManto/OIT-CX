@@ -202,7 +202,6 @@ class CoveredShift extends React.Component {
                                         className={"fadingButton"}>Pick up
                                 </button>
                             </div>
-                            <p>Careful no take backs</p>
                         </div>
                     )
             );
