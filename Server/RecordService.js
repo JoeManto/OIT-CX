@@ -64,11 +64,7 @@ class RecordService {
         let migrateQuery = "Insert into legacyRecords (cosID,empyID,location,date) values ";
         for(let i = 0;i<result.length;i++){
 
-          //Javascript/mysql fuckery because dates get returned has date object instead of strings...
-          let date = new Date(result[i].date.getTime() - (result[i].date.getTimezoneOffset() * 60000)).toISOString();
-          date = date.slice(0, 19).replace('T', ' ');
-
-          migrateQuery+="("+result[i].cosID+","+result[i].empyID+","+result[i].location+",'"+date+"')";
+          migrateQuery+="("+result[i].cosID+","+result[i].empyID+","+result[i].location+",'"+result[i].date+"')";
           if(i!==result.length-1){
             migrateQuery+=","
           }

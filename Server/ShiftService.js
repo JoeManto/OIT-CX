@@ -93,12 +93,12 @@ class ShiftService {
         }
 
     }
-
+    
     /*
       MigrateData shift records that are going to be remove and achive them to the legacy shift records table
     */
     migrateShiftData(shifts){
-      return new Promise(function (reslove,reject){
+      return new Promise(function (resolve,reject){
         let sql = "";
         for(let i = 0;i<shifts.length;i++){
           let curShift = shifts[i];
@@ -123,7 +123,7 @@ class ShiftService {
           if(err){
             reject({error:"Error While Migrating Shift Data"});
           }else{
-            reslove({res:"Migration Success"});
+            resolve({res:"Migration Success"});
           }
         });
       });
@@ -139,7 +139,8 @@ class ShiftService {
 
         for(let i = 0;i<this.openShifts.length;i++){
             console.log("[SHIFT WORKER] : checking shift with ID = "+this.openShifts[i].shiftID);
-            console.log(this.openShifts[i]);
+
+            //If a perm shift has been picked up. Remove posting.
             if(this.openShifts[i].availability === 1 && this.openShifts[i].perm === 1){
                 console.log("adding shift to delete");
                 shiftsToRemove.push(this.openShifts[i]);
@@ -166,6 +167,8 @@ let service = new ShiftService();
 process.on("message",function (m) {
     let split = m.split(' ');
     if(split[0] === 'ADD'){
+        
+        //Gather all shift details for a shiftID and add the shift to the open shifts pool
         db.query(mysql.format("select * from shifts where shiftID = ?"),[Number(split[1])],(err,result) =>{
            if(err){console.log(err);return;}
            service.addShiftTracking(result[0]);
