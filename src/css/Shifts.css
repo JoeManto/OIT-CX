@@ -6,9 +6,17 @@
     min-width: 400px;
 }
 
+#shiftCont{
+    background: linear-gradient(to right, #F5F5F5 50%, white 50%);
+    background-size: 200% 100%;
+    background-position:right bottom;
+  
+    transition:all 0.5s ease-in;
+}
 #shiftCont:hover {
     transform: scale(1.009, 1.009);
     box-shadow: 0 5px 9px #8999;
+    background-position:left bottom;   
 }
 
 .shiftFlexCont {

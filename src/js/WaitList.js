@@ -187,7 +187,7 @@ export function Header(props) {
 function Row(props) {
     const data = props.data;
     let date = new Date(data.date);
-    date.setHours(date.getHours()+4);
+    //date.setHours(date.getHours()+4);
     return (
         <tr>
             <td>{data.name}</td>
