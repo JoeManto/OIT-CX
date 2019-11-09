@@ -101,9 +101,18 @@ let mailService = new Mail();
 
 //-------------------------ENDPOINTS--------------------------------------
 
-app.get('/', function (req, res) {
+//Normal Build
+/*app.get('/', function (req, res) {
     //res.sendFile(path.join(__dirname + '/client'));
-    res.send({res:"hello"});
+    let date = new Date();
+    let temp = ""+date.toTimeString()+" | "+date.toLocaleDateString();
+    res.send({res:temp});
+});*/
+
+//For Docker Build
+app.use(express.static(path.join(__dirname, '../build')));
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 app.post('/unAuth',(req,res) => {
@@ -533,6 +542,6 @@ app.post('/locations',(req,res)=>{
 });
 
 let server = https.createServer(sslOptions, app);
-server.listen(443, () => {
-    console.log("server starting on port : " + 443)
+server.listen(7304, () => {
+    console.log("server starting on port : " + 7304)
 });

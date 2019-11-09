@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
+RUN echo "America/New_York" > /etc/timezone
+RUN dpkg-reconfigure -f noninteractive tzdata
+
 RUN npm install && \
     npm cache clean --force
 

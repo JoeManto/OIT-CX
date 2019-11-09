@@ -7,7 +7,7 @@
 #--connection via host
 #mysql -h 127.0.0.1 -u <DATA_BASE_USER> -P <EXPOSED PORT> -p <ROOT_PASS>
 
-version: '3'
+version: '3.3'
 services:
   adminer:
     image: adminer
