@@ -81,10 +81,18 @@ INSERT INTO `positions` VALUES (1,0,'Walk-In'),(2,0,'Mobile'),(3,0,'Call-In'),(4
 
 DROP TABLE IF EXISTS `records`;
 CREATE TABLE `records` (
-  `cosID` int(11) DEFAULT NULL,
-  `empyID` int(11) DEFAULT NULL,
+  `cosID` int DEFAULT NULL,
+  `empyID` int DEFAULT NULL,
   `date` varchar(255) DEFAULT NULL
 );
+
+DROP TABLE IF EXISTS `legacyRecords`;
+CREATE TABLE `legacyRecords` (
+  `cosID` int DEFAULT NULL,
+  `empyID` int DEFAULT NULL,
+  `date` varchar(255) DEFAULT NULL
+);
+
 
 --
 -- Dumping data for table `records`
@@ -97,6 +105,23 @@ INSERT INTO `records` VALUES (2,3,'2008-11-11'),(2,4,'2008-10-10'),(1,3,'2008-10
 --
 -- Table structure for table `shifts`
 --
+
+
+DROP TABLE IF EXISTS `legacyShifts`;
+CREATE TABLE `legacyShifts` (
+  `shiftID` int(11) NOT NULL AUTO_INCREMENT,
+  `coveredBy` int(11) DEFAULT NULL,
+  `postedBy` int(11) DEFAULT NULL,
+  `postedDate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `availability` tinyint(4) DEFAULT NULL,
+  `positionID` int(11) DEFAULT NULL,
+  `groupID` int(11) DEFAULT NULL,
+  `perm` tinyint(4) DEFAULT NULL,
+  `message` varchar(255) DEFAULT NULL,
+  `shiftDateEnd` mediumtext,
+  `shiftDateStart` mediumtext,
+  PRIMARY KEY (`shiftID`)
+);
 
 DROP TABLE IF EXISTS `shifts`;
 CREATE TABLE `shifts` (
