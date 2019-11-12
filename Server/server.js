@@ -102,18 +102,19 @@ let mailService = new Mail();
 //-------------------------ENDPOINTS--------------------------------------
 
 //Normal Build
-/*app.get('/', function (req, res) {
+app.get('/', function (req, res) {
     //res.sendFile(path.join(__dirname + '/client'));
     let date = new Date();
     let temp = ""+date.toTimeString()+" | "+date.toLocaleDateString();
     res.send({res:temp});
-});*/
+});
+
 
 //For Docker Build
-app.use(express.static(path.join(__dirname, '../build')));
+/*app.use(express.static(path.join(__dirname, '../build')));
 app.get('/*', function(req, res) {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
-});
+});*/
 
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
@@ -312,7 +313,8 @@ app.post('/postShift', (req, res) => {
                         let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
                         shiftServiceChild.send('ADD ' + message);
                     });
-                    mailService.sendMail(shift,user,group);
+                    //mailService.sendMail(shift,user,group);
+                    mailService.sendShiftPosting(shift,user,group);
                     res.send({res: "success"});
                 }
             });
