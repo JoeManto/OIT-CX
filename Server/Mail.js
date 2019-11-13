@@ -70,8 +70,6 @@ class Mail {
         let startDate = new Date(shiftData.date);
         let endDate = new Date(shiftData.endDate);
 
-        console.log("what is this value"+this.formatLocaleDate(startDate));
-
         //Build Replacements
         let replacements = {
             _FullName: userData.empyname + ' ' + userData.surname,
@@ -83,28 +81,38 @@ class Mail {
             _PostingDate: this.formatLocaleDate(),
         };
 
-        this.sendMail(this.adminTransporter,'/Emails/ShiftPosting.html',replacements,"");
+        this.sendMail(this.adminTransporter,groupID,'/Emails/ShiftPosting.html',replacements,"");
     }
 
-    sendMail(transport,htmlpath,replacements,text){
+    sendMail(transport,groupID,htmlpath,replacements,text){
         this.readHTMLFile(__dirname + htmlpath, function(err, html) {
             if(err){
                 console.log(err);
             }
-            var template = handlebars.compile(html);
-            var htmlToSend = template(replacements);
-            var mailOptions = {
-                from: '"oit-shifts" <oit_shifts@wmich.edu>',
-                to : 'joe.m.manto@wmich.edu',
-                subject : 'Shift Posting',
-                html : htmlToSend
-             };
-
-            transport.sendMail(mailOptions, function (error, response) {
-                if (error) {
-                    console.log(error);
+            let sendTo = "";
+            db.query(mysql.format("select emailList from groupRoles where groupID = ?"), [groupID], (err, result) => {
+                if (err) {
+                    reject({error:"couldn't fetch email lists"});
+                    return;
                 }
+                sendTo = result[0]['emailList'];
+                var template = handlebars.compile(html);
+                var htmlToSend = template(replacements);
+                var mailOptions = {
+                    from: '"oit-shifts" <oit_shifts@wmich.edu>',
+                    to : sendTo,
+                    subject : 'Shift Posting',
+                    html : htmlToSend
+                 };
+    
+                transport.sendMail(mailOptions, function (error, response) {
+                    if (error) {
+                        console.log(error);
+                    }
+                });
             });
+
+
         });
     }
 }
