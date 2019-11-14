@@ -70,10 +70,12 @@ class Mail {
         let startDate = new Date(shiftData.date);
         let endDate = new Date(shiftData.endDate);
 
+        console.log(shiftData);
+
         //Build Replacements
         let replacements = {
             _FullName: userData.empyname + ' ' + userData.surname,
-            _ShiftType: shiftData.positionData[Number(shiftData.selectedPosition)]['posName'],
+            _ShiftType: shiftData.positionData[Number(shiftData.selectedPosition)-1]['posName'],
             _ShiftDate: this.formatLocaleDate(startDate),
             _ShiftStartTime: this.formatLocaleTime(startDate),
             _ShiftEndTime: this.formatLocaleTime(endDate),
