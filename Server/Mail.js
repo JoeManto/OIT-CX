@@ -18,8 +18,6 @@ db.connect((err) => {
 class Mail {
     constructor(){
         this.adminTransporter = nodemailer.createTransport(config.transporter_config());
-
-        //this.sendMail(this.adminTransporter);
     }
 
     readHTMLFile(path, callback){
@@ -34,6 +32,10 @@ class Mail {
         });
     };
 
+    /**
+     * Formats the locale JS date to include the day the of the week
+     * @param {Date} date 
+     */
     formatLocaleDate(date = new Date()){
         const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -42,6 +44,10 @@ class Mail {
         return  monthNames[date.getMonth()] +' '+ dateList[1] +', '+dateList[2];
     }
 
+    /**
+     * Formats the locale JS time to remove the seconds
+     * @param {Date} date 
+     */
     formatLocaleTime(date = new Date()){
         let localTime = {lct:date.toLocaleTimeString(),left:"",right:""};
 
@@ -83,21 +89,24 @@ class Mail {
             _PostingDate: this.formatLocaleDate(),
         };
 
-        this.sendMail(this.adminTransporter,groupID,'/Emails/ShiftPosting.html',replacements,"");
+        this.sendMail(this.adminTransporter,groupID,'/Emails/shiftposting.html',replacements,"");
     }
 
     sendMail(transport,groupID,htmlpath,replacements,text){
         this.readHTMLFile(__dirname + htmlpath, function(err, html) {
+            //Error finding the email template.
             if(err){
-                console.log(err);
+                console.log("There was an error finding the file");
+                console.err(err);
             }
-            let sendTo = "";
+            
             db.query(mysql.format("select emailList from groupRoles where groupID = ?"), [groupID], (err, result) => {
                 if (err) {
-                    reject({error:"couldn't fetch email lists"});
+                    console.log("There was an find the emailList for group" + groupID);
+                    console.err(err);
                     return;
                 }
-                sendTo = result[0]['emailList'];
+                let sendTo = result[0]['emailList'];
                 var template = handlebars.compile(html);
                 var htmlToSend = template(replacements);
                 var mailOptions = {
@@ -113,8 +122,6 @@ class Mail {
                     }
                 });
             });
-
-
         });
     }
 }
