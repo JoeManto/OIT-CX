@@ -8,9 +8,16 @@ Git was chosen as the Version Control for this project. This will allow the team
 ----
 To initialize the Repository the following commands were used:
 ```
+git init
 
+git remote add origin https://www.github.com/joemanto/OIT-CX
+
+git pull origin master
 ```
-
+To clone the repository the following command can be used:
+```
+git clone https://www.github.com/joemanto/OIT-CX
+```
 ## Branching
 ----
 When starting a need feature or sub feature, a branch should be created from the testing branch or a from a sub branch from testing.
@@ -46,7 +53,7 @@ git add -A
 git commit -m "message"
 
 git push <remote> master
-``
+```
 ## Reverting
 ----
 - If any code is pushed to the Master branch without being reviewed and tested (both unit and system tests), that push will be reverted and the project will be taken back to the most recent stable version. The code that follows will perform a rollback:
@@ -68,6 +75,8 @@ git revert <commit hash>
 
 ## Pushing to Testing
 ----
+All team members are allowed to push to testing without code review. 
+-   Features when completed and tested should then be pushed to the master branch after a code review
 
 
 
