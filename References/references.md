@@ -23,3 +23,6 @@ https://www.geeksforgeeks.org/javascript-array-filter/
 
 Git Commands / Tutorial</br>
 https://www.atlassian.com/git/tutorials/undoing-changes
+
+Git Commit Messages Guide</br>
+https://medium.com/@steveamaza/how-to-write-a-proper-git-commit-message-e028865e5791
