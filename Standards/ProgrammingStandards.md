@@ -11,6 +11,7 @@ The following Programming Standards must be followed by all Team Members:
 - All names should be descriptive and meaningful and represent what that variable or function is doing. e.g. `function addTwoInts(a, b)` rather than `function add(a, b)`
 - All functions should be visible within one viewing window at standard zoom in visual studio code
     - If a function is larger than this it should be split into smaller functions
+ - Variables should not be one character other than indexing variables
 
 #### Indentation and Characters
 - Tab spacing set to 4
@@ -20,24 +21,23 @@ The following Programming Standards must be followed by all Team Members:
 - Use of white space should be as follows:
     - Use a space after a comma when separating function arguments e.g. `function doSomething(arg1, arg2)`
     - Every nested block of code should be one indent further than the previous
-- Variables should not be one character other than indexing variables
 
-
-## React Standards
+## ReactJS Standards
 ----
 - Try to follow all of **ReactJS Design Principles**. These can be found at the following link: [Design Principles](https://reactjs.org/docs/design-principles.html)
 - Any react component that doesn't rely on multiple states should be a simple React component function
--   All React Components functions/classes definitions should start and follow with a capitalized first character
-- Components should have a relatively small foot printing. Meaning they should one not be very large and two solve or implement a small feature (see nested Components)
+-   All React Components functions/classes definitions should start and follow with a capitalized first character for each word
+- Components should have a relatively small foot printing. Meaning they should one not be very large and too solve or implement a small feature (see nested Components)
 
 #### Nested Components
 Nested components should be used rather than passing in jsx through props in most cases
 ex.
-**What not to do**
+
+- **What not to do**
 ```javascript
     <TwoColumn left = {[<div>LEFT SIDE</div>]} right = {[<div>Right</div>]} />
 ```
-**What should be used**
+- **What should be used**
 ```javascript
     <TwoColumn>
         <div>LEFT SIDE</div>
@@ -45,7 +45,9 @@ ex.
     <TwoColumn>
 ```
 #### React Function Component
-React functions are only suppose to return JSX
+Here is an example of what a ES6 React component function should look like.
+All react component functions and inner class functions follow ES6 syntax.
+-   return JSX only
 ```javascript
     let Frame = (props) => {
         let {name,lastname} = props
@@ -56,6 +58,7 @@ React functions are only suppose to return JSX
     }
 ```
 #### React Class Component
+Here is an example of what a React Class Component should look like.
 ```javascript
     class Frame extends React.Component{
         constructor(props){
@@ -70,9 +73,13 @@ React functions are only suppose to return JSX
         render() return();
     }
 ```
-#### Props Destructure
-Prop Destructuring should be used always when there are > 1 number of props
-This allows props to be referenced by name rather than the root reference from props.
+#### Props Destruction
+Prop Destructuring is the process of converting a js object's inner hash table key value pairs into individual local scoped variables.
+Prop Destructuring should be used always when there are > 1 number of props.
+This allows props to be referenced by name rather than using the root reference from props first.
+This process has little impact on performance and is mainly used for readability.
+
+**Prop Destruction in React Functions**
 ```javascript
     let Frame = (props) => {
         //Props Destructuring
@@ -81,6 +88,34 @@ This allows props to be referenced by name rather than the root reference from p
             //jsx
             <div>{name}{lastname}</div>
         )
+    }
+```
+
+**Prop Destruction in React Classes**
+
+The process is almost the same as React functions, but instead of destructing to individual variables we just append the hash table from the props object to the class's inner hash table.
+
+Prop destructuring in React classes should only be done in the constructor
+of the class in question. It also should be the first thing that is done in the constructor to prevent 
+from future errors from a function using pre-destruction references.
+
+```javascript
+    class Frame extends React.Component{
+        constructor(props){
+            super(props);
+            
+            /*  [Props Destructuring]
+            * - this | Frame reference
+            * - {props} | Outer Destruction
+            * - ['props'] | stealing the hash table
+            */
+            Object.assign(this,{props}['props']);
+            ...
+        }
+
+        render(){
+            return <div>{this.lastname}</div>
+        }
     }
 ```
 
@@ -115,7 +150,7 @@ All element references should be done using React refs in components.
 Notice that a reference is attached to the anchor tag and that reference is used to simulate a click on the anchor when the outside div is 'clicked'
 
 #### Rendering Inline Conditional Statements
-Any conditional statements in the render method should only compare changing state values and not other global variables
+Any conditional statements in the render method should only compare changing state values and not any other global variables
 ```javascript
     Class Frame extends React.Component{
         ...
@@ -132,11 +167,54 @@ Any conditional statements in the render method should only compare changing sta
                 <div>Render Option 2</div>
             ):
             (
-                <div>Render Option 3</div>
+                <div>Not 2</div>
             )}
+
+            //nested if else
+            {this.state.firstRender 
+            ? null 
+            : ( !this.state.closed ? 
+                    this.animateMenu(this.links,"up") : this.animateMenu(this.links,"down")
+              )
+            }
         }
     }
-``` 
+```
+
+#### React Styling
+Follows the normal CSS styling conventions 
+Styles that are local to a component should be implemented as javascript object styling. In line style in the jsx block
+
+**Javascript Object Styling**
+define all the styling in the render method of the component
+```javascript
+    render(){
+        const divStyle = {
+            backgroundColor:'#333',
+        }
+
+        return (
+            <div style = {divStyle}/>
+        )
+    }
+```
+
+**Inlining to not use**
+```javascript
+    render(){
+        return (
+            <div style = {"background-color:#333"}/>
+        )
+    }
+```
+**Correct Inlining to use**
+```javascript
+    render(){
+        return (
+            <div style = {{backgroundColor:"#333"}}/>
+        )
+    }
+```
 
 ## ES6+ and Babel
 ---
@@ -213,40 +291,7 @@ Putting these all together will yield the following:
 }
 ```
 
-#### React Styling
-Follows the normal CSS styling conventions 
-Styles that are local to a component should be implemented as javascript object styling. In line style in the jsx block
 
-**Javascript Object Styling**
-define all the styling in the render method of the component
-```javascript
-    render(){
-        const divStyle = {
-            backgroundColor:'#333',
-        }
-
-        return (
-            <div style = {divStyle}/>
-        )
-    }
-```
-
-**Inlining to not use**
-```javascript
-    render(){
-        return (
-            <div style = {"background-color:#333"}/>
-        )
-    }
-```
-**Correct Inlining to use**
-```javascript
-    render(){
-        return (
-            <div style = {{backgroundColor:"#333"}}/>
-        )
-    }
-```
 
 
 
