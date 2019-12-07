@@ -208,6 +208,8 @@ define all the styling in the render method of the component
     }
 ```
 **Correct Inlining to use**
+
+use camel case js style 
 ```javascript
     render(){
         return (
