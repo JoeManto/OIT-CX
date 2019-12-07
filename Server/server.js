@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const config = require('./SecertConfig.js');
 const ldapWrapper = require('./Ldapwrapper');
+const newDb = require('./DbHandler');
 
 const ldapSearch = require('./LdapSearch');
 const ApiKeyService = require('./ApiKeyService');
@@ -127,7 +128,42 @@ app.post('/unAuth',(req,res) => {
    }
 });
 
-app.post('/auth', (req, res) => {
+app.post('/auth', async(req,res) => {
+    let {user,pass} = req.body;
+      
+    //gather user data from db
+    let result = await newDb.query("select * from users where empybnid = ?",{conditions:[user]})
+    .then(res => {return res[0]})
+    .catch(_ => res.send({res: "auth-failed", error: "Internal Search Error"}));
+
+    //no records found in the user search
+    if(!result)
+        return res.send({res: "auth-failed", error: "User Not-Found"});
+    
+    if(result.password === pass){
+        //Create user instance and send a success full login response
+        let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+        return res.send({res: "auth-success", key: key});
+    }
+
+    /*
+        User wasn't able to auth fully the database
+        requires pass auth from ldap
+    */
+    ldapWrapper.authUser(options, user, pass)
+            .then(_ => {
+                //Create user instance and send a success full login response
+                let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+                return res.send({res: "auth-success", key: key});
+            })
+            .catch((err) => {
+                return res.send(err);
+            });
+
+    res.send({res: "auth-failed", error: "User Not-Found"});
+});
+
+/*app.post('/auth', (req, res) => {
     let user = req.body.user;
     let pass = req.body.pass;
     let foundMatchForUser = false;
@@ -161,7 +197,7 @@ app.post('/auth', (req, res) => {
             res.send({res: "auth-failed", error: "User Not-Found"});
         }
     });
-});
+});*/
 
 app.post('/getUsers', (req, res) => {
     let sqlUserLookUp = "select empyname,surname,empybnid from users";

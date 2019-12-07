@@ -1,7 +1,7 @@
 import React from 'react';
 import '../css/LandingPage.css';
 import '../css/util.css';
-import {IP,checkWindowHeight} from '../js/Util.js';
+import {IP} from '../js/Util.js';
 import {getLastCommit,getContributorsList} from "./DataFetchHandler";
 import {Auth} from '../js/Authentication.js';
 
