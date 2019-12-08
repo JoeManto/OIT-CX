@@ -119,22 +119,21 @@ app.get('/*', function(req, res) {
 
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
-   if(apiService.validHashedKeyForUser(req.body.user,req.body.key)){
-       console.log("removed user");
-       apiService.expireOpenKeyForUser(req.body.user);
-       res.send({res:"success"});
-   }else{
-       res.send({res: "apiKey-error"});
-   }
+   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key))
+        return res.send({res: "apiKey-error"});
+
+    apiService.expireOpenKeyForUser(req.body.user);
+    console.log("removed user");
+    res.send({res:"success"});
 });
 
 app.post('/auth', async(req,res) => {
     let {user,pass} = req.body;
       
     //gather user data from db
-    let result = await newDb.query("select * from users where empybnid = ?",{conditions:[user]})
+    let result = await newDb.userLookUp(user)
     .then(res => {return res[0]})
-    .catch(_ => res.send({res: "auth-failed", error: "Internal Search Error"}));
+    .catch(err => res.send({res:"auth-failed",error:err}));
 
     //no records found in the user search
     if(!result)
@@ -150,7 +149,7 @@ app.post('/auth', async(req,res) => {
         User wasn't able to auth fully the database
         requires pass auth from ldap
     */
-    ldapWrapper.authUser(options, user, pass)
+    return ldapWrapper.authUser(options, user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
                 let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
@@ -159,8 +158,6 @@ app.post('/auth', async(req,res) => {
             .catch((err) => {
                 return res.send(err);
             });
-
-    res.send({res: "auth-failed", error: "User Not-Found"});
 });
 
 /*app.post('/auth', (req, res) => {
@@ -199,7 +196,24 @@ app.post('/auth', async(req,res) => {
     });
 });*/
 
-app.post('/getUsers', (req, res) => {
+app.post('/getUsers', async(req, res) => {
+
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true))
+        res.send({res: "apiKey-error"});
+
+    //Query all users
+    let result = await newDb.query("select empyname,surname,empybnid from users")
+    .then(res => {return res})
+    .catch(_ => {return undefined});
+
+    //check if the query was valid
+    if(!result || result.length === 0)
+        return res.send({res: "user-error", error: "Couldn't search for user"});
+    
+    res.send({res: result});
+
+
+    /*
     let sqlUserLookUp = "select empyname,surname,empybnid from users";
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         db.query(sqlUserLookUp, (err, result) => {
@@ -211,11 +225,82 @@ app.post('/getUsers', (req, res) => {
         });
     } else {
         res.send({res: "apiKey-error"});
-    }
+    }*/
 });
 
-app.post('/searchUser',(req,res) => {
-  if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+app.post('/searchUser',async(req,res) => {
+
+    let searchCache = async() => {
+        //search for customer in database by bnid 
+        let cache = await newDb.query('select * from customer where bnid = ?',{conditions:[req.body.userToLookUp]})
+        .then(res => {return res})
+        .catch(_ => {return undefined});
+
+        if(!cache){
+            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+        }
+
+        //valid user cached data was found in the data base
+        if(cache.length > 0){
+             res.send({customerID:cache[0].id,otherData:cache[0]});
+             return true;
+        }
+        return false;
+    }
+
+
+    if(apiService.validHashedKeyForUser(req.body.user, req.body.key,true)){
+        return res.send({res: "apiKey-error"});   
+    }
+        
+    if(searchCache())
+        return;
+
+    ldapSearchClient.search(req.body.userToLookUp)
+    .then(async searchResult => {
+
+        let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
+        let insertRes = await newDb.query(insertSql,{conditions:[searchResult.data[0].wmuFullName,searchResult.data[0].wmuUID,searchResult.data[0].wmuBannerID]})
+        .then()
+        .catch(err => {return undefined});
+
+        if(!insertRes){
+            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+        }
+
+        let lookUpRes = await newDb.query("Select Max(id) from customer")
+        .then(res => {return lookUpRes})
+        .catch(err => {return undefined})
+
+        if(!lookUpRes){
+            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+        } 
+
+        searchCache();
+
+
+      /*
+      db.query(mysql.format(insertSql,[result.data[0].wmuFullName,result.data[0].wmuUID,result.data[0].wmuBannerID]),(err,result) =>{
+        if(err){
+          res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+          return;
+        }
+        db.query("Select Max(id) from customer",(err,id) =>{
+          if(err){
+            res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+            return;
+          }
+          res.send({customerID:id[0]['Max(id)'],otherData:result});
+          return;
+        })
+      });*/
+    })
+    .catch(error => {
+      res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
+      return;
+    });
+
+ /* if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
     let sql = 'select * from customer where bnid = ?';
 
     db.query(mysql.format(sql,[req.body.userToLookUp]),(err,result) =>{
@@ -253,7 +338,7 @@ app.post('/searchUser',(req,res) => {
     });
   }else{
     res.send({res: "apiKey-error"});
-  }
+  }*/
 });
 
 app.post('/addUser', (req, res) => {

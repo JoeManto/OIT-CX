@@ -25,6 +25,19 @@ class DbHandler {
             });
         });
     }
+
+    userLookUp(bnid){
+        let sql = mysql.format("select * from users where empybnid = ?",[bnid]);
+
+        return new Promise((resolve,reject) => {
+            this.db.query(sql,(err,res) => {
+                if(err){
+                    reject("Database Query Error");
+                }
+                resolve(res);
+            })
+        })
+    }
 }
 
 let dbhandler = new DbHandler();
