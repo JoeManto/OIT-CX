@@ -9,6 +9,9 @@ The following standards should be followed:
 - CRLF line endings
 - UTF-8 character set
 - Block Comments Package/Extension should be installed 
+
+#### Example of Block Comment Format
+This will provide universal comments for functions
 ```javascript
     Ex. 
     /**
@@ -18,16 +21,15 @@ The following standards should be followed:
     Function(args){...}
 ```
 
-This will provide universal comments for functions
-
 Within this IDE we also used a Pair programming feature that should be utilized as much as possible: VS Code Live Share.
 To set up Live Share it must be installed as an extension in VS Code. This feature allows for real time pair programming.
 
 ## Cloning from Github
 To clone the project from Github the following commands should be used from the terminal: 
-- `git clone https://github.com/JoeManto/OIT-CX.git`
 
-This command will copy the public project in a directory in your current directory.
+`git clone https://github.com/JoeManto/OIT-CX.git`
+
+This command will copy the public project in a directory in your current working directory.
 
 ## Add Server Configuration File
 This file is store locally by a team member as it contains sensitive passwords for ldap and smtp. You will have get this file from a teammate
@@ -58,12 +60,55 @@ A super user in MySQL is necessary to create the appropriate Tables needed by th
 or run these commands in a unix terminal. If on windows then use the Mysql Command Line Program and skip to command 2. 
 
 `mysql -u root -p`
+
 Notice that you will be prompted for a password. This is the password that was set when mysql was installed.
+
 `GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'password';`
 
 ## Setting up MySQL Tables
-A database will need to be created that is called `nodemysql`. This can be done with the following command in MySQL within a terminal: `CREATE DATABASE nodemysql;`
-Next, locate the sqldump.sql file within the server directory. 
-Run the following: `mysql -u root -p nodemysql < sqldump.sql`.
-The tables should now be set up.
+- A database will need to be created that is called `nodemysql`. This can be done with the following command in MySQL within a terminal: 
 
+    `CREATE DATABASE nodemysql;`
+
+- Next, locate the sqldump.sql file within the server directory. 
+Run the following: 
+
+    `mysql -u root -p nodemysql < sqldump.sql`.
+
+- The tables should now be set up.
+
+# Starting the Project
+
+## Running a local development build
+To run a development build for Contributing or testing whether your config settings are correct can be done by running the following commands.
+
+- `npm install` (If you haven't already)
+
+- `npm start &`
+
+  This will start the local react developed server on localhost:3000
+
+- `node Server/server.js`
+
+  This will start the backend server for which the proxy is already set up
+
+### Deploying a production build with docker
+
+Deploying a production build with docker is very easy. First thing you need to do is confirm that the exposed http port in the `dockerFile` is the same as in `server.js`.
+> **Server.js**
+- Changing http/https port
+```javascript
+let server = https.createServer(sslOptions, app);
+server.listen(443, () => {
+    console.log("server starting on port : " + 443)
+});
+```
+- Change Certificate
+```javascript
+const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
+const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
+const sslOptions = {
+    key: key,
+    cert: cert
+};
+```

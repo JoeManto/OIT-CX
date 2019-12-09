@@ -35,12 +35,16 @@
 
  [Spike 10]
  - Tests Mock Es6 Class in Jest or Mock Objects 
+
+ [Spike 11]
+ - This spike, tests how snapshot testing UI works in jest
 -------------------------------------------------------------
 */
 
 import React from "react";
 import '@testing-library/jest-dom/extend-expect'
 import {cleanup, fireEvent, render} from '@testing-library/react';
+import TestRenderer  from 'react-test-renderer';
 
 afterEach(cleanup)
 
@@ -311,4 +315,27 @@ describe.skip('SoundPlayerCustomer',() => {
       expect(mockSoundPlayerInstance.calls[0][0]).toEqual('FavSong.mp3');
 
    });
+});
+
+//------------Jest spike 11---------------------
+/*
+   [Spike Test 11]
+
+   This spike, tests how snapshot testing UI works in jest
+*/
+
+function Link({name}){
+   return(
+      <a href = "https://shifts.it.wmich.edu" alt = "">{name}</a>
+   );
+}
+
+describe('Snapshot testing component', () => {
+   it('Should render correctly', () => {
+      let tree = TestRenderer
+      .create(<Link/>)
+      .toJSON()
+
+      expect(tree).toMatchSnapshot();
+   })
 });
