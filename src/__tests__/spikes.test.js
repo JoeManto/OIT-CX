@@ -7,6 +7,10 @@
 import React from "react";
 import '@testing-library/jest-dom/extend-expect'
 import {cleanup, fireEvent, render} from '@testing-library/react';
+import { resolve } from "dns";
+import { reject } from "q";
+
+afterEach(cleanup)
 
 
 //defining a set of functions to test
@@ -94,7 +98,7 @@ class Button extends React.Component {
 
 describe('Button Component', () => {
 
-   it('Should Render The Button Start',() => {
+   it('Should Render',() => {
       const {getByTestId} = render(<Button/>);
       expect(getByTestId('button')).toBeInTheDocument();
    });
@@ -107,10 +111,68 @@ describe('Button Component', () => {
 
       //Need to use *query* here as query returns null and the others just throw an error to the test
       expect(queryByText('Please Click This Button')).toBeNull();
+
    });
 
 });
 
+//---------------Jest spike 5---------------------
+/*
+*  [Spike 5]
+*   
+*  Mock functions in Jest
+*/
 
+//Example function to test
+function forEach(items,callback){
+   for (let index = 0;index < items.length; index++) {
+      callback(items[index]);
+   }
+}
+
+//define a jest mock function call back object
+var mockCallBack = jest.fn(x => 42 + x);
+//call the function with our mock function object
+
+
+describe('For Each Function', () => {
+
+   forEach([0,1],mockCallBack);
+
+   it('should run 2', () => {
+      //The number of time this function was ran
+      expect(mockCallBack.mock.calls.length).toBe(2);
+      
+   });
+
+   it('return 42 on the first return', () => {
+      expect(mockCallBack.mock.results[0].value).toBe(42);
+   })
+
+   it('return 43 on the second return', () => {
+      expect(mockCallBack.mock.results[1].value).toBe(43);
+   })  
+});
+
+//---------------Jest spike 6---------------------
+/*
+*  [Spike 6]
+*   
+*  This jest spike tests how functions that return promises should be tested
+*/
+
+let delay = (ms) => {
+   return new Promise((resolve,reject) => {
+      setTimeout(()=>{resolve(5)},ms);
+   }); 
+}  
+
+
+describe('Delay Function', () => {
+   it('Should wait 2 seconds', async() => {
+      let res = await delay(2000);
+      expect(res).toBe(5);
+   })
+});
 
 
