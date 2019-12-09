@@ -1,34 +1,68 @@
 /*
+-------------------------------------------------------------
 
- JEST Spikes - For Testing
+ JEST Spikes - (For Testing)
+ These spikes, test the inner workings of Jest and as well test how well Jest and React Testing Library work together.
 
- */
+ [Overview]
+
+ [Spike 1]
+ - General Usage of Jest for testing functions
+
+ [Spike 2]
+ - Tests the getByTestId() to find `data-testid` attributes in the dom
+
+ [Spike 3]
+ - Tests the getByText() func to find any child component has rendered the given text
+
+ [Spike 4]
+ - Tests simulation of dom events on components
+
+ [Spike 5]
+ - Tests Mock functions in Jest
+
+ [Spike 6]
+ - Tests how to test functions that require async capabilities 
+
+ [Spike 7]
+ - Tests how jest expects a unit test to throw an exception
+
+ [Spike 8]
+ - Tests how jest skips unit tests
+ 
+ [Spike 9]
+ - Tests contrapositive unit tests
+
+ [Spike 10]
+ - Tests Mock Es6 Class in Jest or Mock Objects 
+-------------------------------------------------------------
+*/
 
 import React from "react";
 import '@testing-library/jest-dom/extend-expect'
 import {cleanup, fireEvent, render} from '@testing-library/react';
-import { resolve } from "dns";
-import { reject } from "q";
 
 afterEach(cleanup)
 
+
+/* [Spike Test 1]
+*  This is a basic jest test that explains the most basic principles
+*/
 
 //defining a set of functions to test
 const functions = {
    add: (num1, num2) => num1 + num2
 };
 
-/* [Spike Test 1]
-*  This is a basic jest test that explains the most basic principles
-*/
 describe('Functions',() => {
    test('Adds 2 + 2 to get 4', () => {
       expect(functions.add(2,2)).toBe(4);
    });
 });
 
-/*-----------Jest Spikes 2 and 3--------------
- *
+/*-----------Jest Spikes 2,3--------------
+ * 
+
  * [Spike Test 2]
  * This spike is the first test in the jest suite
  * This test shows how to use the getByTestId to find `data-testid` attributes in the dom
@@ -36,6 +70,7 @@ describe('Functions',() => {
  * [Spike Test 3]
  * This spike is the second test in the jest suite
  * This spike shows how to use the getByText func to find any child component has rendered the given text
+ * 
 */
 
 //Defining a basic React Component
@@ -65,13 +100,12 @@ describe('Link Component', () => {
    });
 });
 
-/*---------------------Jest Spike 4---------------------
- *
- * [Spike Test 4]
- * This spike demonstrates how to simulate dom events on components
+/*---------------Jest spike 4---------------------
+* [Spike Test 4]
+* This spike demonstrates how to simulate dom events on components
 */
 
-/* Define a basic react component that is controlled by a simple state attribute 'clicked'
+/*  Define a basic react component that is controlled by a simple state attribute 'clicked'
 *  This example component renders a button and when it is clicked it is no longer rendered.
 */
 class Button extends React.Component {
@@ -118,7 +152,7 @@ describe('Button Component', () => {
 
 //---------------Jest spike 5---------------------
 /*
-*  [Spike 5]
+*  [Spike Test 5]
 *   
 *  Mock functions in Jest
 */
@@ -132,14 +166,13 @@ function forEach(items,callback){
 
 //define a jest mock function call back object
 var mockCallBack = jest.fn(x => 42 + x);
-//call the function with our mock function object
-
 
 describe('For Each Function', () => {
 
+   //call the function with our mock function object
    forEach([0,1],mockCallBack);
 
-   it('should run 2', () => {
+   it('should run 2 times', () => {
       //The number of time this function was ran
       expect(mockCallBack.mock.calls.length).toBe(2);
       
@@ -156,7 +189,7 @@ describe('For Each Function', () => {
 
 //---------------Jest spike 6---------------------
 /*
-*  [Spike 6]
+*  [Spike Test 6]
 *   
 *  This jest spike tests how functions that return promises should be tested
 */
@@ -169,10 +202,113 @@ let delay = (ms) => {
 
 
 describe('Delay Function', () => {
-   it('Should wait 2 seconds', async() => {
-      let res = await delay(2000);
+   it('Should wait 0.5 seconds', async() => {
+      let res = await delay(500);
       expect(res).toBe(5);
    })
 });
 
+//---------------Jest spike 7---------------------
+/*
+   [Spike Test 7]
 
+   This spike tests how a Jest test can expect an exception to be thrown
+
+*/
+
+//define basic function that throws when input is equal to 5
+const throwWhenEqualTo5 = (num) => {
+   if (num === 5){
+    throw "Number can't be 5";
+   }
+   return 1; 
+}
+
+describe('Exception Function',() => {
+   it('Should throw when num is 5', () => {
+      expect(() => throwWhenEqualTo5(5)).toThrowError("Number can't be 5");
+   })
+})
+
+//------------Jest spike 8---------------------
+/*
+   [Spike Test 8]
+
+   This spike, tests how to skip a unit test
+*/
+
+describe.skip('Skipping',()=>{
+   it('Should skip', () => {
+      expect(true).toBeTruthly()
+   });
+})
+
+//------------Jest spike 9---------------------
+/*
+   [Spike Test 9]
+
+   This spike, tests how to test for the contrapositive
+*/
+
+let capFirstLetter = (name) => {
+  
+    if(name[0] > 'Z'){
+       let newName = name.split('');
+       newName[0] = String.fromCharCode(name.charCodeAt(0) - 32);
+       return newName.join('');
+    }
+    return name;
+ }
+
+describe('Contrapositive function',() => {
+   it('Should not be equal to joe', () => {
+      expect(capFirstLetter('joe')).not.toEqual('joe');
+   })
+})
+
+//------------Jest spike 10---------------------
+/*
+   [Spike Test 10]
+
+   This spike, tests how mock objects work in jest
+*/
+class SoundPlayer {
+   constructor(){
+
+   }
+   play(file){
+      console.log("now playing "+ file);
+   }
+}
+class SoundPlayerCustomer {
+   constructor(){
+      this.soundPlayer = new SoundPlayer();
+   }
+   playFavSound(){
+      this.soundPlayer.play('FavSong.mp3');
+   }
+}
+
+//jest.mock('SoundPlayer');
+
+describe.skip('SoundPlayerCustomer',() => {
+   it('Should Call The Sound Player Constructor',() => {
+      const newSoundPlayerCustomer = new SoundPlayerCustomer();
+      expect(SoundPlayer).toHaveBeenCalledTime(1);
+   });
+
+   it('Should Call Play In The Sound Player Class', () => {
+      SoundPlayer.mock.clear();
+
+      const newSoundPlayerCustomer = new SoundPlayerCustomer();
+
+      expect(SoundPlayer).toHaveBeenCalledTime(1);
+
+      newSoundPlayerCustomer.playFavSound();
+
+      const mockSoundPlayerInstance = SoundPlayer.mock.instances[0].play;
+      
+      expect(mockSoundPlayerInstance.calls[0][0]).toEqual('FavSong.mp3');
+
+   });
+});
