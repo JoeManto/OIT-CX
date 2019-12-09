@@ -1,10 +1,8 @@
 # Testing Standards for OIT-CX
-
+The following guidelines and standards below will explain how, when, and where Server tests and React Component tests are conducted using Jest and React testing library.
 ## Unit Testing
 
 Unit Tests need to be conducted for every finish React component and every function should ideally should have a Jest test associated to it.
-
-
 
 #### Unit Testing with Jest
 -   All tests need to be in the directory named `__tests__`
@@ -27,7 +25,7 @@ test('Adds 2 + 2 to get 4', () => {
 ```
 
 #### Running Jest Unit Tests
-The Jest unit tests can be ran using the command `jest`. jest then takes a path to where you tests are found `jest path/to/tests`. 
+The Jest unit tests can be ran using the command `jest`. Jest then takes a path to where you tests are found `jest path/to/tests`. 
 
     jest spikes
 
