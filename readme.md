@@ -15,10 +15,10 @@ Docker deployable customer and shift management fullstack internal tool
 General Info
 =====
 #### After Cloning
-Modify the environment variables and the server `config-file` which holds variables like database host and ldap host, root passwords ..etc
+If you trying to start a development build please modify the environment variables and the server `config-file` which holds variables like database host addresses and ldap host, root passwords ..etc (More on this below)
 
 #### Running a local development build
-To run a development build for Contributing or testing whether your config settings are correct can be done by running the following commands.
+To run a development build for contributing or testing whether your config settings are correct can be done by running the following commands.
 
 - `npm install` (If you haven't already)
 
@@ -33,15 +33,16 @@ To run a development build for Contributing or testing whether your config setti
 #### Deploying a production build with docker
 
 Deploying a production build with docker is very easy. First thing you need to do is confirm that the exposed http port in the `dockerFile` is the same as in `server.js`.
-> **Server.js**
-- Changing http/https port
+
+> **Server.js** - Changing the http port
 ```javascript
 let server = https.createServer(sslOptions, app);
 server.listen(443, () => {
     console.log("server starting on port : " + 443)
 });
 ```
-- Change Certificate
+
+> **Server.js** - Changing Certificate
 ```javascript
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
 const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
@@ -57,12 +58,15 @@ once all config editing is finished we need to build the production version of o
 
 This will turn our React development files into static js chunks which can be found in the newly created directory `build`. Next we need to modify our server to statically serve the build folder.
 
-> **Server.js**
+> **Server.js** - Switch to serving static files
 ```javascript
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+    app.use(express.static(path.join(__dirname, '../build')));
+    app.get('/*', function(req, res) {
+        res.sendFile(path.join(__dirname, '../build', 'index.html'));
+    }); 
 ```
+
+
 more info can be found here https://create-react-app.dev/docs/deployment
 
 you can now start your docker container. Run the docker container

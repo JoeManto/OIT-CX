@@ -13,7 +13,7 @@ const config = {
     tls: {
         minVersion: 'TLSv1.1',
     },
-}
+};
 
 class Mail {
     constructor(){
@@ -65,7 +65,7 @@ class Mail {
                         console.log(error);
                     }
                 });
-            });
+            
         });
     }
 }

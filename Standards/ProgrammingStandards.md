@@ -226,24 +226,21 @@ Such Concepts that should be followed are [Spreading Syntax (Array and Object re
 
 Spread Syntax Example - from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax:
 ```Javascript
-function sum(x, y, z) {
-  return x + y + z;
-}
+let sum = (x, y, z) => return x + y + z;
 
 const numbers = [1, 2, 3];
 
 console.log(sum(...numbers));
 // expected output: 6
 
+//Non-ES6
 console.log(sum.apply(null, numbers));
 // expected output: 6
 ```
 
 JavaScript Array Filtering Example - from: https://www.geeksforgeeks.org/javascript-array-filter/:
 ```JavaScript
-function isPositive(value) {
-  return value > 0;
-}
+let isPositive = (value) return value > 0;
 
 var filtered = [112, 52, 0, -1, 944].filter(isPositive);
 
