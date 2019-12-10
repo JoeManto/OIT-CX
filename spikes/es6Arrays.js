@@ -6,9 +6,13 @@ var numbers = [2,56, 15,23,4, 123];
 var first = numbers.find(greaterThan15); //find will get the first element of an array that passes some functional test
 
 //use this as our test function
-function greaterThan15(value, index, array) {
+let greaterThan15 = (value, index, array) => {
   return value > 15;
 }
+
+//Or
+
+numbers.find(x => x > 15);
 
 console.log(first); //only 56 is returned here since it is the first thing to pass the functions test, even though there are others > 15 that are less
 

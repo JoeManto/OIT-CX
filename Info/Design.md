@@ -15,7 +15,7 @@ We chose to use the Testing framework Jest as it provides everything we need all
 We have a MySQL database as a sub-service container in our root docker container which is hosted on a server in the Bernhard center. We chose to use a MySql database as this is a database that both teammates understand and will allow us to get a faster start. 
 
 ## Server
-We are using one of Western Michigan Universities servers located in the Bernhard center which runs linux.
+We are using one of Western Michigan University's servers located in the Bernhard center which runs linux-vms.
 
 ## Docker
 Docker was one of our most important design choices as it allows us to build our project using scripts and run those scripts in a very easy and intuitive way. This makes for easy startup and stopping of the project, which is very important for the client.
