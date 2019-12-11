@@ -50,7 +50,7 @@ class LdapSearch {
             }
         })
         .then((_) => {
-            console.log(_);
+            //console.log(_);
             return {data: _}
         })
         .catch(error => console.log(error));

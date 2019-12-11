@@ -171,6 +171,7 @@ export function getContributorsList(){
   });
 }
 
+/*
 export function getLastCommit() {
     let githubKeys = getCookie("github-repo-keys");
     if(githubKeys != null && githubKeys.length !== 0){
@@ -217,4 +218,4 @@ export function getLastCommit() {
             }
         };
     });
-}
+}*/

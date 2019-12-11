@@ -14,12 +14,6 @@ const Mail = require('./Mail');
 
 //----------------------------SETUP----------------------------------
 
-
-async function pause() {
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    await delay(5000);
-}
-
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/ShiftService.js');
 const recordServiceChild = cp.fork('Server/RecordService.js');
@@ -229,76 +223,82 @@ app.post('/getUsers', async(req, res) => {
 });
 
 app.post('/searchUser',async(req,res) => {
+    
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,false)){
+        return res.send({res: "apiKey-error"});   
+    }
 
-    let searchCache = async() => {
+    /**
+     * Searches the data base to see if a user is found
+     * if a user is found then the http header is set and return that the user was found
+     * @param {String} bnid 
+     */
+    let searchCacheForCustomer = async(bnid) => {
         //search for customer in database by bnid 
-        let cache = await newDb.query('select * from customer where bnid = ?',{conditions:[req.body.userToLookUp]})
+        let cache = await newDb.query('select * from customer where bnid = ?',{conditions:[bnid]})
         .then(res => {return res})
-        .catch(_ => {return undefined});
-
-        if(!cache){
-            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-        }
-
+        .catch();
+    
         //valid user cached data was found in the data base
-        if(cache.length > 0){
-             res.send({customerID:cache[0].id,otherData:cache[0]});
-             return true;
+        if(cache && cache.length > 0){
+            res.send({customerID:cache[0].id,otherData:cache[0]});
+            return true;
         }
+
         return false;
     }
 
-
-    if(apiService.validHashedKeyForUser(req.body.user, req.body.key,true)){
-        return res.send({res: "apiKey-error"});   
-    }
-        
-    if(searchCache())
-        return;
-
-    ldapSearchClient.search(req.body.userToLookUp)
-    .then(async searchResult => {
-
-        let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-        let insertRes = await newDb.query(insertSql,{conditions:[searchResult.data[0].wmuFullName,searchResult.data[0].wmuUID,searchResult.data[0].wmuBannerID]})
-        .then()
-        .catch(err => {return undefined});
-
-        if(!insertRes){
-            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-        }
-
-        let lookUpRes = await newDb.query("Select Max(id) from customer")
-        .then(res => {return lookUpRes})
-        .catch(err => {return undefined})
-
-        if(!lookUpRes){
-            return res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-        } 
-
-        searchCache();
-
-
-      /*
-      db.query(mysql.format(insertSql,[result.data[0].wmuFullName,result.data[0].wmuUID,result.data[0].wmuBannerID]),(err,result) =>{
-        if(err){
-          res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-          return;
-        }
-        db.query("Select Max(id) from customer",(err,id) =>{
-          if(err){
-            res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-            return;
-          }
-          res.send({customerID:id[0]['Max(id)'],otherData:result});
-          return;
+    /**
+     * LDAP search a bnid and insert and cache that user to the database
+     * returns a error object and undefined for no error
+     * @param {String} bnid 
+     */
+    let cacheNewCustomer = (bnid) => {
+        return ldapSearchClient.search(req.body.userToLookUp)
+        .then(async searchResult => {
+    
+            let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
+            let insertError = await newDb.query(insertSql,{conditions:[searchResult.data[0].wmuFullName,searchResult.data[0].wmuUID,searchResult.data[0].wmuBannerID]})
+            .then()
+            .catch(_ => {
+                return {error:"Couldn't cache ${bnid} search"}
+            });
+    
+            if(insertError) return insertError;
         })
-      });*/
+        .catch(_ => {
+          return {error:"Couldn't Search For User "+bnid};
+        });
+    }
+
+    let bnid = req.body.userToLookUp;
+    let foundCustomer = false;
+    
+    searchCacheForCustomer(bnid)
+    .then(customerInCache => {
+
+        if(!customerInCache){
+            return cacheNewCustomer(bnid)
+        }
+
+        foundCustomer = true;
     })
-    .catch(error => {
-      res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-      return;
-    });
+    .then(cacheError => {
+        if(foundCustomer) return;
+
+        if(cacheError && cacheError.error){
+            return res.send({res:"error",error: cacheError.error});
+        }
+
+        searchCacheForCustomer(bnid);
+    }) 
+    .then()
+    .catch(err => {
+        res.send(res.send({res:"error",error: err.error}));
+    })
+    
+  
+
 
  /* if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
     let sql = 'select * from customer where bnid = ?';

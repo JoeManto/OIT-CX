@@ -666,7 +666,7 @@ export default class PostShiftPage extends React.Component {
                             <button onClick={this.handleConfirmPost} className={"fadingButton right"}>Confirm</button>
                         </div>
                     </div>
-                    <Footer style={{marginTop:"50px"}} showgitcont={true} showgitstatus={true}/>
+                    <Footer style={{marginTop:"50px"}} showgitcont={true} showgitstatus={false}/>
                 </div>
                 }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import '../css/LandingPage.css';
 import '../css/util.css';
 import {IP} from '../js/Util.js';
-import {getLastCommit,getContributorsList} from "./DataFetchHandler";
+import {getContributorsList} from "./DataFetchHandler";
 import {Auth} from '../js/Authentication.js';
 
 class LandingSignIn extends React.Component {
@@ -91,7 +91,7 @@ export class Footer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            githubData: [],
+            //githubData: [],
             githubContribList:[],
             error: "",
             showMoreInfo: false,
@@ -100,11 +100,11 @@ export class Footer extends React.Component {
     }
 
     componentDidMount() {
-        getLastCommit().then(res => {
+        /*getLastCommit().then(res => {
             this.setState({githubData: res});
         }).catch(e => {
             this.setState({error: e.error});
-        });
+        });*/
 
         getContributorsList().then(res => {
             res = res.filter((obj,i) => i<= 3);
@@ -177,7 +177,7 @@ class LandingPage extends React.Component {
         return (
             <div id="body">
                 <LandingSignIn/>
-                <Footer showgitcont={true} showgitstatus={true}/>
+                <Footer showgitcont={true} showgitstatus={false}/>
             </div>
         );
     }

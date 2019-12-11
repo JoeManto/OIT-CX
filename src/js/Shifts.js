@@ -315,7 +315,7 @@ export default class Shifts extends React.Component {
                     </div>
                     <ShiftsWrapper covered={2}/>
                 </div>
-                <Footer showgitcont={true} showgitstatus={true}/>
+                <Footer showgitcont={true} showgitstatus={false}/>
                 </div>
             </div>
         );
