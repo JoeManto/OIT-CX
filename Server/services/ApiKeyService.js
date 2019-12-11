@@ -1,5 +1,5 @@
 let sha = require("sha256");
-let sleep = require("../Util/Util.js").sleep;
+let sleep = require("../../Util/Util.js").sleep;
 
 class ApiKeyService {
     /**

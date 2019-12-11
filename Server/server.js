@@ -5,18 +5,17 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
 const config = require('./SecertConfig.js');
-const ldapWrapper = require('./Ldapwrapper');
-const newDb = require('./DbHandler');
-
-const ldapSearch = require('./LdapSearch');
-const ApiKeyService = require('./ApiKeyService');
-const Mail = require('./Mail');
+const ldapWrapper = require('./wrappers/LdapWrapper');
+const newDb = require('./wrappers/MysqlWrapper');
+const ldapSearch = require('./services/LdapSearch');
+const ApiKeyService = require('./services/ApiKeyService');
+const Mail = require('./emails/Mail');
 
 //----------------------------SETUP----------------------------------
 
 const cp = require('child_process');
-const shiftServiceChild = cp.fork('Server/ShiftService.js');
-const recordServiceChild = cp.fork('Server/RecordService.js');
+const shiftServiceChild = cp.fork('Server/services/ShiftService.js');
+const recordServiceChild = cp.fork('Server/services/RecordService.js');
 
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
 const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
@@ -296,9 +295,7 @@ app.post('/searchUser',async(req,res) => {
     .catch(err => {
         res.send(res.send({res:"error",error: err.error}));
     })
-    
-  
-
+});
 
  /* if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
     let sql = 'select * from customer where bnid = ?';
@@ -339,7 +336,6 @@ app.post('/searchUser',async(req,res) => {
   }else{
     res.send({res: "apiKey-error"});
   }*/
-});
 
 app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
