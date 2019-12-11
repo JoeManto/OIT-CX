@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 const handlebars = require('handlebars');
 const mysql = require("mysql");
 const fs = require('fs');
-const config = require('./SecertConfig.js');
+const config = require('../SecertConfig.js');
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
@@ -89,7 +89,7 @@ class Mail {
             _PostingDate: this.formatLocaleDate(),
         };
 
-        this.sendMail(this.adminTransporter,groupID,'/Emails/shiftposting.html',replacements,"");
+        this.sendMail(this.adminTransporter,groupID,'/shiftposting.html',replacements,"");
     }
 
     sendMail(transport,groupID,htmlpath,replacements,text){

@@ -1,5 +1,5 @@
 const mysql = require("mysql");
-const config = require('./SecertConfig.js');
+const config = require('../SecertConfig.js');
 
 class DbHandler {
     constructor(){
