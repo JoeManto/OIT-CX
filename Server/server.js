@@ -94,9 +94,8 @@ let mailService = new Mail();
 
 
 //-------------------------ENDPOINTS--------------------------------------
-
 //Normal Build
-app.get('/', function (req, res) {
+app.get('/time', function (req, res) {
     //res.sendFile(path.join(__dirname + '/client'));
     let date = new Date();
     let temp = ""+date.toTimeString()+" | "+date.toLocaleDateString();
@@ -105,10 +104,10 @@ app.get('/', function (req, res) {
 
 
 //For Docker Build
-/*app.use(express.static(path.join(__dirname, '../build')));
+app.use(express.static(path.join(__dirname, '../build')));
 app.get('/*', function(req, res) {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
-});*/
+});
 
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
@@ -661,6 +660,4 @@ app.post('/locations',(req,res)=>{
 });
 
 let server = https.createServer(sslOptions, app);
-server.listen(7304, () => {
-    console.log("server starting on port : " + 7304)
-});
+server.listen(7304);

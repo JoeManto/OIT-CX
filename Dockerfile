@@ -1,11 +1,16 @@
-FROM node:9
+FROM node:10
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN echo "America/New_York" > /etc/timezone
-RUN dpkg-reconfigure -f noninteractive tzdata
+ENV TZ=America/New_York
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+#RUN apk --update add \
+#		tzdata \
+#	&& cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#	&& apk del tzdata
 
 RUN npm install && \
     npm cache clean --force

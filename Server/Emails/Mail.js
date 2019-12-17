@@ -106,7 +106,7 @@ class Mail {
                     console.err(err);
                     return;
                 }
-                let sendTo = result[0]['emailList'];
+                let sendTo = 'joe.m.manto@wmich.edu'//result[0]['emailList'];
                 var template = handlebars.compile(html);
                 var htmlToSend = template(replacements);
                 var mailOptions = {
