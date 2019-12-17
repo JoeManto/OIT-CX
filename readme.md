@@ -14,6 +14,8 @@ Full-stack ReactJS app focused on streamlining employee shift management and cus
 
 General Info
 =====
+**Infomation is subject to change because of a future planned effort to provide a more intitive way of starting the project for the first time**
+
 #### After Cloning
 If you trying to start a development build please modify the environment variables and the server `config-file` which holds variables like database host addresses and ldap host, root passwords ..etc (More on this below)
 
@@ -44,11 +46,9 @@ server.listen(443, () => {
 
 > **Server.js** - Changing Certificate
 ```javascript
-const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
-const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
 const sslOptions = {
-    key: key,
-    cert: cert
+    key: fs.readFileSync(__dirname + '/ssl/selfsigned.key'),
+    cert: fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
 };
 ```
 
@@ -281,7 +281,7 @@ from future errors from a function using pre-destruction references.
 #### References
 No DOM element should be referenced out side of the React API.
 `Document.getElementBy...` should not be used at all as it interferes with the React API.
-All element references should be done using React refs in components.
+All element references should be done using React refs in components. (overkill example below)
 
 ```javascript
     class Frame extends React.Component{
@@ -294,7 +294,7 @@ All element references should be done using React refs in components.
         }
 
         clickLink = () => {
-            this.link.click();
+            this.link.current.click();
         }
 
         render(){
@@ -345,7 +345,7 @@ Follows the normal CSS styling conventions
 Styles that are local to a component should be implemented as javascript object styling. In line style in the jsx block
 
 **Javascript Object Styling**
-define all the styling in the render method of the component
+define all the styling in the render method of the class component or use css modules 
 ```javascript
     render(){
         const divStyle = {
