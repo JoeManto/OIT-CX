@@ -1,4 +1,7 @@
-export let IP = () => {return "http://localhost:3000";};
+const dotenv = require('dotenv');
+dotenv.config();
+
+export let IP = () => {return process.env.HOST_NAME;};
 
 export let formatAMPM = (date) => {
     var hours = date.getHours();
