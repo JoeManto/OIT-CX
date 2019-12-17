@@ -1,5 +1,5 @@
 # OIT-CX
-Docker deployable customer and shift management fullstack internal tool
+Full-stack ReactJS app focused on streamlining employee shift management and customer relations.
 
 ``https://shifts.it.wmich.edu/``
 
