@@ -19,7 +19,7 @@ class DbHandler {
         return new Promise((resolve,reject) => {
             this.db.query(sql,(err,res) => {
                 if(err){
-                    reject("Database Query Error");
+                    reject({sqlError:err,error:"Database Query Error"});
                 }
                 resolve(res);
             });
@@ -32,7 +32,7 @@ class DbHandler {
         return new Promise((resolve,reject) => {
             this.db.query(sql,(err,res) => {
                 if(err){
-                    reject("Database Query Error");
+                    reject({sqlError:err,error:"Database Query Error"});
                 }
                 resolve(res);
             })
