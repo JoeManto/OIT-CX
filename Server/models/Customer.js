@@ -6,12 +6,11 @@ const User = require('./User');
  * Customer class is an interface for pulling customer data;
  */
 class Customer extends User {
-    constructor(bnid = undefined){
-        super(bnid,'customer');
-        
-        if(bnid)
-           this.apply(bnid);
-
+    constructor(){
+        super(undefined,'customer');
+        this.win;
+        this.uid;
+        this.win;
     }
 
     getData(){
@@ -34,112 +33,66 @@ class Customer extends User {
      * 
      * @param {String} bnid 
      */
-    apply(bnid){
+    async apply(bnid){
         super.bnid = bnid;
+
+        let cache = await super.lookup()
+        .then(data => {return data})
+        .catch(err => {return err})
+
+        if(cache.error){
+            const data = await this.create(bnid)
+            .then(data => {return data;})
+            .catch(err => {return err});
+
+            if(data.error){
+                return Promise.reject(data.error);
+            }
         
-        return super.lookup().then(customerData => {
-            if(!customerData > 0) {
-                return this.create(bnid);
-            }else{
-                Object.assign(this,customerData);
-            }
-        })
-        .then(_ => super.lookup(bnid))
-        .then(customerData => {
-            Object.assign(this,customerData);
-            return customerData;
-        });
-
-        //console.log(customerData);
-
-        /*let customerData = this.searchCacheForCustomer(bnid);
-        console.log(customerData);
-
-        if(!customerData){
-            //attempt to new customer
-            customerData = this.create(bnid);
-            console.log(customerData);
-
-            //an error accrued while inserting the new customer data
-            if(!customerData){
-                return {error:this.error};
-            }
-
-            customerData = super.lookup();
+        }else{
+            return cache;
         }
 
-        Object.assign(this,customerData);
-
-        console.log(customerData);
-
-        return customerData;*/
-
-        /*let customerDataCache = this.searchCacheForCustomer(bnid);
-
-
-        //customer was not found in the database
-        if(!customerDataCache){
-
-            //attempt to cache new customer
-            customerDataCache = this.create(bnid);
-
-            //an error accrued while inserting the new customer data
-            if(!customerDataCache){
-                return {error:this.error};
-            }
-
-            //recover customer id on top of ldap data
-            customerDataCache = this.searchCacheForCustomer(bnid);
-        }
+        cache = await super.lookup(bnid);
         
-        //set customer data
-        Object.assign(this,customerDataCache);
-
-        return customerDataCache;*/
-    }
-
-    /**
-     * Todo: Unit Tests
-     * 
-     * Searches the database for a customer that as already been to OIT
-     * 
-     * @Success returns customer data
-     * @Failure returns false
-     *
-     * @param {String} bnid 
-     */
-    async search(bnid){
-        //search for customer in database by bnid 
-        let cache = await db.query('select * from customer where bnid = ?',{conditions:[bnid]})
-        .then(res => {return res})
-        .catch();
-    
-        //valid user cached data was found in the data base
-        if(cache && cache.length > 0){
-            return cache[0];
-        }
-
-        return false;
+        Object.assign(this,cache[0]);
+        
+        return cache;
     }
 
     /**
      * Todo: Unit Tests
      * 
      * LDAP search a bnid and insert and cache that user to the database
-     * returns 
      * 
-     * @Success @returns customer data
-     * @Failure @returns undefined and sets customer.error 
+     * @Success @returns {Promise} customer data
+     * @Failure @returns {Promise} customer.error 
      * @Error customer.error is set on ldap user not found or sql insert error
      * 
      * @param {String} bnid 
      */
-     create(bnid){
+     async create(bnid){
+
+        //check to see if the user is already in the db
+        let customer = await super.lookup(bnid)
+        .then(data => {
+            return data;
+        })
+        .catch(err => {
+            return err;
+        })
+
+        //customer already exists in the db
+        if(!customer.error){
+            return customer;
+        }
+            
+
         return ldapSearchClient.search(bnid)
         .then(async searchResult => {
-            
+            console.log(bnid);
             if(searchResult.data.length === 0)
-                return Promise.reject({error:"Couldn't Search For User ${bnid}"});
+                return Promise.reject({error:"Couldn't Search For User ${bnid} | result length was 0"});
 
             let data = {
                 name:searchResult.data[0].wmuFullName,
@@ -147,17 +100,15 @@ class Customer extends User {
                 win:searchResult.data[0].wmuBannerID,
             }
 
-          
-
             let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-            return await db.query(insertSql,{conditions:[data.name, data.uid, data.win]})
+            return await db.query(insertSql,{conditions:[data.name, data.bnid, data.win]})
             .then(_ => {return data})
             .catch(_ => {
                 return {error:"Couldn't cache ${bnid} search"};
             });
         })
         .catch(_ => {
-            return {error:"Couldn't Search For User ${bnid}"};
+            return {error:_};
         });
     }
 }
