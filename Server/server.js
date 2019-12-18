@@ -141,7 +141,7 @@ app.post('/getUsers', async(req, res) => {
 });
 
 /**
- * TODO: Change endpoint to searchCustomer
+ * TODO: Change endpoint to searchCustomer 
  */
 app.post('/searchUser',async(req,res) => {
     
@@ -149,13 +149,21 @@ app.post('/searchUser',async(req,res) => {
         return res.send({res: "apiKey-error"});   
     }
 
-    let customer = new Customer(req.body.user);
+    let customer = new Customer();
 
+    customer.apply('kkkss')
+    .then(data => {
+        console.log(data);
+    })
+    .catch(err => {
+        console.log("error");
+    });
+    /*
     if(customer.error){
         res.send({res:'error',error: customer.error});
     }else{
         res.send({customerID:customer.id,otherData:customer.getData()});
-    }
+    }*/
 });
 
 app.post('/addUser', (req, res) => {

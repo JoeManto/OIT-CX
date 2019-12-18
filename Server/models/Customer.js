@@ -10,9 +10,8 @@ class Customer extends User {
         super(bnid,'customer');
         
         if(bnid)
-            Object.assign(this,this.findWithBnid(bnid));
+           this.apply(bnid);
 
-        this.error;
     }
 
     getData(){
@@ -35,16 +34,54 @@ class Customer extends User {
      * 
      * @param {String} bnid 
      */
-    findWithBnid(bnid){
+    apply(bnid){
         super.bnid = bnid;
+        
+        return super.lookup().then(customerData => {
+            if(!customerData > 0) {
+                return this.create(bnid);
+            }else{
+                Object.assign(this,customerData);
+            }
+        })
+        .then(_ => super.lookup(bnid))
+        .then(customerData => {
+            Object.assign(this,customerData);
+            return customerData;
+        });
 
-        let customerDataCache = this.searchCacheForCustomer(bnid);
+        //console.log(customerData);
+
+        /*let customerData = this.searchCacheForCustomer(bnid);
+        console.log(customerData);
+
+        if(!customerData){
+            //attempt to new customer
+            customerData = this.create(bnid);
+            console.log(customerData);
+
+            //an error accrued while inserting the new customer data
+            if(!customerData){
+                return {error:this.error};
+            }
+
+            customerData = super.lookup();
+        }
+
+        Object.assign(this,customerData);
+
+        console.log(customerData);
+
+        return customerData;*/
+
+        /*let customerDataCache = this.searchCacheForCustomer(bnid);
+
 
         //customer was not found in the database
         if(!customerDataCache){
 
             //attempt to cache new customer
-            customerDataCache = this.cacheNewCustomer(bnid);
+            customerDataCache = this.create(bnid);
 
             //an error accrued while inserting the new customer data
             if(!customerDataCache){
@@ -58,7 +95,7 @@ class Customer extends User {
         //set customer data
         Object.assign(this,customerDataCache);
 
-        return customerDataCache;
+        return customerDataCache;*/
     }
 
     /**
@@ -71,7 +108,7 @@ class Customer extends User {
      *
      * @param {String} bnid 
      */
-    async searchCacheForCustomer(bnid){
+    async search(bnid){
         //search for customer in database by bnid 
         let cache = await db.query('select * from customer where bnid = ?',{conditions:[bnid]})
         .then(res => {return res})
@@ -97,25 +134,30 @@ class Customer extends User {
      * 
      * @param {String} bnid 
      */
-     cacheNewCustomer(bnid){
+     create(bnid){
         return ldapSearchClient.search(bnid)
         .then(async searchResult => {
             
+            if(searchResult.data.length === 0)
+                return Promise.reject({error:"Couldn't Search For User ${bnid}"});
+
             let data = {
                 name:searchResult.data[0].wmuFullName,
                 bnid:searchResult.data[0].uid,
                 win:searchResult.data[0].wmuBannerID,
             }
 
+          
+
             let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-            return await newDb.query(insertSql,{conditions:[data.name, data.uid, data.win]})
+            return await db.query(insertSql,{conditions:[data.name, data.uid, data.win]})
             .then(_ => {return data})
             .catch(_ => {
-                this.error = "Couldn't cache ${bnid} search";
+                return {error:"Couldn't cache ${bnid} search"};
             });
         })
         .catch(_ => {
-            this.error = "Couldn't Search For User ${bnid}";
+            return {error:"Couldn't Search For User ${bnid}"};
         });
     }
 }

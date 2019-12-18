@@ -1,0 +1,68 @@
+/**
+     * Searches the data base to see if a user is found
+     * if a user is found then the http header is set and return that the user was found
+     * @param {String} bnid 
+     */
+    let searchCacheForCustomer = async(bnid) => {
+        //search for customer in database by bnid 
+        let cache = await newDb.query('select * from customer where bnid = ?',{conditions:[bnid]})
+        .then(res => {return res})
+        .catch();
+    
+        //valid user cached data was found in the data base
+        if(cache && cache.length > 0){
+            res.send({customerID:cache[0].id,otherData:cache[0]});
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * LDAP search a bnid and insert and cache that user to the database
+     * returns a error object and undefined for no error
+     * @param {String} bnid 
+     */
+    let cacheNewCustomer = (bnid) => {
+        return ldapSearchClient.search(req.body.userToLookUp)
+        .then(async searchResult => {
+    
+            let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
+            let insertError = await newDb.query(insertSql,{conditions:[searchResult.data[0].wmuFullName,searchResult.data[0].wmuUID,searchResult.data[0].wmuBannerID]})
+            .then()
+            .catch(_ => {
+                return {error:"Couldn't cache ${bnid} search"}
+            });
+    
+            if(insertError) return insertError;
+        })
+        .catch(_ => {
+          return {error:"Couldn't Search For User "+bnid};
+        });
+    }
+
+    let bnid = req.body.userToLookUp;
+    let foundCustomer = false;
+    
+    searchCacheForCustomer(bnid)
+    .then(customerInCache => {
+
+        if(!customerInCache){
+            return cacheNewCustomer(bnid)
+        }
+
+        foundCustomer = true;
+    })
+    .then(cacheError => {
+        if(foundCustomer) return;
+
+        if(cacheError && cacheError.error){
+            return res.send({res:"error",error: cacheError.error});
+        }
+
+        searchCacheForCustomer(bnid);
+    }) 
+    .then()
+    .catch(err => {
+        res.send(res.send({res:"error",error: err.error}));
+    })
