@@ -1,7 +1,21 @@
 const LdapAuth = require('ldapauth-fork');
+const ldapConfig = require('../SecertConfig.js').ldap_config();
 
 module.exports = {
-    authUser: function (options, user, pass) {
+    authUser: function (user, pass) {
+
+        let options = {
+            url: ldapConfig.url + ldapConfig.port,
+            bindDN: ldapConfig.dn,
+            bindCredentials: ldapConfig.pw,
+            searchBase: ldapConfig.bn,
+            searchFilter: 'uid=blank',
+            searchAttributes: ['sn'],
+            tlsOptions: {
+                minVersion: 'TLSv1',
+            }
+        };
+
         return new Promise(function (resolve, reject) {
             let ldap = new LdapAuth(options);
             options.searchFilter = "uid=" + user;
