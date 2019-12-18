@@ -10,13 +10,28 @@ class User {
         this.type = type;
     }
 
-    lookup() {
+    /**
+     * Looks for a user in the db
+     * !todo add support for win
+     * todo: unit tests
+     * 
+     * @param {String} bnid 
+     */
+    async lookup(bnid) {
+        let id = (bnid) ? bnid : this.bnid;
+
         if(!this.type)
             return Promise.reject({error:"user type not specified"});
 
-        if(this.isCustomer()) return db.query("select * from customer where bnid = ?",{conditions:[this.bnid]});
+        let data;
+        if(this.isCustomer()) data = await db.query("select * from customer where bnid = ?", { conditions: [id] });
     
-        if(this.isEmployee()) return db.query("select * from users where bnid = ?",{conditions:[this.bnid]});
+        if(this.isEmployee()) data = await db.query("select * from users where bnid = ?", { conditions: [id] });
+
+        if (data.length === 0)
+            return Promise.reject({ error: "no data found" });
+
+        return data;
     }
 
     isCustomer(){return this.type === "customer"};

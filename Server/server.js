@@ -42,6 +42,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client'));
 
+
+
 //----------------------------SERVICES----------------------------------
 
 setInterval(() => {
@@ -149,15 +151,16 @@ app.post('/searchUser',async(req,res) => {
         return res.send({res: "apiKey-error"});   
     }
 
-    let customer = new Customer();
-
-    customer.apply('kkkss')
+    new Customer().apply(req.body.userToLookUp)
     .then(data => {
-        console.log(data);
+        res.send({customerID:data[0].id,otherData:data[0]})
     })
     .catch(err => {
-        console.log("error");
+        console.log(err);
+        res.send({res:'error',error: err});
+        
     });
+
     /*
     if(customer.error){
         res.send({res:'error',error: customer.error});
