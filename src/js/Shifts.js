@@ -182,7 +182,7 @@ class CoveredShift extends React.Component {
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                                 <div className = {"flexColumn"}>
                                   <h3>Delete this shift? <span role="img">🙇🏽‍♂️</span></h3>
-                                  <p style={{color:"#ffb347"}}>Cancel</p>
+                                  <p style={{color:"var(secondary)"}}>Cancel</p>
                                 </div>
                                 <button onClick={this.handleShiftDelete} style={{marginLeft: "50%", marginTop: "15px"}}
                                         className={"fadingButton"}>Delete Shift
@@ -196,7 +196,7 @@ class CoveredShift extends React.Component {
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                                 <div className = {"flexColumn"}>
                                   <h3>Hello, picking this shift up? <span role="img">🙇🏽‍♂️</span></h3>
-                                  <p style = {{color:"#ffb347"}}>Cancel</p>
+                                  <p style = {{color:"var(secondary)"}}>Cancel</p>
                                 </div>
                                 <button onClick={this.handleShiftPickUp} style={{marginLeft: "50%", marginTop: "15px"}}
                                         className={"fadingButton"}>Pick up
@@ -298,20 +298,20 @@ export default class Shifts extends React.Component {
                 <div id = "shifts-headerSpacer"style={{marginTop:"100px"}}/>
                 <div>
                     <div className={"Content contentShifts yellowBottomBordered"}>
-                        <h3 style={{color: "black"}}>Open Shifts</h3>
+                        <h3 style={{color: "var(--text)"}}>Open Shifts</h3>
                         <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with
                         <a href={IP()+'/post-shift'} style={{fontStyle:"bolder",marginLeft:"15px"}}>Post a shift</a>
                         </p>
                     </div>
                     <ShiftsWrapper covered={0}/>
                     <div className={"Content contentShifts yellowBottomBordered"}>
-                        <h3 style={{color: "black"}}>Picked Up Shifts</h3>
-                        <p style={{color: "darkgrey"}}>Just for viewing</p>
+                        <h3 style={{color: "var(--text)"}}>Picked Up Shifts</h3>
+                        <p style={{color: "lightgrey"}}>Just for viewing</p>
                     </div>
                     <ShiftsWrapper covered={1}/>
                     <div className={"Content contentShifts yellowBottomBordered"}>
-                        <h3 style={{color: "black"}}>Permanent Shifts</h3>
-                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with</p>
+                        <h3 style={{color: "var(--text)"}}>Permanent Shifts</h3>
+                        <p style={{color: "lightgrey"}}>Click the shifts you wish to interact with</p>
                     </div>
                     <ShiftsWrapper covered={2}/>
                 </div>

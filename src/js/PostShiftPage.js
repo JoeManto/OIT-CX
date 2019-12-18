@@ -325,7 +325,7 @@ class PositionList extends React.Component {
         if (this.props.data) {
             return (
                 <div onChange={this.handlePosChange}>
-                    <h3 style={{color: "#292c34"}}>Shift Type</h3>
+                    <h3 style={{color: "var(--text)"}}>Shift Type</h3>
                     {this.props.data.map((obj, i) => {
                         return this.renderPosition(i);
                     })}
@@ -583,18 +583,18 @@ export default class PostShiftPage extends React.Component {
                     <div id="header-background"/>
                     <Header title = {"Shift Posting"} subtitle = {"Offer a shift once or permanently"}/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
-                        <h2 style={{color: "#292c34"}}>Post Shift</h2>
+                        <h2 style={{color: "var(--text)"}}>Post Shift</h2>
                         <p style={{color: "grey", fontSize: ".7em"}}>After a posted shift has been picked up, all
                             previous actions are final.
                             <br/>
-                            <a href={IP()+"/shifts"} style={{color: "#292c34 !important", fontSize: "1.2em"}}>Find Open Shifts</a>
+                            <a href={IP()+"/shifts"} style={{color: "lightgrey !important", fontSize: "1.2em"}}>Find Open Shifts</a>
                         </p>
 
                         <hr/>
                         <PositionList onChange={this.handlePosChange} data={this.state.positionData}/>
-                        <h3 style={{color: "#292c34"}}>Shift Date</h3>
+                        <h3 style={{color: "var(--text)"}}>Shift Date</h3>
                         <DatePicker onChange={this.handleDateChange}/>
-                        <h3 style={{color: "#292c34"}}>Shift Time</h3>
+                        <h3 style={{color: "var(--text)"}}>Shift Time</h3>
                         {/*If mobile or call-in are selected, display that the time is already been changed*/}
                         {isMobile() ?
                             (
@@ -611,7 +611,7 @@ export default class PostShiftPage extends React.Component {
                             //set long shift warning
                             longShiftWarning.status && <p className={"cautionText"}>{longShiftWarning.message}</p>
                         }
-                        <h3 style={{marginBottom: "5px",color: "#292c34"}}>Other Info</h3>
+                        <h3 style={{marginBottom: "5px",color: "var(--text)"}}>Other Info</h3>
                         <p className={"smallLineHeight"}
                            style={{color: "grey", fontSize: ".7em", margin: "0", marginBottom: "5px"}}>Please add a
                             short
@@ -641,9 +641,9 @@ export default class PostShiftPage extends React.Component {
                     <Header title={"Shift Posting"} subtitle={"Offer a shift once or permanently"}/>
                     <div id="header-background"/>
                     <div style={{marginTop: "100px"}} className={"Content contentPostShifts yellowBordered"}>
-                        <h2 style={{color: "black"}}>Confirm Posting</h2>
+                        <h2 style={{color: "var(--text)"}}>Confirm Posting</h2>
                         <hr/>
-                        <h3 style={{color: "#292c34"}}>Shift Type : <span
+                        <h3>Shift Type : <span
                             className={"cautionText"}>{this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData)}</span>
                         </h3>
                         <h3>Permanent : <span
@@ -654,7 +654,7 @@ export default class PostShiftPage extends React.Component {
                                  src={require('../rightArrow.png')}/>
                             <p>{this.state.endDate.toDateString() + " " + formatAMPM(this.state.endDate)}</p>
                         </div>
-                        <p style={{color: "grey", fontSize: ".7em"}}>A shift posting can be canceled on the shifts page
+                        <p style={{color: "lightgrey", fontSize: ".7em"}}>A shift posting can be canceled on the shifts page
                             but, after a posted shift has been picked up all
                             previous actions are final.</p>
                         <div style={{paddingTop: "20px"}} className={"flexRow"}>

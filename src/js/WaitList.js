@@ -173,7 +173,7 @@ export function Header(props) {
             </div>
 
             <p onClick={handleLogout} id="logout" className={"right"}><strong>{getCookie("user-bnid")}</strong>
-            <a href={"/"} style={{color: '#282c34',marginLeft:"10px"}}>logout</a>
+            <a href={"/"} style={{color: 'var(--text)',marginLeft:"10px"}}>logout</a>
             </p>
         </div>
     );

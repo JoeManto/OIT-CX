@@ -7,7 +7,7 @@
 }
 
 #shiftCont{
-    background: linear-gradient(to right, #F5F5F5 50%, white 50%);
+    background: linear-gradient(to right, var(--background) 50%,var(--primary) 50%);
     background-size: 200% 100%;
     background-position:right bottom;
   
@@ -15,7 +15,7 @@
 }
 #shiftCont:hover {
     transform: scale(1.009, 1.009);
-    box-shadow: 0 5px 9px #8999;
+    box-shadow: 0 5px 9px rgba(81, 88, 88, 0.1);
     background-position:left bottom;   
 }
 
@@ -33,7 +33,7 @@
 }
 
 .shiftListItemHeader {
-    color: darkgray;
+    color: var(--secondary);
 }
 
 #shift-dialog-cnt {

@@ -1,6 +1,6 @@
 /*------------BUTTONS------------*/
 .fadingButton {
-    background: white;
+    background: var(--primary);
     color: #ffb347;
     border: none;
     position: relative;
@@ -13,7 +13,7 @@
 }
 
 .fadingButton:hover {
-    background: #fff;
+    background: var(--primary);
     color: #ffb347;
 }
 
@@ -99,9 +99,9 @@
 
 .clearButton {
     height: 40px;
-    background-color: white;
+    background-color: transparent;
     border: none;
-    color: black;
+    color: var(--text);
     cursor: pointer;
     outline: none;
 }
@@ -179,7 +179,7 @@
     width: 125px;
     padding: 10px 0;
 
-    color: #292929;
+    color: var(--secondary);
     font-size: 18px;
     font-weight: bolder;
     font-style: oblique;
@@ -208,6 +208,7 @@
 }
 
 .clearColor {
+    background-color: transparent;
     color: black
 }
 
@@ -235,6 +236,7 @@
 #scroll-wrap {
     /*margin-bottom: 100px;*/
     height: 100vh;
+    background:var(--background);
 }
 
 #header-background {
@@ -242,7 +244,7 @@
     width: 100%;
     height: 400px;
     z-index: -1;
-    background: url("../background.png");
+    /*background: url("../background.png");*/
 }
 #headerSpacer{
     margin-bottom: 280px;
