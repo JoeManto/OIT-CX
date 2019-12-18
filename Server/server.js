@@ -7,16 +7,17 @@ const path = require('path');
 const config = require('./SecertConfig.js');
 const ldapWrapper = require('./wrappers/LdapWrapper');
 const newDb = require('./wrappers/MysqlWrapper');
-const ldapSearch = require('./services/LdapSearch');
+const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./emails/Mail');
+const Customer = require('./models/Customer');
 
-//----------------------------SETUP----------------------------------
-
+//child processes
 const cp = require('child_process');
 const shiftServiceChild = cp.fork('Server/services/ShiftService.js');
 const recordServiceChild = cp.fork('Server/services/RecordService.js');
 
+//ssl
 const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
 const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
 const sslOptions = {
@@ -26,7 +27,6 @@ const sslOptions = {
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
-
 console.log(config.db_config());
 
 //Test DataBase Connection
@@ -36,34 +36,6 @@ db.connect((err) => {
     }
     console.log('mysql connected...');
 });
-
-//Gather Hidden LDAPConfig
-/*
-    url: 'ldaps://host.name',
-    dn: '[user to bind]',
-    bn: '[search base]',
-    ip: 'x------x',
-    port: ':636',
-    pw: 'x------x',
- */
-let ldapConfig = config.ldap_config();
-const ldapSearchClient = new ldapSearch();
-
-//---LDAP Connection options for a new LDAPAuth Object with LDAP config options
-/*
-    Change TLS options to the options that are appropriate for your LDAP server
-*/
-let options = {
-    url: ldapConfig.url + ldapConfig.port,
-    bindDN: ldapConfig.dn,
-    bindCredentials: ldapConfig.pw,
-    searchBase: ldapConfig.bn,
-    searchFilter: 'uid=blank',
-    searchAttributes: ['sn'],
-    tlsOptions: {
-        minVersion: 'TLSv1',
-    }
-};
 
 const app = express();
 app.use(bodyParser.json());
@@ -86,12 +58,14 @@ recordServiceChild.on('message',function (m) {
     console.log('[AUTO][Record WORKER] : ' + m)
 });
 
-
 let apiService = new ApiKeyService();//.api();
 let mailService = new Mail();
 
-//----------------------Helper Functions----------------------------------
-
+//For Docker Build
+app.use(express.static(path.join(__dirname, '../build')));
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
 
 //-------------------------ENDPOINTS--------------------------------------
 //Normal Build
@@ -102,13 +76,9 @@ app.get('/time', function (req, res) {
     res.send({res:temp});
 });
 
-
-//For Docker Build
-app.use(express.static(path.join(__dirname, '../build')));
-app.get('/*', function(req, res) {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
-});
-
+/**
+ * 
+ */
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
    if(!apiService.validHashedKeyForUser(req.body.user,req.body.key))
@@ -122,12 +92,12 @@ app.post('/unAuth',(req,res) => {
 app.post('/auth', async(req,res) => {
     let {user,pass} = req.body;
       
-    //gather user data from db
+    //query database for user-id
     let result = await newDb.userLookUp(user)
     .then(res => {return res[0]})
     .catch(err => res.send({res:"auth-failed",error:err}));
 
-    //no records found in the user search
+    //no records from database : auth session user is unknown
     if(!result)
         return res.send({res: "auth-failed", error: "User Not-Found"});
     
@@ -138,10 +108,11 @@ app.post('/auth', async(req,res) => {
     }
 
     /*
-        User wasn't able to auth fully the database
-        requires pass auth from ldap
+        User wasn't able to auth fully using the database
+        
+        *requires auth from lDAP
     */
-    return ldapWrapper.authUser(options, user, pass)
+    return ldapWrapper.authUser(user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
                 let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
@@ -151,42 +122,6 @@ app.post('/auth', async(req,res) => {
                 return res.send(err);
             });
 });
-
-/*app.post('/auth', (req, res) => {
-    let user = req.body.user;
-    let pass = req.body.pass;
-    let foundMatchForUser = false;
-    let userRole = 0;
-    db.query("SELECT * FROM users", (err, result) => {
-        if (err) {
-            res.send({res: "auth-failed"});
-        } else {
-            for (let i = 0; i < result.length; i++) {
-                if (result[i]["empybnid"] === user) {
-                    foundMatchForUser = true;
-                    userRole = result[i]['role'];
-                    if (result[i]['password'] === pass) {
-                        let key = apiService.createKeyForUser(user, result[i]['role'] === 1,18000);
-                        res.send({res: "auth-success", error: "no-error", key: key});
-                        return;
-                    }
-                }
-            }
-        }
-        if (foundMatchForUser) {
-            ldapWrapper.authUser(options, user, pass)
-                .then((_) => {
-                    let key = apiService.createKeyForUser(user, userRole === 1,18000);
-                    res.send({res: "auth-success", error: "no-error", key: key});
-                })
-                .catch((error) => {
-                    res.send(error)
-                });
-        } else {
-            res.send({res: "auth-failed", error: "User Not-Found"});
-        }
-    });
-});*/
 
 app.post('/getUsers', async(req, res) => {
 
@@ -203,138 +138,25 @@ app.post('/getUsers', async(req, res) => {
         return res.send({res: "user-error", error: "Couldn't search for user"});
     
     res.send({res: result});
-
-
-    /*
-    let sqlUserLookUp = "select empyname,surname,empybnid from users";
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
-        db.query(sqlUserLookUp, (err, result) => {
-            if (err || result.length === 0) {
-                res.send({res: "user-error", error: "Couldn't search for user"});
-                return;
-            }
-            res.send({res: result});
-        });
-    } else {
-        res.send({res: "apiKey-error"});
-    }*/
 });
 
+/**
+ * TODO: Change endpoint to searchCustomer
+ */
 app.post('/searchUser',async(req,res) => {
     
     if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,false)){
         return res.send({res: "apiKey-error"});   
     }
 
-    /**
-     * Searches the data base to see if a user is found
-     * if a user is found then the http header is set and return that the user was found
-     * @param {String} bnid 
-     */
-    let searchCacheForCustomer = async(bnid) => {
-        //search for customer in database by bnid 
-        let cache = await newDb.query('select * from customer where bnid = ?',{conditions:[bnid]})
-        .then(res => {return res})
-        .catch();
-    
-        //valid user cached data was found in the data base
-        if(cache && cache.length > 0){
-            res.send({customerID:cache[0].id,otherData:cache[0]});
-            return true;
-        }
+    let customer = new Customer(req.body.user);
 
-        return false;
+    if(customer.error){
+        res.send({res:'error',error: customer.error});
+    }else{
+        res.send({customerID:customer.id,otherData:customer.getData()});
     }
-
-    /**
-     * LDAP search a bnid and insert and cache that user to the database
-     * returns a error object and undefined for no error
-     * @param {String} bnid 
-     */
-    let cacheNewCustomer = (bnid) => {
-        return ldapSearchClient.search(req.body.userToLookUp)
-        .then(async searchResult => {
-    
-            let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-            let insertError = await newDb.query(insertSql,{conditions:[searchResult.data[0].wmuFullName,searchResult.data[0].wmuUID,searchResult.data[0].wmuBannerID]})
-            .then()
-            .catch(_ => {
-                return {error:"Couldn't cache ${bnid} search"}
-            });
-    
-            if(insertError) return insertError;
-        })
-        .catch(_ => {
-          return {error:"Couldn't Search For User "+bnid};
-        });
-    }
-
-    let bnid = req.body.userToLookUp;
-    let foundCustomer = false;
-    
-    searchCacheForCustomer(bnid)
-    .then(customerInCache => {
-
-        if(!customerInCache){
-            return cacheNewCustomer(bnid)
-        }
-
-        foundCustomer = true;
-    })
-    .then(cacheError => {
-        if(foundCustomer) return;
-
-        if(cacheError && cacheError.error){
-            return res.send({res:"error",error: cacheError.error});
-        }
-
-        searchCacheForCustomer(bnid);
-    }) 
-    .then()
-    .catch(err => {
-        res.send(res.send({res:"error",error: err.error}));
-    })
 });
-
- /* if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
-    let sql = 'select * from customer where bnid = ?';
-
-    db.query(mysql.format(sql,[req.body.userToLookUp]),(err,result) =>{
-      if(err){
-        console.log(sql+" \n"+err);
-        res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-        return;
-      }else if(result.length > 0){
-        res.send({customerID:result[0].id,otherData:result[0]});
-        return;
-      }
-
-      ldapSearchClient.search(req.body.userToLookUp)
-      .then(result => {
-        let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-        db.query(mysql.format(insertSql,[result.data[0].wmuFullName,result.data[0].wmuUID,result.data[0].wmuBannerID]),(err,result) =>{
-          if(err){
-            res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-            return;
-          }
-          db.query("Select Max(id) from customer",(err,id) =>{
-            if(err){
-              res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-              return;
-            }
-            res.send({customerID:id[0]['Max(id)'],otherData:result});
-            return;
-          })
-        });
-      })
-      .catch(error => {
-        res.send({res:"error",error:"Couldn't Search For User "+req.body.userToLookUp});
-        return;
-      });
-    });
-  }else{
-    res.send({res: "apiKey-error"});
-  }*/
 
 app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
