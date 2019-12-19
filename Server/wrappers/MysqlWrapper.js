@@ -3,14 +3,7 @@ const config = require('../SecertConfig.js');
 
 class DbHandler {
     constructor(){
-        this.db = mysql.createConnection(config.db_config());
-
-        this.db.connect((err) => {
-            if(err)
-                throw err;
-            
-            console.log('mysql connected....');
-        });
+        this.build()
     }
 
     query(sql,options = {}){
@@ -37,6 +30,15 @@ class DbHandler {
                 resolve(res);
             })
         })
+    }
+
+    build(){
+        this.db = mysql.createConnection(config.db_config());
+
+        this.db.connect((err) => {
+            if(err)
+                throw err;
+        });
     }
 }
 

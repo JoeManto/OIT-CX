@@ -1,7 +1,7 @@
  const dotenv = require('dotenv');
  const mysql = require("mysql");
- const config = require('../Server/SecertConfig.js');
- const sleep = require('../Util/Util.js').sleep;
+ const config = require('./Server/SecertConfig.js');
+ const sleep = require('./Util/Util.js').sleep;
  const RecordService = require('../Server/RecordService.js');
  const ApiKeyService = require('../Server/ApiKeyService.js');
  const db = mysql.createConnection(config.db_config());

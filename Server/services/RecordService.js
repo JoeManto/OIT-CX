@@ -1,24 +1,38 @@
-const mysql = require('mysql');
+const db = require('../wrappers/MysqlWrapper');
+const Util = require('../../Util/Util');
 const config = require('../SecertConfig.js');
-
-//DataBase Connection Config
-const db = mysql.createConnection(config.db_config());
-
-//Create DataBase Connection
-db.connect((err) => {
-  if (err) {
-      throw err;
-  }
-  console.log('mysql connected...');
-});
+var MockDate = require('mockdate');
 
 /**
   Manages all the active records in the data base.
 */
 class RecordService {
-  constructor(){
-    Object.assign(this, {startDate:new Date()});
+  constructor(forceNextDay){
+    
+    Object.assign(this, {startDate:new Date(),didMigrationTest:false});
+    this.shouldForceNextDay = forceNextDay;
+    //this.db = this.buildDBConnection();
+
+    /*console.log("time has changed");
+    let timezoneOffset = new Date().getTimezoneOffset();
+    let target = new Date();
+    target.setHours(23);
+    target.setMinutes(58);
+    MockDate.set(target,timezoneOffset);*/
   }
+
+  /*buildDBConnection(){
+    //DataBase Connection Config
+    const db = mysql.createConnection(config.db_config());
+    db.connect((err) => {
+      if (err) {
+          throw err;
+      }
+      //console.log('mysql connected...');
+    });
+
+    return db;
+  }*/
 
   /*
   Checks the server start date and the current date.
@@ -27,6 +41,16 @@ class RecordService {
   */
  checkForDataMigration(){
     let now = new Date();
+    
+    /*For Testing Midnight records migration*/
+    if(this.shouldForceNextDay && !this.didMigrationTest){ 
+      now.setDate(this.startDate.getDate()+1);
+      this.didMigration = true;
+      console.log("changed did Migration to "+ this.didMigration);
+    }
+
+    console.log("OLD Date = "+this.startDate.getDate() + " Now Date = " + now.getDate());
+    console.log(now.toLocaleTimeString() + " " +now.toDateString());
 
     if(this.startDate.getDate() < now.getDate()){
       console.log("Starting Record Data Migration");
@@ -52,8 +76,37 @@ class RecordService {
     The completion status is sent via a promise.
   */
   migrateData(){
+    return new Promise(async(resolve, reject) => {
+      db.query('select * from records')
+      .then(result => {
+        if(result.length === 0)
+          return reject("No Records Found"); 
+
+        let migrateQuery = "Insert into legacyRecords (cosID,empyID,location,date) values ";
+        for(let i = 0;i<result.length;i++){
+
+          migrateQuery+="("+result[i].cosID+","+result[i].empyID+","+result[i].location+",'"+Util.dateToMysqlDateTime(new Date(result[i].date))+"')";
+          if(i!==result.length-1){
+            migrateQuery+=","
+          }
+        }
+        return db.query(migrateQuery);
+      })
+      .then(res => {
+          return db.query('Delete from records where cosID > -1');
+      })
+      .then(_ => resolve(true))
+      .catch(_ => reject("err during data migration"))
+      .catch(_ => reject("err flushing data"))
+      .catch(err =>{
+        return reject(err);
+      });
+    });
+  }
+  
+  /*migrateData(){
     return new Promise(function (resolve, reject) {
-      db.query("Select * from records",(err,result) =>{
+      this.db.query("Select * from records",(err,result) =>{
         if(err){
           reject("mysql not connected");
           return;
@@ -64,20 +117,22 @@ class RecordService {
         let migrateQuery = "Insert into legacyRecords (cosID,empyID,location,date) values ";
         for(let i = 0;i<result.length;i++){
 
-          migrateQuery+="("+result[i].cosID+","+result[i].empyID+","+result[i].location+",'"+result[i].date+"')";
+          migrateQuery+="("+result[i].cosID+","+result[i].empyID+","+result[i].location+",'"+Util.dateToMysqlDateTime(new Date(result[i].date))+"')";
           if(i!==result.length-1){
             migrateQuery+=","
           }
         }
 
         //Performs the migration of the record data
-        db.query(migrateQuery,(err,result) => {
-          if(err)
+        this.db.query(migrateQuery,(err,result) => {
+          if(err){
+            error = 'err during data migration'
             return reject("err during data migration");
+          } 
         });
-
+      
         //Flushes the data out of the records table
-        db.query("Delete from records where cosID > -1",(err,result) =>{
+        this.db.query("Delete from records where cosID > -1",(err,result) =>{
           if(err)
             return reject("err during flushing records");
 
@@ -85,8 +140,9 @@ class RecordService {
         });
       });
     });
-  }
+  }*/
 }
+
 module.exports = RecordService;
 let recordsService = new RecordService();
 

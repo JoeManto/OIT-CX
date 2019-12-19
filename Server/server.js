@@ -156,17 +156,8 @@ app.post('/searchUser',async(req,res) => {
         res.send({customerID:data[0].id,otherData:data[0]})
     })
     .catch(err => {
-        console.log(err);
         res.send({res:'error',error: err});
-        
     });
-
-    /*
-    if(customer.error){
-        res.send({res:'error',error: customer.error});
-    }else{
-        res.send({customerID:customer.id,otherData:customer.getData()});
-    }*/
 });
 
 app.post('/addUser', (req, res) => {
