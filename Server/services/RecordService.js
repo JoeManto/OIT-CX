@@ -7,7 +7,7 @@ const config = require('../SecertConfig.js');
 */
 class RecordService {
   constructor(forceNextDay){
-    
+
     Object.assign(this, {startDate:new Date(),didMigrationTest:false});
     this.shouldForceNextDay = forceNextDay;
   }
@@ -17,11 +17,11 @@ class RecordService {
   This check determines if the records table needs to be emptied because of
   the start of a new day.
   */
- checkForDataMigration(){
+ async checkForDataMigration(){
     let now = new Date();
-    
+
     /*For Testing Midnight records migration*/
-    if(this.shouldForceNextDay && !this.didMigrationTest){ 
+    if(this.shouldForceNextDay && !this.didMigrationTest){
       now.setDate(this.startDate.getDate()+1);
       this.didMigration = true;
     }
@@ -30,7 +30,7 @@ class RecordService {
       console.log("Starting Record Data Migration");
 
       //Run the migration and return the completion status
-      return this.migrateData()
+      return await this.migrateData()
       .then(() => {
         Object.assign(this,{startDate:new Date()});
         return true;
@@ -55,7 +55,7 @@ class RecordService {
       db.query('select * from records')
       .then(result => {
         if(result.length === 0)
-          return reject("No Records Found"); 
+          return reject("No Records Found");
 
         let migrateQuery = "Insert into legacyRecords (cosID,empyID,location,date) values ";
         for(let i = 0;i<result.length;i++){
