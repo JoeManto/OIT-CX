@@ -37,13 +37,10 @@ class Customer extends User {
         super.bnid = bnid;
 
         let cache = await super.lookup()
-        .then(data => {return data})
-        .catch(err => {return err})
-
+        .catch(err => err);
+  
         if(cache.error){
-            const data = await this.create(bnid)
-            .then(data => {return data;})
-            .catch(err => {return err});
+            const data = await this.create(bnid);
 
             if(data.error){
                 return Promise.reject(data.error);
@@ -80,7 +77,7 @@ class Customer extends User {
         })
         .catch(err => {
             return err;
-        })
+        });
 
         //customer already exists in the db
         if(!customer.error){
@@ -102,14 +99,12 @@ class Customer extends User {
 
             let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
             return await db.query(insertSql,{conditions:[data.name, data.bnid, data.win]})
-            .then(_ => {return data})
-            .catch(_ => {
+            .then(() => data)
+            .catch(() => {
                 return {error:"Couldn't cache ${bnid} search"};
             });
         })
-        .catch(_ => {
-            return {error:_};
-        });
+        .catch(err => {return {error:err}});
     }
 }
 

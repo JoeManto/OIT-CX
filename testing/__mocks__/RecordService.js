@@ -1,7 +1,6 @@
 const db = require('../../Server/wrappers/MysqlWrapper');
 const Util = require('../../Util/Util');
 const config = require('../../Server/SecertConfig');
-var MockDate = require('mockdate');
 
 /**
   Manages all the active records in the data base.
@@ -25,11 +24,7 @@ class RecordService {
     if(this.shouldForceNextDay && !this.didMigrationTest){ 
       now.setDate(this.startDate.getDate()+1);
       this.didMigration = true;
-      //console.log("changed did Migration to "+ this.didMigration);
     }
-
-    //console.log("OLD Date = "+this.startDate.getDate() + " Now Date = " + now.getDate());
-    //console.log(now.toLocaleTimeString() + " " +now.toDateString());
 
     if(this.startDate.getDate() < now.getDate()){
       console.log("Starting Record Data Migration");
