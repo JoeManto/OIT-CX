@@ -31,7 +31,7 @@ class User {
         if (data.length === 0)
             return Promise.reject({ error: "no data found" });
 
-        return data;
+        return Promise.resolve(data);
     }
 
     isCustomer(){return this.type === "customer"};
