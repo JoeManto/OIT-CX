@@ -12,14 +12,14 @@ class Customer extends User {
     constructor(){
         super(undefined,'customer');
         this.win;
-        this.uid;
+        this.bnid;
         this.win;
     }
 
     getData(){
         return {
             name:this.name,
-            uid:this.uid,
+            bnid:this.bnid,
             win:this.win,
         }
     }
@@ -79,9 +79,9 @@ class Customer extends User {
         .catch(err => err);
 
         //customer already exists in the db
-        if(!customer instanceof Error){
-            return customer;
-        }
+        if(!(customer instanceof Error))
+          return customer;
+
 
         let searchResult = await ldapSearchClient.search(bnid);
 
@@ -102,26 +102,4 @@ class Customer extends User {
     }
 }
 
-        /*
-        return ldapSearchClient.search(bnid)
-        .then(async searchResult => {
-            console.log(bnid);
-            if(searchResult.data.length === 0)
-                return Promise.reject({error:"Couldn't Search For User ${bnid} | result length was 0"});
-
-            let data = {
-                name:searchResult.data[0].wmuFullName,
-                bnid:searchResult.data[0].uid,
-                win:searchResult.data[0].wmuBannerID,
-            }
-
-            let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
-            return await db.query(insertSql,{conditions:[data.name, data.bnid, data.win]})
-            .then(() => data)
-            .catch(() => {
-                return {error:"Couldn't cache ${bnid} search"};
-            });
-        })
-        .catch(err => {return {error:err}});
-        */
 module.exports = Customer;
