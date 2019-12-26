@@ -7,6 +7,9 @@ const flushTestCustomer= () => {
 const fetchTestCustomer = () => {
   return dbhandler.query("select * from customer where bnid = ?",{conditions:['jfj5666']});
 }
+const insertTestCustomer = () => {
+  dbhandler.query("insert into customer (name,bnid,win) values ('Joe-Manto-Tests','jfj5666',12343242)");
+}
 
 afterEach(flushTestCustomer);
 
@@ -19,7 +22,7 @@ describe('Customer Function [apply]', () => {
     it('Should apply/find customer data that is stored in the db', async() => {
 
       //insert test user
-      dbhandler.query("insert into customer (name,bnid,win) values ('Joe-Manto-Tests','jfj5666',12343242)");
+      insertTestCustomer();
       let customer = new Customer();
 
       let data = await customer.apply('jfj5666');
