@@ -4,6 +4,9 @@ const User = require('./User');
 
 /**
  * Customer class is an interface for pulling customer data;
+ *
+ *  Extentions:
+    - delete
  */
 class Customer extends User {
     constructor(){
@@ -28,29 +31,29 @@ class Customer extends User {
      * Searches cache for a returning customer and ldap for a new customer.
      * Users are cached in the database if found and new.
      *
-     * @Success Customer data is set and the customer data is returned
-     * @Failure Respect Error is returned
+     * @Success @returns {Promise} Customer data is set and the customer data is returned
+     * @Failure @returns {Promise} customer.error
      *
      * @param {String} bnid
      */
     async apply(bnid){
         super.bnid = bnid;
 
+        //Search customer in the db
         let cache = await super.lookup()
         .catch(err => err);
 
-        if(cache instanceof Error){
-            const data = await this.create(bnid)
-            .catch(err => err);
+        if(!cache instanceof Error)
+          return cache;
 
-            if(data instanceof Error){
-                return Promise.reject(data);
-            }
+        //Create new customer
+        const data = await this.create(bnid)
+        .catch(err => err);
 
-        }else{
-            return cache;
-        }
+        if(data instanceof Error)
+          return Promise.reject(data);
 
+        //search for newly created customer
         cache = await super.lookup(bnid);
 
         Object.assign(this,cache[0]);
@@ -85,8 +88,8 @@ class Customer extends User {
         if(searchResult instanceof Error)
           return Promise.reject(searchResult);
 
-        if(searchResult.length === 0)
-          return Promise.reject(new Error('Couldnt Search For User : searchResult length was 0'));
+        if(!searchResult.data || searchResult.data.length === 0)
+          return Promise.reject(Error('Couldnt Search For User : searchResult length was 0'));
 
           let data = {
               name:searchResult.data[0].wmuFullName,
@@ -96,6 +99,8 @@ class Customer extends User {
 
         let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
         return await db.query(insertSql,{conditions:[data.name, data.bnid, data.win]});
+    }
+}
 
         /*
         return ldapSearchClient.search(bnid)
@@ -119,7 +124,4 @@ class Customer extends User {
         })
         .catch(err => {return {error:err}});
         */
-    }
-}
-
 module.exports = Customer;
