@@ -63,7 +63,7 @@ or run these commands in a unix terminal. If on windows then use the Mysql Comma
 
 Notice that you will be prompted for a password. This is the password that was set when mysql was installed.
 
-`GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'password';`
+`ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';`
 
 ## Setting up MySQL Tables
 - A database will need to be created that is called `nodemysql`. This can be done with the following command in MySQL within a terminal: 
