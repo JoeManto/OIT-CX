@@ -82,7 +82,7 @@ a {
   height: 30px;
 }
 #checkin-input:hover{
-  background-color: #F3F3F3;
+  background-color: transparent;
 }
 
 #CheckIn-Button {
