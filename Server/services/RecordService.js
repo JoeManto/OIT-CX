@@ -8,7 +8,8 @@ const config = require('../SecertConfig.js');
 class RecordService {
   constructor(forceNextDay){
 
-    Object.assign(this, {startDate:new Date(),didMigrationTest:false});
+    
+    Object.assign(this, {startDate:new Date().getDate(),didMigrationTest:false});
     this.shouldForceNextDay = forceNextDay;
   }
 
@@ -18,26 +19,26 @@ class RecordService {
   the start of a new day.
   */
  async checkForDataMigration(){
-    let now = new Date();
+    let now = new Date().getDate();
 
     /*For Testing Midnight records migration*/
-    if(this.shouldForceNextDay && !this.didMigrationTest){
+    /*if(this.shouldForceNextDay && !this.didMigrationTest){
       now.setDate(this.startDate.getDate()+1);
       this.didMigration = true;
-    }
+    }*/
 
-    if(this.startDate.getDate() < now.getDate()){
+    if(this.startDate < now){
       console.log("Starting Record Data Migration");
 
       //Run the migration and return the completion status
       return await this.migrateData()
       .then(() => {
-        Object.assign(this,{startDate:new Date()});
+        Object.assign(this,{startDate:now});
         return true;
       })
       .catch(error => {
         console.log("[AUTO][Record WORKER] :"+error);
-        Object.assign(this,{startDate:new Date()});
+        Object.assign(this,{startDate:now});
         return false;
       });
     }else{
@@ -85,9 +86,9 @@ let recordsService = new RecordService();
 
 //listen for interval messages from the parent
 //This process message check handles calling all the functions in 'RecordService'
-process.on("message",function (m) {
+process.on("message", async function (m) {
     if(m === "CHECK") {
-        let statusString = recordsService.checkForDataMigration() ? "[Completed]":"[Not Ready]";
+        let statusString = await recordsService.checkForDataMigration() ? "[Completed]":"[Not Ready]";
         process.send("Checked date for data migration "+statusString);
     }else{
         process.send('UNKNOWN OPT');
