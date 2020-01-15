@@ -26,7 +26,7 @@ class User {
         let data;
         if(this.isCustomer()) data = await db.query("select * from customer where bnid = ?", { conditions: [id] });
 
-        if(this.isEmployee()) data = await db.query("select * from users where bnid = ?", { conditions: [id] });
+        if(this.isEmployee()) data = await db.query("select * from users where empybnid = ?", { conditions: [id] });
 
         if (data.length === 0)
             return Promise.reject(new Error('⚠️ No Records in the database'));
