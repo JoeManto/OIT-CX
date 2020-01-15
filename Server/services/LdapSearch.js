@@ -18,7 +18,7 @@ let client = new LdapClient({url: options.url,tlsOptions: options.tlsOptions});
 class LdapSearch {
 
     constructor(){
-        this.test = "works";
+
     }
 
     async bind() {

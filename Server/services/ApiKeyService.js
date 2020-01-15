@@ -98,7 +98,7 @@ class ApiKeyService {
     }
 
     /**
-     * A never ending search for expired key
+     * A never ending search for expired keys
      * The waits the exc thread every 20 seconds between each check.
      * @returns {Promise<void>}
      */
