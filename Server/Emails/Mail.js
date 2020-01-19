@@ -92,6 +92,22 @@ class Mail {
         this.sendMail(this.adminTransporter,groupID,'/shiftposting.html',replacements,"");
     }
 
+    /*
+    Replacements
+    _FirstName Joe
+    _PickedUpName
+    _FullName Joe Manto
+    _ShiftType Mobile
+    _ShiftDate Nov 13, 2019
+    _ShiftStartTime 5:00 PM
+    _ShiftEndTime 10:00 PM
+    _Message
+    _PostingDate       Nov 10th, 2019 5:49 PM
+*/
+    sendShiftPickedUpPosting(){
+
+    }
+
     sendMail(transport,groupID,htmlpath,replacements,text){
         this.readHTMLFile(__dirname + htmlpath, function(err, html) {
             //Error finding the email template.
