@@ -9,7 +9,7 @@ Javascript, HTML, CSS, MySQL, Bash
 ## Frameworks/Libraries
 We chose to use the React Library for this project that provide a great work flow as we can create and reuse highly abstract components. The decision to use React rather than some other MVC framework comes down to having more flexibility in our design choices, along with being able to integrate other Javascript libraries as we need: This keeps our project lightweight, and allows us to build in functionalities as we need them.
 
-We chose to use the Testing framework Jest as it provides everything we need all in one tool. Jest provides things like automation, mock objects, code coverage testing, and a great view of failed tests, so we know exactly where and how a test failed. 
+We chose to use the Testing framework Jest as it provides everything we need all in one tool. Jest provides things like automation, mock objects, code coverage testing, and a great view of failed tests, so we know exactly where and how a t failed. 
 
 ## Databases
 We have a MySQL database as a sub-service container in our root docker container which is hosted on a server in the Bernhard center. We chose to use a MySql database as this is a database that both teammates understand and will allow us to get a faster start. 

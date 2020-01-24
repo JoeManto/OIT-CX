@@ -16,7 +16,11 @@ class User {
      *
      * @param {Object} by: {String} what database column to look up by. value: {Any} the matching value in the database column
      */
-    async lookup({by,value}) {
+    async lookup({by,value} = undefined) {
+        if(!by){
+            value = this.bnid;
+            by = this.isCustomer() ? "bnid" : "empybnid";
+        }
 
         if(!this.type)
             return Promise.reject(new Error('❌User type is not set [required]'));
