@@ -5,8 +5,6 @@ const User = require('./User');
 class Employee extends User {
   constructor(){
     super(undefined,'employee');
-
-    this.data;
   }
 
   /**
@@ -19,7 +17,7 @@ class Employee extends User {
   */
   async apply(bnid){
     //Search for user in the database
-    const cache = await super.lookup()
+    const cache = await super.lookup({by:"empybnid",value:bnid})
     .catch(err => err);
 
     //User was not found in the database
