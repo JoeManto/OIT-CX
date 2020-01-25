@@ -25,7 +25,9 @@ class User {
         if(!this.type)
             return Promise.reject(new Error('❌User type is not set [required]'));
 
-        let data = await db.query("select * from customer where "+by+" = ?", { conditions: [value] });
+        let data; 
+        if(this.isCustomer()) data = await db.query("select * from customer where "+by+" = ?", { conditions: [value] });
+        if(this.isEmployee()) data = await db.query("select * from users where "+by+" = ?", { conditions: [value] });
 
         if (data.length === 0)
             return Promise.reject(new Error('⚠️ No Records in the database'));
