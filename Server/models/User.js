@@ -16,7 +16,7 @@ class User {
      *
      * @param {Object} by: {String} what database column to look up by. value: {Any} the matching value in the database column
      */
-    async lookup({by,value} = undefined) {
+    async lookup({by,value}) {
         if(!by){
             value = this.bnid;
             by = this.isCustomer() ? "bnid" : "empybnid";
