@@ -254,7 +254,7 @@ app.post('/postShift', (req, res) => {
                         shiftServiceChild.send('ADD ' + message);
                     });
                     //mailService.sendMail(shift,user,group);
-                    mailService.sendShiftPosting(shift,user,group);
+                    //mailService.sendShiftPosting(shift,user,group);
                     res.send({res: "success"});
                 }
             });
