@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const config = require('../SecertConfig.js');
+const Util = require('../../Util/Util');
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
@@ -95,7 +96,7 @@ class ShiftService {
     }
     
     /*
-      MigrateData shift records that are going to be remove and achive them to the legacy shift records table
+      MigrateData shift records that are going to be remove and archive them to the legacy shift records table
     */
     migrateShiftData(shifts){
       return new Promise(function (resolve,reject){
@@ -106,9 +107,13 @@ class ShiftService {
             sql += "Insert into legacyShifts (shiftID,coveredBy,postedBy,postedDate," +
               "availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values ";
           }
+          console.log("POSTED DATE: " + shifts[i].postedDate);
           //Javascript/mysql fuckery because dates get returned has date object instead of strings...
-          let date = new Date(shifts[i].postedDate.getTime() - (shifts[i].postedDate.getTimezoneOffset() * 60000)).toISOString();
-          date = date.slice(0, 19).replace('T', ' ');
+          //let date = new Date(shifts[i].postedDate.getTime() - (shifts[i].postedDate.getTimezoneOffset() * 60000)).toISOString();
+          //date = date.slice(0, 19).replace('T', ' ');
+          let date = Util.dateToMysqlDateTime(new Date(shifts[i].date));
+
+          console.log("NEW DATE:" + date);
 
           sql += "("+curShift.shiftID+","+curShift.coveredBy+","+curShift.postedBy+",'"
               +date+"',"+curShift.availability+","+curShift.positionID
@@ -121,8 +126,10 @@ class ShiftService {
         }
         db.query(sql,(err,result) => {
           if(err){
+            console.log(err);
             reject({error:"Error While Migrating Shift Data"});
           }else{
+            console.log("resolved");
             resolve({res:"Migration Success"});
           }
         });
