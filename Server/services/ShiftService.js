@@ -100,23 +100,14 @@ class ShiftService {
     */
     migrateShiftData(shifts){
       return new Promise(function (resolve,reject){
-        let sql = "";
+        let sql = "Insert into legacyShifts (shiftID,coveredBy,postedBy,postedDate," +
+        "availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values ";
+
         for(let i = 0;i<shifts.length;i++){
           let curShift = shifts[i];
-          if(i === 0){
-            sql += "Insert into legacyShifts (shiftID,coveredBy,postedBy,postedDate," +
-              "availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values ";
-          }
-          console.log("POSTED DATE: " + shifts[i].postedDate);
-          //Javascript/mysql fuckery because dates get returned has date object instead of strings...
-          //let date = new Date(shifts[i].postedDate.getTime() - (shifts[i].postedDate.getTimezoneOffset() * 60000)).toISOString();
-          //date = date.slice(0, 19).replace('T', ' ');
-          let date = Util.dateToMysqlDateTime(new Date(shifts[i].date));
-
-          console.log("NEW DATE:" + date);
 
           sql += "("+curShift.shiftID+","+curShift.coveredBy+","+curShift.postedBy+",'"
-              +date+"',"+curShift.availability+","+curShift.positionID
+              +curShift.postedDate.toISOString().slice(0, 19).replace('T', ' ')+"',"+curShift.availability+","+curShift.positionID
               +","+curShift.groupID+","+curShift.perm+",'"+curShift.message+"',"+curShift.shiftDateEnd
               +","+curShift.shiftDateStart+")";
 
@@ -124,6 +115,7 @@ class ShiftService {
             sql+=","
           }
         }
+
         db.query(sql,(err,result) => {
           if(err){
             console.log(err);
@@ -166,6 +158,8 @@ class ShiftService {
         this.pruneOpenShifts();
     }
 }
+
+module.exports = ShiftService;
 
 let service = new ShiftService();
 
