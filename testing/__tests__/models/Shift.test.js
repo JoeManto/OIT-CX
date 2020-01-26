@@ -24,22 +24,51 @@ const testShiftData = () =>{
     }
 }
 
-
-/*describe('Shift Create Function', () => {
-    test('Should create a shift',async() =>{
+describe('Shift Delete Function', () => {
+    it('Should delete the current shift', async() => {
 
         let shift = new Shift();
-        let id = await shift.create(testShiftData());
 
-        result = await dbhandler.query('select * from shifts where shiftID = ?',{conditions:[id]});
+        await shift.create(testShiftData());
 
-        expect(result.length === 1).toBeTruthy();
+        let shiftId = shift.shiftData.shiftID;
+
+        shift.delete();
+
+        let resolves = await Promise.all([
+            dbhandler.query('select * from shifts where shiftID = ?',{conditions:[shiftId]}),
+            dbhandler.query('select * from legacyshifts where shiftID = ?',{conditions:[shiftId]}),
+        ]);
+        
+        resolves = resolves.map(obj => obj.length);
+
+        expect(resolves).toEqual([0,0]);
+        expect(shift.rawData).toBe(undefined);
+        expect(shift.shiftData).toBe(undefined);
     });
-});*/
 
+    it('Should migrate the deleted shift', async() => {
+        let shift = new Shift();
+
+        await shift.create(testShiftData());
+
+        let shiftId = shift.shiftData.shiftID;
+
+        shift.delete({migrate:true});
+
+        let resolves = await Promise.all([
+            dbhandler.query('select * from shifts where shiftID = ?',{conditions:[shiftId]}),
+            dbhandler.query('select * from legacyshifts where shiftID = ?',{conditions:[shiftId]}),
+        ]);
+
+        resolves = resolves.map(obj => obj.length);
+
+        expect(resolves).toEqual([0,1]);
+    });
+});
 
 describe('Shift Apply Function', () => {
-    test.only('Should retrieve a shift from DB by shiftID and set it as current shift', async() =>{
+    it('Should retrieve a shift from DB by shiftID and set it as current shift', async() =>{
         let shift = new Shift();
 
         let dbResult = await dbhandler.query('select max(shiftID) from shifts');
@@ -54,7 +83,7 @@ describe('Shift Apply Function', () => {
 
         await shift.apply(id);
         expect(shift.rawData).not.toBe(undefined);
+        expect(shift.shiftData).not.toBe(undefined);
     });
-
 });
 

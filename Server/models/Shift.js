@@ -2,16 +2,7 @@ const db = require('../wrappers/MysqlWrapper');
 const Employee = require('../models/Employee');
 const User = require('../models/User');
 
-/*
- Shift Abstraction
- -  Find Shifts from id
- -
-*/
-
 class Shift {
-    constructor(){
-       
-    }
 
     /*
         Retrieves a shift in the database by shiftID
@@ -60,22 +51,60 @@ class Shift {
     }
 
     /**
+     * Deletes the current shift present in the class instance
+     * Pass in the option migrate to migrate the shift data.
      * 
-     * @param {*} param0 
+     * Note: shiftData is set to undefined after
+     * 
+     * @param {Object} options | Migrate should shift be migrated into legacyshifts after deletion. 
      */
+    delete(options){
+        if(!this.shiftData) {
+           return new Error('Deletion aborted no shift selected');
+        }
 
-     /**
-        shiftID: INT,
-        coveredBy: INT ID NULLABLE,
-        postedBy: INT ID,
-        postedDate: DATE,
-        availability: INT,
-        positionID: INT,
-        groupID: INT,
-        perm: INT,
-        message: {String},
-        shiftDateEnd: DATE,
-        shiftDateStart: DATE,
+        db.query('delete from shifts where shiftID = ?',{conditions:[this.shiftData.shiftID]})
+        .catch(err => {
+            console.log("[Shift] Error shift deletion for ID "+this.shiftData.shiftID);
+            console.log(err);
+            return;
+        });
+
+        if(options && options.migrate){
+
+            let {shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart} = this.rawData;
+
+            db.query('insert into legacyshifts (shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values (?,?,?,?,?,?,?,?,?,?,?)',
+            {conditions:[
+                shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart, 
+            ]})
+            .catch(err => {
+                console.log("[Shift] Error shift migrating");
+                console.log(err);
+                return;
+            });
+        }
+
+        this.shiftData = undefined;
+        this.rawData = undefined;
+    }
+
+    /**
+     * 
+     * Creates a new shift that is inserted into the database
+     * and sets the shift data in the class instance
+     * 
+     * @param {Int} shiftID 
+     * @param {Int | null} coveredBy
+     * @param {Int} postedBy
+     * @param {Date} postedDate
+     * @param {Int} availability
+     * @param {Int} positionID 
+     * @param {Int} groupID
+     * @param {Int} perm
+     * @param {String} message
+     * @param {Date} shiftDateEnd
+     * @param {Date} shiftDateStart
      */
     async create({coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart}){
         
@@ -85,7 +114,11 @@ class Shift {
         await db.query('insert into shifts (coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values (?,?,?,?,?,?,?,?,?,?)',{conditions:[
             coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,end,start,
         ]})
-        .catch(err => console.log("Error inserting new shift \n" + err));
+        .catch(err => {
+            console.log("[Shift] Error inserting new shift");
+            console.log(err);
+            return;
+        });
 
         let dbResult = await db.query('select max(shiftID) from shifts');
 
