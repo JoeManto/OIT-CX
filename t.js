@@ -31,7 +31,7 @@
    */
    addTestCases(testCase,subroutine = 'default'){
      if(process.env.DEV_STATE !== "1"){
-       console.log("Unable to add test case: DEV_STATE is not set to the testing state");
+       console.log("Unable to add t case: DEV_STATE is not set to the testing state");
        return;
      }
      //if the testcase is missing return
@@ -52,7 +52,7 @@
      //subroutine was not found
      }else{
         let testCases;
-        //if there are more than one test case
+        //if there are more than one t case
         if(testCase === 'object')
           testCases = testCase;
         else
@@ -119,7 +119,7 @@
             output = this.classPointer[this.functionPointer](this.inputs[i]);
          }
        }catch(error){
-         //set error and print then exit this input test
+         //set error and print then exit this input t
          result = {status:false,error:error}
          this.printTestResult(result,this.inputs[i]);
          continue;
@@ -132,7 +132,7 @@
 
        /*if expectedResult is of type object
          each mapped value will be compared to the same mapped output
-         if all keys have the same value then the test is correct.*/
+         if all keys have the same value then the t is correct.*/
        }else if(typeof this.expectedResult[i] === 'object'){
           let keys = Object.keys(this.expectedResult[i]);
           result = {status:true,output:output};
@@ -147,7 +147,7 @@
           result = {status:output === this.expectedResult[i],output:output};
        }
 
-       //print the result of the test case [correct,wrong,error]
+       //print the result of the t case [correct,wrong,error]
        this.printTestResult(result,this.inputs[i]);
      }
    }
@@ -190,7 +190,7 @@
  module.exports = TestCase;
 
 
-// * ------------------ Example of how to perfom a unit test --------------------
+// * ------------------ Example of how to perfom a unit t --------------------
 /*
  class Example {
    testFunction1(arr){
@@ -216,10 +216,10 @@
 
 let example = new Example();
 let test1 = new TestCase(example,"testFunction1",[[1,2,3,4,5,6],[1,3,5,6]],[true,false]);
-let test2 = new TestCase(example,"testFunction2",["hello%joe","what%%test"],(input,output) => {return true});
+let test2 = new TestCase(example,"testFunction2",["hello%joe","what%%t"],(input,output) => {return true});
 let test3 = new TestCase(example,"testFunction3",[{name:"hi",number:5}],[{name:"hi",number:5}]);
 */
-let test = new Tests();
+let t = new Tests();
 
 let apiKeyServiceTestCases = [];
 
@@ -232,6 +232,6 @@ apiKeyServiceTestCases.push(new TestCase(api_service,'createKeyForUser',[["jfj56
 apiKeyServiceTestCases.push(new TestCase(api_service,'expireOpenKeyForUser',['jfj5666','mmm5666','notfoundowner'],
 (input,output)=>{return api_service.apiKeyExpireTest(input,output)},1));
 
-test.addTestCases(apiKeyServiceTestCases,'api');
+t.addTestCases(apiKeyServiceTestCases,'api');
 
-test.runTestsForAllSubroutines();
+t.runTestsForAllSubroutines();

@@ -607,15 +607,13 @@ The following guidelines and standards below will explain how, when, and where S
 * **React Test Render**
 ## Unit Testing
 
-Unit Tests need to be conducted for every finish Non-Static Html React component and every function should ideally should have a Jest test associated to it.
+Unit Tests need to be conducted for every finish Non-Static Html React component and every function should ideally should have a Jest t associated to it.
 
 #### Unit Testing with Jest
 -   All tests need to be in the directory named `__tests__`
     This folder name will allow jest to automatically find unit tests.
-    Alternately, tests can have the file extension prefix `.test.js` which will also allow jest to spot tests. 
--   Example Jest test file name would be the following `spiketest1.test.js`
-
-- The testing file should have the same file name prefix as the file that is being tested
+    Alternately, tests can have the file extension prefix `.t.jshich will also allow jest to spot tests. 
+-   Example Jest t file name would be the following `spiketest1.t.js- The testing file should have the same file name prefix as the file that is being tested
 - The testing file should not contain tests that are from unrelated files
 
 #### Defining a Suite
@@ -633,11 +631,11 @@ A suite in Jest is simply a category name for all the tests in that suite and is
 ```
 
 #### Defining a Test
-A test in Jest can be denoted by `it` or `test`. Jest tests can be done by using an expect combined with a matcher. Jest provides a whole list of matchers that test general logic conditions all the way up to DOM lookups. These Jest Assertions can be done by using the `expect()` with the element or value that are going to match.
+A t in Jest can be denoted by `it` or `t`. Jest tests can be done by using an expect combined with a matcher. Jest provides a whole list of matchers that t general logic conditions all the way up to DOM lookups. These Jest Assertions can be done by using the `expect()` with the element or value that are going to match.
 then 
 
 * The it keyword should be used
-* The test name should start with "Should ..." as it provides a nice way of making sure unit test descriptions are easy to understand.
+* The t name should start with "Should ..." as it provides a nice way of making sure unit t descriptions are easy to understand.
 
 **Example Test with Jest**
 ```javascript
@@ -664,7 +662,7 @@ The Jest unit tests can be ran using the command `jest`. Jest then takes a path 
 
 To run the unit tests for the frontend you run 
 
-    npm test
+    npm t
 
 this will run all the tests in the `src` directory, which holds all the react components.  
 
@@ -673,8 +671,7 @@ this will run all the tests in the `src` directory, which holds all the react co
 
     `jest` (in the root directory)
 
-- This will search through the entire directory of the project and find any file with the extension `.test.js`.
-The output will show the number of tests that were found and ran along with the number of them that passed.
+- This will search through the entire directory of the project and find any file with the extension `.t.jsThe output will show the number of tests that were found and ran along with the number of them that passed.
 
 - Snapshots can also be created for components using Jest (more on this later). All snapshots will also be ran using the `jest` command. 
 
@@ -682,12 +679,12 @@ The output will show the number of tests that were found and ran along with the 
 
 ## Coverage Testing
 - We use jest to automatically generate coverage reports using the following command:</br>
-`npm test -- --coverage`
+`npm t -- --coverage`
 ```
 Test Suites: 2 passed, 2 total
 Tests:       2 passed, 2 total
- PASS  src/__tests__/JestSpike1.test..js
- PASS  src/__tests__/App.test.js
+ PASS  src/__tests__/JestSpike1.t..js
+ PASS  src/__tests__/App.t
 ----------|----------|----------|----------|----------|-------------------|
 File      |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
 ----------|----------|----------|----------|----------|-------------------|

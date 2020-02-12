@@ -11,6 +11,7 @@ const User = require('./User');
 class Customer extends User {
     constructor(){
         super(undefined,'customer');
+        this.id;
         this.win;
         this.bnid;
         this.win;
@@ -18,6 +19,7 @@ class Customer extends User {
 
     getData(){
         return {
+            id:this.id,
             name:this.name,
             bnid:this.bnid,
             win:this.win,
@@ -25,7 +27,6 @@ class Customer extends User {
     }
 
     /**
-     * Todo: Unit Tests
      * !todo: Added support for searching from win
      *
      * Searches cache for a returning customer and ldap for a new customer.
@@ -37,13 +38,12 @@ class Customer extends User {
      * @param {String} bnid
      */
     async apply(bnid){
-        super.bnid = bnid;
 
         //Search customer in the db
-        let cache = await super.lookup()
+        let cache = await super.lookup({by:"bnid",value:bnid})
         .catch(err => err);
 
-        if(!cache instanceof Error)
+        if(!(cache instanceof Error))
           return cache;
 
         //Create new customer
@@ -54,7 +54,7 @@ class Customer extends User {
           return Promise.reject(data);
 
         //search for newly created customer
-        cache = await super.lookup(bnid);
+        cache = await super.lookup({by:"bnid",value:bnid});
 
         Object.assign(this,cache[0]);
 
@@ -75,7 +75,7 @@ class Customer extends User {
      async create(bnid){
 
         //check to see if the user is already in the db
-        let customer = await super.lookup(bnid)
+        let customer = await super.lookup({by:"bnid",value:bnid})
         .catch(err => err);
 
         //customer already exists in the db
@@ -89,13 +89,13 @@ class Customer extends User {
           return Promise.reject(searchResult);
 
         if(!searchResult.data || searchResult.data.length === 0)
-          return Promise.reject(Error('Couldnt Search For User : searchResult length was 0'));
+          return Promise.reject(new Error('Couldnt Search For User : searchResult length was 0'));
 
           let data = {
               name:searchResult.data[0].wmuFullName,
               bnid:searchResult.data[0].uid,
               win:searchResult.data[0].wmuBannerID,
-          }
+          };
 
         let insertSql = "Insert into customer (name,bnid,win) values (?,?,?)";
         return await db.query(insertSql,{conditions:[data.name, data.bnid, data.win]});

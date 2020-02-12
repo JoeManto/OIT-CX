@@ -12,21 +12,22 @@ class User {
 
     /**
      * Looks for a user in the db
-     * !todo add support for win
      * todo: unit tests
      *
-     * @param {String} bnid
+     * @param {Object} by: {String} what database column to look up by. value: {Any} the matching value in the database column
      */
-    async lookup(bnid) {
-        let id = (bnid) ? bnid : this.bnid;
+    async lookup({by,value}) {
+        if(!by){
+            value = this.bnid;
+            by = this.isCustomer() ? "bnid" : "empybnid";
+        }
 
         if(!this.type)
-            return Promise.reject(new Error('❌User type is not set * required'));
+            return Promise.reject(new Error('❌User type is not set [required]'));
 
-        let data;
-        if(this.isCustomer()) data = await db.query("select * from customer where bnid = ?", { conditions: [id] });
-
-        if(this.isEmployee()) data = await db.query("select * from users where bnid = ?", { conditions: [id] });
+        let data; 
+        if(this.isCustomer()) data = await db.query("select * from customer where "+by+" = ?", { conditions: [value] });
+        if(this.isEmployee()) data = await db.query("select * from users where "+by+" = ?", { conditions: [value] });
 
         if (data.length === 0)
             return Promise.reject(new Error('⚠️ No Records in the database'));
