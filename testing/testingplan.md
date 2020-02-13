@@ -2,17 +2,17 @@
 #### Jared Teller and Joe Manto - 12/7/2019
 
 # Introduction
-For our project we decided to use Jest and the React Testing Library to perform our unit and system tests. We are planning on spiking the Enzyme testing utility to understand how we can t various parts of the DOM in our project. 
+For our project we decided to use Jest and the React Testing Library to perform our unit and system tests. We are planning on spiking the Enzyme testing utility to understand how we can test various parts of the DOM in our project. 
 
 - **Jest**
-is a JavaScript t runner that lets you access the DOM via jsdom. While jsdom is only an approximation of how the browser works, it is often good enough for testing React components. Jest provides a great iteration speed combined with powerful features like mocking modules and timers so you can have more control over how the code executes.
+is a JavaScript test runner that lets you access the DOM via jsdom. While jsdom is only an approximation of how the browser works, it is often good enough for testing React components. Jest provides a great iteration speed combined with powerful features like mocking modules and timers so you can have more control over how the code executes.
 
 - **React Testing Library**
-is a set of helpers that let you t React components without relying on their implementation details. This approach makes refactoring a breeze and also nudges you towards best practices for accessibility. Although it doesn’t provide a way to “shallowly” render a component without its children, a t runner like Jest lets you do this by mocking.
+is a set of helpers that let you test React components without relying on their implementation details. This approach makes refactoring a breeze and also nudges you towards best practices for accessibility. Although it doesn’t provide a way to “shallowly” render a component without its children, a test runner like Jest lets you do this by mocking.
 
-- **Enzyme** is a JavaScript Testing utility for React that makes it easier to t your React Components' output. You can also manipulate, traverse, and in some ways simulate runtime given the output.
+- **Enzyme** is a JavaScript Testing utility for React that makes it easier to test your React Components' output. You can also manipulate, traverse, and in some ways simulate runtime given the output.
 
-- Each type of t will reference the stories appendix below
+- Each type of test will reference the stories appendix below
 
 # Unit Tests
 
@@ -28,7 +28,7 @@ is a set of helpers that let you t React components without relying on their imp
 #### Automation
 
 - The tests will be fully automated inside of Jest.
-- The tests will be executed by running a t script that is embedded in our projects
+- The tests will be executed by running a test script that is embedded in our projects
 
 #### When to Unit Test
 - Unit tests are ran before any code can be merged from the testing branch to the master branch.
@@ -41,14 +41,14 @@ is a set of helpers that let you t React components without relying on their imp
 
 # System Tests
 
-- Our system tests is the running of all unit tests. Our unit-tests will t the proper flow and state throughout our React components. 
+- Our system tests is the running of all unit tests. Our unit-tests will test the proper flow and state throughout our React components. 
 
 #### Automation
 - The tests will be fully automated inside of Jest.
-- The tests will be executed by running a t script that is embedded in our projects
+- The tests will be executed by running a test script that is embedded in our projects
 
 #### When to System Test
-- A system t will be ran before any merges are made for the Git Master branch
+- A system test will be ran before any merges are made for the Git Master branch
 
 #### Stories to be System Tested
 - All stories
@@ -81,9 +81,9 @@ is a set of helpers that let you t React components without relying on their imp
 # Usability
 
 #### Extensiveness
-- The coverage the usability t will cover the whole web app
+- The coverage the usability test will cover the whole web app
 #### When to Usability Test
-- These usability t will be done by the client and by student employee on a 2 week basis
+- These usability test will be done by the client and by student employee on a 2 week basis
 
 #### Expected Results
 - The expected results are that the client finds improvements that will make the site more useable.
@@ -106,7 +106,7 @@ is a set of helpers that let you t React components without relying on their imp
 #### When to Compliance Test
 - Compliance Testing will be ran at major milestone points in the project
 #### Expected Results
-- The expected results are that our project doesn't receive any warnings from the tools
+- The expected results are that our project doesn'test receive any warnings from the tools
 #### Stories to be Compliance Tested
 - All stories
 
@@ -133,14 +133,14 @@ is a set of helpers that let you t React components without relying on their imp
 - Jest
 #### Automation
 - The coverage tests are automatically tracked by Jest
-- Use the command `npm t -- --coverage`
-- We will be able to generate coverage report after every system t
+- Use the command `npm test -- --coverage`
+- We will be able to generate coverage report after every system test
 #### When to Coverage Test
-- These will be not ran but viewed after every system t on the project
+- These will be not ran but viewed after every system test on the project
 
 #### Expected Results
 - The expected results are to have close to 90% of the code tested
- the other 10% of code that isn't tested will be code that doesn't
+ the other 10% of code that isn'test tested will be code that doesn'test
  need tests such as static rendering components
 #### Stories to be Coverage Tested
 - All Stories
@@ -156,7 +156,7 @@ such as our Mysql database...
 - Enzyme
 #### Automation
 - The tests will be fully automated inside of Jest.
-- The tests will be executed by running a t script that is embedded in our projects
+- The tests will be executed by running a test script that is embedded in our projects
 
 #### When to Integration Test
 - Integration Tests will be ran when changes are made to the code that interacts with our external actors.
@@ -174,7 +174,7 @@ These tests will also be ran before any code is merged to the master branch (jus
 - We will be black box testing all major testing areas of the project (Unit, System, Acceptance, Integration, Usability, etc.). We will have the client do some of the black box testing as they will know what to expect, but not exactly what is going on behind the scenes (in code). 
 
 #### When to Black Box Test
-- We will be continuously black box testing throughout the projects development making use of the client. This will be done using t versions that have not yet gone live.
+- We will be continuously black box testing throughout the projects development making use of the client. This will be done using test versions that have not yet gone live.
 
 #### Expected Results
 - Find random occurrences of bugs and other issues by getting new perspectives and use cases from this testing.
@@ -187,9 +187,9 @@ These tests will also be ran before any code is merged to the master branch (jus
 # Acceptance Tests
 
 #### Extensiveness
-- The client will t all stories and make sure they are up to their expected standards.
+- The client will test all stories and make sure they are up to their expected standards.
 #### When to Acceptance Test
-- We will have the client acceptance t before go-live on the project.
+- We will have the client acceptance test before go-live on the project.
 #### Expected Results
 - The client should be satisfied that all stories are working and performing as expected.
 #### Stories to be Acceptance Tested
@@ -209,7 +209,7 @@ These tests will also be ran before any code is merged to the master branch (jus
 
         - The password change field should validate a new password. 
 
-        - Validating the smtp password should be conducted by sending a t email. 
+        - Validating the smtp password should be conducted by sending a test email. 
 
     - The settings page should have a setting to change the build’s environment variables. 
 
