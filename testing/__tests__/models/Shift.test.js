@@ -87,7 +87,45 @@ describe('Shift Apply Function', () => {
     });
 });
 
-/*describe('Shift Create Function', () => {
-    it('Should create')
-});*/
+describe('Shift assignTo Function',() => {
+
+    it.only('Should be able to assign a user a shift', async () => {
+
+        let shift = new Shift();
+
+        await shift.create(testShiftData());
+
+        await shift.assignTo('jfj5666');
+
+        expect(shift.shiftData.coveredBy).not.toBe(undefined);
+
+        let res = await dbhandler.query('select * from shifts where shiftID = ?',{conditions:[shift.id]});
+
+        expect(res[0].coveredBy).not.toBe(null);
+        expect(res[0].availability).not.toEqual(1);
+
+    });
+
+    it('Should should fail to assign a unknown user a shift', async () => {
+        let shift = new Shift();
+
+        await shift.create(testShiftData());
+
+        await shift.assignTo('non-existent-bnid');
+
+        expect(shift.shiftData.coveredBy).toBe(undefined);
+    });
+
+    it('Should return an error when a shift is unknown', async ()=>{
+        let shift = new Shift();
+
+        //shift object is empty
+
+        let err = await shift.assignTo('jfj5666');
+
+        expect(err instanceof Error).toBeTruthy();
+    });
+
+});
+
 

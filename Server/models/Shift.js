@@ -2,6 +2,15 @@ const db = require('../wrappers/MysqlWrapper');
 const Employee = require('../models/Employee');
 const User = require('../models/User');
 
+/*
+    Interface for handling shift related database actions    
+
+    rawData: The raw sql return record 
+    shiftData: This is a structured and updated object.
+    id: short for shiftData.shiftID
+    
+    !note rawData is not updated after changes
+*/
 class Shift {
 
     /*
@@ -48,6 +57,8 @@ class Shift {
             let coveredBy = new User(undefined,'employee').lookup({by:'id',value:sqlResult.coveredBy})
             this.shiftData.coveredBy = coveredBy;
         }
+
+        this.id = this.shiftData.shiftID;
     }
 
     /**
@@ -129,6 +140,27 @@ class Shift {
         return id;
     }
 
+    /**
+     * Updates the current shift and database to a user assignment of a shift 
+     * 
+     * @param {String} user The bnid of the user that is being assigned the current shift
+     */
+    async assignTo(user){
+        if(!this.shiftData) return new Error("Can't assign shift: shift doesn't exist");
+
+        //validate user exists and get ID
+        let userObj = await db.query('select id from users where empybnid = ?',{conditions:[user]});
+
+        if(userObj.length === 0){
+            console.log('user '+user+' was not found');
+            return;
+        }
+
+        //update
+        db.query('Update shifts set coveredBy = ?, availability = ? where shiftId = ?',{conditions:[userObj[0].id,0,this.shiftData.shiftID]});
+        this.shiftData.availability = 0;
+        this.shiftData.coveredBy = userObj[0];
+    }
 }
 
 module.exports = Shift;
