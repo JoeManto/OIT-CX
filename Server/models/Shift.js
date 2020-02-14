@@ -145,11 +145,11 @@ class Shift {
      * 
      * @param {String} user The bnid of the user that is being assigned the current shift
      */
-    async assignTo(user){
+    async assignTo(user, options){
         if(!this.shiftData) return new Error("Can't assign shift: shift doesn't exist");
 
         //validate user exists and get ID
-        let userObj = await db.query('select id from users where empybnid = ?',{conditions:[user]});
+        let userObj = await db.query('select * from users where empybnid = ?',{conditions:[user]});
 
         if(userObj.length === 0){
             console.log('user '+user+' was not found');
@@ -160,6 +160,12 @@ class Shift {
         db.query('Update shifts set coveredBy = ?, availability = ? where shiftId = ?',{conditions:[userObj[0].id,0,this.shiftData.shiftID]});
         this.shiftData.availability = 0;
         this.shiftData.coveredBy = userObj[0];
+
+        if(!options) return;
+
+        if(options.notify){
+
+        }
     }
 }
 
