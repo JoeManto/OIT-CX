@@ -45,4 +45,18 @@ describe('getEmailGroup Function', () => {
         
         expect(resolves[0] === resolves[1][0].emailList).toBeTruthy();
     });
+
+    it('Should gather group email for labs employee', async () => {
+    	await insertTestEmployee({role:0,group:1});
+
+		let employee = new Employee()
+		await employee.apply('test-bnid');
+
+		let resolves = await Promise.all([
+			employee.getEmailGroup(),
+			dbhandler.query('select * from grouproles where groupID = 1'),
+		]);
+
+		expect(resolves[0] === resolves[1][0].emailList).toBeTruthy();
+    });
 });
