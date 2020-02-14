@@ -35,6 +35,15 @@ class User {
         return Promise.resolve(data);
     }
 
+    delete(){
+        if(!this.bnid) return Promise.reject(new Error("User Delete Error: User is not selected"));
+        
+        if(this.isEmployee())
+            db.query('delete from users where empybnid = ?',{conditions:[this.bnid]});
+        else
+            db.query('delete from customer where bnid = ?',{conditions:[this.bnid]});
+    }
+
     isCustomer(){return this.type === "customer"};
     isEmployee(){return this.type === "employee"};
 }
