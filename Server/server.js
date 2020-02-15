@@ -9,8 +9,9 @@ const ldapWrapper = require('./wrappers/LdapWrapper');
 const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
-const Mail = require('./emails/Mail');
+const Mail = require('./emails/MailNew');
 const Customer = require('./models/Customer');
+const Shift = require('./models/Shift');
 
 //child processes
 const cp = require('child_process');
@@ -246,13 +247,20 @@ app.post('/postShift', (req, res) => {
                     console.log(err);
                     res.send({res: "shiftpost-error"});
                 } else {
-                    db.query("select shiftDateEnd,shiftID from shifts where shiftID = (Select MAX(shiftID) from shifts)", (err, result) => {
+                    db.query("select shiftDateEnd,shiftID from shifts where shiftID = (Select MAX(shiftID) from shifts)", async(err, result) => {
                         if (err) {
                             console.log(err);
                         }
                         let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
                         shiftServiceChild.send('ADD ' + message);
+
+                        let shiftID = result[0]['shiftID'];
+                        let shiftToPost = new Shift();
+                        await shiftToPost.apply(shiftID);
+
+                        mailService.sendShiftPosting(shiftToPost);
                     });
+
                     //mailService.sendMail(shift,user,group);
                     //mailService.sendShiftPosting(shift,user,group);
                     res.send({res: "success"});

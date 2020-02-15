@@ -26,7 +26,7 @@ class Shift {
 
         this.shiftID = shiftID;
 
-        this.build(result[0]);
+        await this.build(result[0]);
 
         return result[0];
     }
@@ -38,7 +38,7 @@ class Shift {
         @return {Object} structuredShiftObject 
         @param {Object} shiftData the raw sql return object
     */
-    build(sqlResult){
+    async build(sqlResult){
 
         this.rawData = sqlResult;
 
@@ -57,6 +57,9 @@ class Shift {
             let coveredBy = new User(undefined,'employee').lookup({by:'id',value:sqlResult.coveredBy})
             this.shiftData.coveredBy = coveredBy;
         }
+
+        let posName = await db.query('select posName from positions where id = ?',{conditions:[sqlResult.positionID]}); 
+        this.shiftData.posName = posName[0].posName;
 
         this.id = this.shiftData.shiftID;
     }
