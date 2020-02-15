@@ -42,8 +42,6 @@ class Employee extends User {
 
     if(!this.data) return new Error('getEmail error: No Employee Selected');
 
-    console.log(this.data.empybnid);
-
     let cache = await db.query('select * from users where empybnid = ?',{conditions:[this.data.empybnid]});
     
     if(cache.length > 0 && cache[0].email !== null){

@@ -3,6 +3,7 @@ const handlebars = require('handlebars');
 const fs = require('fs');
 const db = require('../wrappers/MysqlWrapper');
 const config = require('../SecertConfig.js');
+const Employee = require('../models/Employee');
 
 /*
     *sendCoveredShift
@@ -41,20 +42,74 @@ class Mail {
     };
 
     async sendCoveredShift(shift){
-        
+		
+		let coveredByEmployee = new Employee();
+		let coveredByData = await shift.shiftData.coveredBy;
+		await coveredByEmployee.apply(coveredByData[0].empybnid);
+		
+
+		let postedByEmployee = new Employee();
+		let postedByData = await shift.shiftData.postedBy;
+		await postedByEmployee.apply(postedByData[0].empybnid);
+
+        //first email | email to the employee who picked up the shift
+		let replacements1 = {
+			_FirstName: coveredByEmployee.data.empyname,
+			_FullName:  postedByEmployee.data.empyname + ' ' + postedByEmployee.data.surname,
+			_ShiftType: shift.shiftData.posName,
+			_ShiftDate: this.formatLocaleDate(shift.shiftData.shiftDateStart),
+			_ShiftStartTime: this.formatLocaleTime(shift.shiftData.shiftDateStart),
+			_ShiftEndTime: this.formatLocaleTime(shift.shiftData.shiftDateEnd),
+			_Message: shift.shiftData.message,
+			_PostingDate: this.formatLocaleDate(),
+			_CoveredDefaultMessage: 'This is a confirmation email for the shift that you picked up. (see shift details below)',
+		};
+		
+		//second email | email to the employee that posted the shift
+
+		let replacements2 = {
+			_FirstName: postedByEmployee.data.empyname,
+			_FullName:  postedByEmployee.data.empyname + ' ' + postedByEmployee.data.surname,
+			_ShiftType: shift.shiftData.posName,
+			_ShiftDate: this.formatLocaleDate(shift.shiftData.shiftDateStart),
+			_ShiftStartTime: this.formatLocaleTime(shift.shiftData.shiftDateStart),
+			_ShiftEndTime: this.formatLocaleTime(shift.shiftData.shiftDateEnd),
+			_Message: shift.shiftData.message,
+			_PostingDate: this.formatLocaleDate(),
+			_CoveredDefaultMessage: 'Your shift was picked up by ' + coveredByEmployee.data.empyname + '!',
+		};
+
+
+		let mailOptions1 = {
+            from: '"oit-shifts" <oit_shifts@wmich.edu>',
+            to : await coveredByEmployee.getEmail(),
+            subject : 'Shift Posting',
+        }
+
+
+		console.log("sending mail to :"+ mailOptions1.to+":");
+		
+		this.send(this.adminTransporter,mailOptions1,'/shiftcovering.html',replacements1);
+
+		let extraTransporter = nodemailer.createTransport(config.transporter_config());
+
+
+		let mailOptions2 = {
+            from: '"oit-shifts" <oit_shifts@wmich.edu>',
+            to : await postedByEmployee.getEmail(),
+            subject : 'Shift Posting',
+        }
+		
+		mailOptions2.to = await postedByEmployee.getEmail();
+
+		console.log("sending mail to :"+ mailOptions2.to+":");
+
+        this.send(extraTransporter,mailOptions2,'/shiftcovering.html',replacements2);
+    
     }
 
-
-
-
-
-
-
-
-
-
 /*
-        {
+       shiftData: {
             shiftID: 276,
             coveredBy: null,
             postedBy:
@@ -87,6 +142,9 @@ class Mail {
         let group = await db.query('select * from grouproles where groupID = ?',{conditions:[postedBy[0].groupRole]});
         let emailList = group[0].emailList;
 
+        //remove this
+        emailList = 'joe.m.manto@wmich.edu'
+
         //Build Replacements
         let replacements = {
                 _FullName:  postedBy[0].empyname + ' ' + postedBy[0].surname,
@@ -115,23 +173,26 @@ class Mail {
      */
     send(transport,mailOptions,htmlPath,replacements){
 
-        //remove before release
-        mailOptions.to = 'joe.m.manto@wmich.edu';
+        //remove all before release
+		//mailOptions.to = 'joe.m.manto@wmich.edu';
 
-        this.readHTMLFile(__dirname + htmlPath, function(err, html) {
-            var template = handlebars.compile(html);
-            var htmlToSend = template(replacements);
+		if(mailOptions.to === 'joe.m.manto@wmich.edu' || mailOptions.to === 'jared.e.teller@wmich.edu'){
 
-            Object.assign(mailOptions,{html:htmlToSend});
+			this.readHTMLFile(__dirname + htmlPath, function(err, html) {
+				var template = handlebars.compile(html);
+				var htmlToSend = template(replacements);
 
-            transport.sendMail(mailOptions, function (error, res) {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                console.log('mailed!');
-            });
-        });
+				Object.assign(mailOptions,{html:htmlToSend});
+
+				transport.sendMail(mailOptions, function (error, res) {
+					if (error) {
+						console.log(error);
+						return;
+					}
+					console.log('mailed!');
+				});
+			});
+		}
     }
 
 

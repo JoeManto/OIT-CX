@@ -304,6 +304,16 @@ app.post('/pickUpShift', (req, res) => {
                         res.send({res: "shift-error"});
                         return;
                     }
+
+                    //Send Email
+                    let shift = new Shift();
+                    
+                    let sendSync = async() =>{
+                        await shift.apply(shiftId);
+                        mailService.sendCoveredShift(shift);
+                    } 
+                    sendSync();
+                    
                     res.send({res: "success"})
                 })
             })
