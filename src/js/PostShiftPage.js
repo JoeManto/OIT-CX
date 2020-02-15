@@ -605,11 +605,11 @@ export default class PostShiftPage extends React.Component {
                         }
                         {
                             //set over night warning
-                            overNightWarning.status && <p className={"cautionText"}>{overNightWarning.message}</p>
+                            (overNightWarning.status && !isMobile() && !isCallin()) && <p className={"cautionText"}>{overNightWarning.message}</p>
                         }
                         {
                             //set long shift warning
-                            longShiftWarning.status && <p className={"cautionText"}>{longShiftWarning.message}</p>
+                            (longShiftWarning.status && !isMobile() && !isCallin()) && <p className={"cautionText"}>{longShiftWarning.message}</p>
                         }
                         <h3 style={{marginBottom: "5px",color: "var(--text)"}}>Other Info</h3>
                         <p className={"smallLineHeight"}
