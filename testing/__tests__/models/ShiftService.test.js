@@ -83,7 +83,7 @@ describe('Shift Deletion', () => {
         expect(resolves).toEqual([0,1]);
     });
 
-    it.only('Should NOT un-track,delete and migrate a valid non-expired shift', async() => {
+    it('Should NOT un-track,delete and migrate a valid non-expired shift', async() => {
         
         flushShifts('legacyshifts');
         flushShifts('shifts');

@@ -63,5 +63,5 @@ describe('checkForDataMirgation', () => {
 
         expect(didMigration).toBeTruthy();
 
-    })
+    });
 });

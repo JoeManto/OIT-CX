@@ -89,7 +89,7 @@ describe('Shift Apply Function', () => {
 
 describe('Shift assignTo Function',() => {
 
-    it.only('Should be able to assign a user a shift', async () => {
+    it('Should be able to assign a user a shift', async () => {
 
         let shift = new Shift();
 
@@ -113,7 +113,7 @@ describe('Shift assignTo Function',() => {
 
         await shift.assignTo('non-existent-bnid');
 
-        expect(shift.shiftData.coveredBy).toBe(undefined);
+        expect(shift.shiftData.coveredBy).toBe(null);
     });
 
     it('Should return an error when a shift is unknown', async ()=>{
