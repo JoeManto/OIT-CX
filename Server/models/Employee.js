@@ -27,6 +27,12 @@ class Employee extends User {
     return cache;
   }
 
+  /**
+   * Retrieves the department email group for a given employee
+   * 
+   * @error returns the sql error
+   * @returns the group email address of the selected employee
+   */
   async getEmailGroup(){
 
     if(!this.data) return;
@@ -37,7 +43,13 @@ class Employee extends User {
     return (res instanceof Error) ? res : res[0].emailList;
   }
 
-
+  /**
+   * returns the users email if the user doesn't have an email recorded in the data base then an ldap request will be made
+   * That request will be record into the data base for next time.
+   * 
+   * @error return the respected error
+   * @returns the email address of the selected employee
+   */
   async getEmail(){
 
     if(!this.data) return new Error('getEmail error: No Employee Selected');
@@ -45,7 +57,6 @@ class Employee extends User {
     let cache = await db.query('select * from users where empybnid = ?',{conditions:[this.data.empybnid]});
     
     if(cache.length > 0 && cache[0].email !== null){
-      console.log("USED DATABASE");
       return cache[0].email;
     }
 
@@ -56,10 +67,8 @@ class Employee extends User {
       return Promise.reject(new Error('Employee could not be found with the provided bnid'));
     }
 
-    console.log('USING LDAP');
     let email = result.data[0].mail;
 
-    //update users set email = 'test.t.jared@wmich.edu' where bnid = 'jsb5633'
     db.query('update users set email = ? where empybnid = ?',{conditions:[email,this.data.empybnid]})
     .catch(err => console.log(err));
 
@@ -69,12 +78,5 @@ class Employee extends User {
 }
 
 module.exports = Employee;
-
-let test = async() => {
-  let emp = new Employee();
-  await emp.apply('jsb5633');
-
-  console.log(await emp.getEmail());
-}
 
 
