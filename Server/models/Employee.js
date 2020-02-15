@@ -63,7 +63,7 @@ class Employee extends User {
     let result = await ldapSearchClient.search(this.data.empybnid)
     .catch(err => err);
 
-    if(!result | result.length === 0){
+    if(result.data.length === 0){
       return Promise.reject(new Error('Employee could not be found with the provided bnid'));
     }
 
