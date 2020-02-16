@@ -8,6 +8,7 @@ import Documentation from './js/Docs.js';
 import AdminPage from './js/AdminPage.js';
 import Shifts from './js/Shifts.js';
 import PostShiftPage from './js/PostShiftPage'
+import ChangeLog from './js/ChangeLog'
 
 //function imports
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
@@ -37,6 +38,7 @@ function App() {
                         <ProtectedRoute path = {"/Admin"} comp = {AdminPage}/>
                         <ProtectedRoute path = {"/Shifts"} comp = {Shifts}/>
                         <ProtectedRoute path = {"/Post-shift"} comp = {PostShiftPage}/>
+                        <ProtectedRoute path = {"/ChangeLog"} comp = {ChangeLog}/>
                     </Switch>
                 </div>
             </Router>
