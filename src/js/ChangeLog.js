@@ -15,8 +15,7 @@ export default class ChangeLog extends React.Component {
                     
                     <ChangeElement title = {'Emails for Shifts being covered'} content = {
                     `
-                        Emails will now be sent to the shift requester and the person who picked up a shift.
-                        
+                        Emails will now be sent to the shift requester and the person who picked up a shift.   
                     `
                     }
                     image = {emailChangeImage}/>
@@ -35,13 +34,18 @@ export default class ChangeLog extends React.Component {
 
                     <ChangeElement title = {'Back-End'} content = {
                     `
-                        Various improvements and small bug fixes
+                        Various improvements and small bug fixes. 
+                        Implemented 30+ unit tests for services and models 
                     `
                     }/>
                     
-                   
-
-
+                    <ChangeElement title = {'Helpdesk Record Merge'} content = {
+                    `
+                        Fixed a parsing error that caused helpdesk records to not be merged into a legacy table.
+                        Also implemented unit and integration tests that test this single action and actions a like.
+                    `
+                    }/>
+                    
                 </ChangesContainer>
             </div>
         );
@@ -103,7 +107,7 @@ class ChangesContainer extends React.Component {
 
     render(){
         return(
-            <div>
+            <div class = {'list-cnt'}>
                 {this.props.children}
             </div>
         );

@@ -4,6 +4,11 @@
     align-items: center;
     text-align: center;
 }
+.list-cnt {
+    padding: 40px;
+    border-radius: 20px;
+    background: #1a1c1d
+}
 
 .header-details{
     display: flex;
