@@ -312,10 +312,11 @@ export default class Shifts extends React.Component {
                 <div>
                     <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "var(--text)"}}>Open Shifts</h3>
-                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with
-                        <a href={IP()+'/post-shift'} style={{fontStyle:"bolder",marginLeft:"15px"}}>Post a shift</a>
+                        <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with 
                         </p>
+                        <a href={IP()+'/post-shift'} className={'postShiftBtn'}>Post Shift</a>
                     </div>
+                    
                     <ShiftsWrapper covered={0}/>
                     <div className={"Content contentShifts yellowBottomBordered"}>
                         <h3 style={{color: "var(--text)"}}>Picked Up Shifts</h3>
