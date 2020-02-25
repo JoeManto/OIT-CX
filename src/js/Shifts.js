@@ -216,7 +216,7 @@ class CoveredShift extends React.Component {
                             }/>
                     ) : (
                         <ShiftListItem header={""} objToRender={
-                            <h2>{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
+                            <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]}-{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
                         }/>
                     ) }
                    
