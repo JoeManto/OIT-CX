@@ -6,7 +6,8 @@ import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
-import {formatAMPM,checkWindowHeight,IP} from "./Util";
+import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek} from "./Util";
+
 
 
 function ShiftListItem(props) {
@@ -34,7 +35,7 @@ class CoveredShift extends React.Component {
             this.shiftTimes.posted = new Date(props.data['postedDate']);
         }
 
-        console.log(props);
+
 
         this.handleShiftClick = this.handleShiftClick.bind(this);
         this.handleShiftPickUp = this.handleShiftPickUp.bind(this);
@@ -48,7 +49,6 @@ class CoveredShift extends React.Component {
     };
 
     getCorrectPosNameFromPosMapping = (positions) => {
-        console.log(this.props);
         let shiftType = this.props.data['positionID'];
         let shiftName = "Default";
         for (let i = 0; i < positions.length; i++) {
@@ -206,10 +206,21 @@ class CoveredShift extends React.Component {
                     )
             );
         } else {
+           
             return (
                 <div onClick={this.handleShiftClick} className={"contentShifts shadow"}>
-                    <ShiftListItem header={""} objToRender={
-                        <h2>{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>}/>
+
+                    {this.props.shiftCategory == 2 ? (
+                             <ShiftListItem header={""} objToRender={
+                                <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]}s</h2>
+                            }/>
+                    ) : (
+                        <ShiftListItem header={""} objToRender={
+                            <h2>{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
+                        }/>
+                    ) }
+                   
+                    
                     <div className={"shiftFlexCont"}>
                         <ShiftListItem header={"ShiftID"} objToRender={<h3>{this.props.data['shiftId']}</h3>}/>
                         {this.props.data['coveredBy'] === null ? (
@@ -265,11 +276,13 @@ class ShiftsWrapper extends React.Component {
     renderAllUnCoveredShifts = () => {
         let elements = [];
         let posMapping = this.state.posMapping;
+        let shiftCategory = this.props.covered;
+
         // eslint-disable-next-line array-callback-return
         this.state.unCoveredShifts.map(function (obj, i) {
             elements.push(<div key={i} id="shiftCont" className={"Content contentShifts"}>{
                 <div>
-                    <CoveredShift data={obj} posmapping={posMapping}/>
+                    <CoveredShift shiftCategory = {shiftCategory} data={obj} posmapping={posMapping}/>
                 </div>}
             </div>);
         });
