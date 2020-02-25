@@ -6,9 +6,9 @@ export default class ChangeLog extends React.Component {
     render(){
         return(
             <div class = {'ChangeLogCnt'}>
-                <Title />
+                <h1>Change Log for OIT-CX</h1>
                 <UpdateHeader date = {'02/15/2020'} updateNumber = {'1'}/>
-                  <ChangesContainer>
+                <ChangesContainer>
                     <ChangeElement title = {'Fixed Posting Shift Warning Bugs'} content = {`
                         Long shift time and over night warnings were being displayed when using preset shifts like (mobile and call-in) 
                     `}/>
@@ -45,37 +45,25 @@ export default class ChangeLog extends React.Component {
                         Also implemented unit and integration tests that test this single action and actions a like.
                     `
                     }/>
-                    
                 </ChangesContainer>
             </div>
         );
     }
 }
-/* TEMPLATE FOR ABOVE
-<ChangeElement title = {'Emails for Shifts being covered'} content = {
-    `
-                    
-    `
-}/>
 
-*/
+class ChangesContainer extends React.Component {
+    constructor(props){
+        super(props);
+    }
 
-
-
-/*
-    Title for changelog
-    the version of OIT-CX
-
-    Summary of major changes in this update 
-*/
-function Title(props){
-    return (
-        <div>
-            <h1>Change Log for OIT-CX</h1>
-        </div>
-    );
+    render(){
+        return(
+            <div class = {'list-cnt'}>
+                {this.props.children}
+            </div>
+        );
+    }
 }
-
 
 function UpdateHeader(props){
     return (
@@ -99,18 +87,3 @@ function ChangeElement(props){
         </div>
     )
 }
-
-class ChangesContainer extends React.Component {
-    constructor(props){
-        super(props);
-    }
-
-    render(){
-        return(
-            <div class = {'list-cnt'}>
-                {this.props.children}
-            </div>
-        );
-    }
-}
-
