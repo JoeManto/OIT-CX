@@ -16,7 +16,7 @@
     align-items: center;
 }
 .header-details > h2 {
-    color:var(--seconardy);
+    color:#ffcc33;
 }
 
 .element-details {
