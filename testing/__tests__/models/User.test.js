@@ -1,5 +1,22 @@
 const dbhandler = require('../../../Server/wrappers/MysqlWrapper');
 const User = require('../../../Server/models/User');
+const Customer = require('../../../Server/models/Customer');
+
+const testCustomer = {
+    bnid:'testBnid',
+    win:123456789,
+    name:'Joe-Manto',
+}
+
+const flushTestCustomer = () => {
+    dbhandler.query("delete from customer where bnid = ?", { conditions: [testCustomer.bnid] });
+};
+const fetchTestCustomer = () => {
+    return dbhandler.query("select * from customer where bnid = ?", { conditions: [testCustomer.bnid] });
+};
+const insertTestCustomer = async() => {
+    dbhandler.query("insert into customer (name,bnid,win) values ('"+testCustomer.name+"','"+testCustomer.bnid+"',"+testCustomer.win+")");
+};
 
 afterAll(()=>{
     dbhandler.db.destroy();
@@ -31,6 +48,27 @@ describe('lookUp Function',() => {
         let data = await customer.lookup({by:'id',value:'686'});
 
         expect(data).not.toBe(undefined);
+    });
+});
+
+describe('Delete Function', () => {
+    it('Should delete a customer record from the database', async() => {
+
+        flushTestCustomer();
+        
+        await insertTestCustomer();
+
+        let customer = new Customer();
+
+        await customer.apply({by:'bnid',value:testCustomer.bnid});
+
+        customer.bnid = testCustomer.bnid;
+
+        await customer.delete();
+
+        let result = await fetchTestCustomer();
+
+        expect(result.length).toBe(0);     
     });
 });
 

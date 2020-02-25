@@ -7,7 +7,7 @@
 }
 
 #shiftCont{
-    background: linear-gradient(to right, var(--background) 50%,var(--primary) 50%);
+    background: linear-gradient(to right, var(--dark) 50%,var(--primary) 50%);
     background-size: 200% 100%;
     background-position:right bottom;
   
@@ -43,4 +43,19 @@
 }
 #ShiftWrapper{
     height: 100%;
+}
+
+.postShiftBtn{
+    background:#ffcc33;
+    margin-left: 15px;
+    font-weight: 600;
+    color:var(--primary);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    float:right;
+}
+
+.postShiftBtn:hover{
+    background: #e6b82e;
 }
