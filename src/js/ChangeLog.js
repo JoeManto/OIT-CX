@@ -20,7 +20,7 @@ export default class ChangeLog extends React.Component {
                     }
                     image = {emailChangeImage}/>
 
-                    <ChangeElement title = {'Fixed crash on post shift page'} content = {
+                    <ChangeElement title = {'Fixed a crash on the post shift page'} content = {
                     `
                         Hovering over the footer will no longer crash the page.
                     `
@@ -29,6 +29,19 @@ export default class ChangeLog extends React.Component {
                     <ChangeElement title = {'Fixed the text color for input text containers'} content = {
                     `
                         changed the text color for the dark theme style from black to white.
+                    `
+                    }/>
+
+                    
+                    <ChangeElement title = {'Changed the highlight color of shifts'} content = {
+                    `
+                        The highlight color when hovering over a shift in the shifts page is now a darker appearance rather than a lighter appearance.
+                    `
+                    }/>
+
+                    <ChangeElement title = {'Changed the mobile header background'} content = {
+                    `
+                        Mobile page headers now reflect the dark theme.
                     `
                     }/>
 
@@ -42,7 +55,7 @@ export default class ChangeLog extends React.Component {
                     <ChangeElement title = {'Helpdesk Record Merge'} content = {
                     `
                         Fixed a parsing error that caused helpdesk records to not be merged into a legacy table.
-                        Also implemented unit and integration tests that test this single action and actions a like.
+                        Implemented unit and integration tests that test this single action and adjacent actions.
                     `
                     }/>
                 </ChangesContainer>

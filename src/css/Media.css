@@ -15,8 +15,7 @@ desktop: '2560px'
     width: 100%;
     padding: 0;
     padding-bottom: 20px;
-    background-color: #292c34;
-    box-shadow: 0 12px 2px #F5F5F5 !important;
+    background-color: var(--dark);
     border-radius: 0;
     border-bottom-left-radius: 15px !important;
     border-bottom-right-radius: 15px !important;
