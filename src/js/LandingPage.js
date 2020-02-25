@@ -146,7 +146,7 @@ export class Footer extends React.Component {
                         </div>
                       )
                   }
-                  <p id="footLinks">Wait-List v1.0 &copy; 2019 OIT MIT Licence</p>
+                  <p id="footLinks">OIT-CX v1.3 &copy; 2020 OIT MIT Licence</p>
                 </div>
                 {state.error !== "" ? (
                     <div className={"footerElemCnt flexColumn"}>

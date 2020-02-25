@@ -63,7 +63,8 @@ class Mail {
 			_Message: shift.shiftData.message,
 			_PostingDate: this.formatLocaleDate(),
 			_CoveredDefaultMessage: 'This is a confirmation email for the shift that you picked up. (see shift details below)',
-		};
+            _Permanent: shift.shiftData.perm === 0 ? "No" : "Yes",
+        };
 		
 		//second email | email to the employee that posted the shift
 
@@ -77,7 +78,8 @@ class Mail {
 			_Message: shift.shiftData.message,
 			_PostingDate: this.formatLocaleDate(),
 			_CoveredDefaultMessage: 'Your shift was picked up by ' + coveredByEmployee.data.empyname + '!',
-		};
+            _Permanent: shift.shiftData.perm === 0 ? "No" : "Yes",
+        };
 
 
 		let mailOptions1 = {
@@ -149,6 +151,7 @@ class Mail {
         let replacements = {
                 _FullName:  postedBy[0].empyname + ' ' + postedBy[0].surname,
                 _ShiftType: shift.shiftData.posName,
+                _Permanent: shift.shiftData.perm === 0 ? "No" : "Yes",
                 _ShiftDate: this.formatLocaleDate(shift.shiftData.shiftDateStart),
                 _ShiftStartTime: this.formatLocaleTime(shift.shiftData.shiftDateStart),
                 _ShiftEndTime: this.formatLocaleTime(shift.shiftData.shiftDateEnd),
