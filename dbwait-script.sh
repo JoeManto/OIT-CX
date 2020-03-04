@@ -5,5 +5,5 @@ while ! mysql -h db -u root -proot -P 3306 -e "SELECT VERSION();SELECT NOW()"; d
 done;
 echo "starting node"
 #exec mysql -h db -u root -proot -P 3306 -e "CREATE DATABASE nodemysql"
-#exec mysql -h db -u root -proot -P 3306 nodemysql < Server/sqldump.sql
+#exec mysql -h db -u root -proot -P 3306 nodemysql < db_init.sql
 exec node Server/server.js

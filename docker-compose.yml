@@ -13,7 +13,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 7070:8080
   db:
     image: mysql:5.7
     volumes:

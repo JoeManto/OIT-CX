@@ -38,3 +38,5 @@ db-dump/
 server/build
 
 BeforeReleaseCheckList.txt
+
+*.sql
