@@ -9,7 +9,7 @@ const ldapWrapper = require('./wrappers/LdapWrapper');
 const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
-const Mail = require('./emails/MailNew');
+const Mail = require('./Emails/MailNew');
 const Customer = require('./models/Customer');
 const Shift = require('./models/Shift');
 
@@ -42,8 +42,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client'));
-
-
 
 //----------------------------SERVICES----------------------------------
 

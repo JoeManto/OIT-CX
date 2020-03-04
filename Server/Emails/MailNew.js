@@ -141,8 +141,10 @@ class Mail {
     
         let postedBy = await shift.shiftData.postedBy;
 
-        let group = await db.query('select * from grouproles where groupID = ?',{conditions:[postedBy[0].groupRole]});
+        let group = await db.query('select * from groupRoles where groupID = ?',{conditions:[postedBy[0].groupRole]});
         let emailList = group[0].emailList;
+
+        console.log('EMAIL LIST = '+emailList);
 
         //remove this
         emailList = 'joe.m.manto@wmich.edu'
