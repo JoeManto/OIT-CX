@@ -101,46 +101,19 @@ export function getUsers() {
     },'getUsers');
 }
 
-export function adminOperation(endpoint, keys, inputs) {
-    return (async () => {
-        const rawResponse = await fetch(endpoint, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                keys: keys,
-                inputs: inputs,
-                user:getCookie("user-bnid"),
-                key: getCookie("key"),
-            })
-        });
-        const content = await rawResponse.json();
-        if (rawResponse.status !== 200){
-            this.reject();
-        }
-        if (content.res === "apiKey-error") {
-            window.location = IP();
-        }
-        if(content.error){
-            this.reject();
-            console.log(content.error);
-            return content;
-        }
-        if (content.res === "success") {
-            return content;
-        }
-    })();
+export function adminOpt(endpoint,data){
+    return apiResponse('POST',BASIC_HEADER,{
+        user: getCookie("user-bnid"),
+        key: getCookie("key"),
+        data: data,
+    }, endpoint);
 }
-
 
 export function getContributorsList(){
   return new Promise(function (resolve,reject) {
     let githubCont = getCookie("github-contributors");
     if(githubCont != null && githubCont.length !== 0){
         githubCont = githubCont.split(",");
-        console.log("hello");
         resolve(githubCont);
         return;
     }
