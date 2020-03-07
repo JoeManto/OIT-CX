@@ -82,7 +82,7 @@ app.get('/time', function (req, res) {
  */
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
-   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key))
+   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key,false))
         return res.send({res: "apiKey-error"});
 
     apiService.expireOpenKeyForUser(req.body.user);
@@ -126,7 +126,7 @@ app.post('/auth', async(req,res) => {
 
 app.post('/getUsers', async(req, res) => {
 
-    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true))
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,false))
         res.send({res: "apiKey-error"});
 
     //Query all users
@@ -163,7 +163,7 @@ app.post('/addUser',(req,res) => {
     if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         return res.send({res: "apiKey-error"}); 
     }else{
-        return res.send({res: "Works"});
+        return res.send({res: "Works",error:{error:"User Exists",errorMessage:"A user with the same bnid already exists in the database"}});
     }
 });
 /*
@@ -223,7 +223,7 @@ app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
     let shift = req.body.shiftDetails;
 
-    if (apiService.validHashedKeyForUser(postUserID, req.body.key)) {
+    if (apiService.validHashedKeyForUser(postUserID, req.body.key,false)) {
         let sqlUserLook = "select * from users where empybnid = ?";
         let sqlAddShift = "Insert into shifts (coveredBy,postedBy,availability,positionID," +
             "groupID,perm,shiftDateStart,shiftDateEnd,message) values (NULL,?,0,?,?,?,?,?,?)";
@@ -282,7 +282,7 @@ app.post('/pickUpShift', (req, res) => {
     let pickUpUser = req.body.user;
     let shiftId = req.body.shiftId;
 
-    if (apiService.validHashedKeyForUser(pickUpUser, req.body.key)) {
+    if (apiService.validHashedKeyForUser(pickUpUser, req.body.key, false)) {
         let sqlCheckShift = "Select * from shifts where shiftId = ? AND availability = 0";
         sqlCheckShift = mysql.format(sqlCheckShift, [shiftId]);
         db.query(sqlCheckShift, (err, result) => {
@@ -330,7 +330,7 @@ app.post('/pickUpShift', (req, res) => {
 });
 
 app.post('/deleteShift', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let shiftId = req.body.shiftId;
         let sqlShiftRemove = "Delete from shifts where shiftId = ?";
         sqlShiftRemove = mysql.format(sqlShiftRemove, [shiftId]);
@@ -356,7 +356,7 @@ app.post('/getShifts', (req, res) => {
       covered = 0;
     }
 
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let sqlGroupRole = "Select groupRole,id from users where empybnid = ?";
         sqlGroupRole = mysql.format(sqlGroupRole, [req.body.user]);
         db.query(sqlGroupRole, (err, result) => {
@@ -401,7 +401,7 @@ app.post('/getShifts', (req, res) => {
 
 
 app.post('/getPositions', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let user = req.body.user;
         let roleChecksql = "Select role,groupRole from users where empybnid = ?";
         roleChecksql = mysql.format(roleChecksql, [user]);
@@ -443,7 +443,7 @@ app.post('/getPositions', (req, res) => {
 });
 
 app.post('/rec', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key, false)) {
         if (req.body.user) {
             let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
                 " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && empybnid = ?) ORDER BY date DESC";
@@ -473,7 +473,7 @@ app.post('/rec', (req, res) => {
 });
 
 app.post('/addRec',(req,res) =>{
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let userIdSql = "select id from users where empybnid = ?"
         db.query(mysql.format(userIdSql,[req.body.user]),(err,result) => {
             if(err || result.length === 0){
@@ -494,7 +494,7 @@ app.post('/addRec',(req,res) =>{
 });
 
 app.post('/locations',(req,res)=>{
-  if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+  if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
     db.query("select * from location",(err,result)=>{
       if(err){
         res.send({res: "sql-error"});

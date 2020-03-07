@@ -1,6 +1,7 @@
 import React from 'react';
 import {CountDownMessage,Flex,Button} from './General';
-import {AlertMessage} from './AlertMessage'
+import {AlertMessage} from './AlertMessage';
+import {adminOpt} from '../DataFetchHandler';
 
 function WIInputPanelDotProgession(props) {
     const coveredBubbleStyle = {
@@ -199,12 +200,16 @@ function WIInputPanelDotProgession(props) {
 		this.setState({
 			opened: true,
 			completed: false,
-			apiStatus:"no-started",
+		
 			progession: {
 				current: 0,
 				max: this.props.numPanels
 			},
-			savedData: [],
+      savedData: [],
+
+      apiError:null,
+      apiRes:null,
+      apiStatus:"no-started",
 		})
 	}
 
@@ -215,9 +220,28 @@ function WIInputPanelDotProgession(props) {
 		const delay = ms => new Promise(res => setTimeout(res, ms));
 		await delay(2500);
 
+    let endpoint = this.props.endpoint;
+    if(endpoint[0] !== '/'){
+      endpoint = ['/',endpoint];
+      endpoint = endpoint.join("");
+    }
+    
+    let result = await adminOpt(this.props.endpoint,this.state.savedData);
+
+    console.log(result);
+
+    if(result.error){
+      this.setState({
+        apiStatus:"error",
+        apiError:result.error,
+      });
+      return;
+    }
+
 		this.setState({
-			apiStatus:"success"
-		})
+      apiStatus:"success",
+      apiRes:result.res,
+		});
 	}
 
     renderOpenView = () => {
@@ -234,7 +258,7 @@ function WIInputPanelDotProgession(props) {
                 progress.current + 1 >= progress.max
                     ? "Confirm"
                     : this.children[progress.current + 1].props.title,
-				onNextProgression: this.handleProgression,
+				        onNextProgression: this.handleProgression,
                 onExit: this.onExit,
                 onError: this.onError,
             })
@@ -264,12 +288,24 @@ function WIInputPanelDotProgession(props) {
 		);
 	}
 
-	renderApiSuccess = () => {
+  renderApiError = ({error,errorMessage}) => {
 		return (
 			<div>
-				<h3>Server Response - Success🎉</h3>
+				<h3>Server Response - Failed<span role = {"img"}>⚠️</span></h3>
 				<CountDownMessage message = {'Closing in'} count = {25} onCompletion = {()=>{this.onExit(true)}}>
-					<p style = {{color:'darkgrey'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+          <h5>{error}</h5>
+          <p style = {{color:'darkgrey'}}>{errorMessage}</p>
+				</CountDownMessage>
+			</div>
+		)
+  }
+
+	renderApiSuccess = ({res}) => {
+		return (
+			<div>
+				<h3>Server Response - Success<span role = "img">🎉</span></h3>
+				<CountDownMessage message = {'Closing in'} count = {25} onCompletion = {()=>{this.onExit(true)}}>
+          <p style = {{color:'darkgrey'}}>{res}</p>
 				</CountDownMessage>
 			</div>
 		)
@@ -279,10 +315,17 @@ function WIInputPanelDotProgession(props) {
 		if(this.state.apiStatus === "success"){
 			return (
 				<div className = {"inputhandler-completion-cnt"}>
-					{this.renderApiSuccess()}
+					{this.renderApiSuccess(this.state.apiRes)}
 				</div> 
 			);
-		}
+		}else if(this.state.apiStatus === "error"){
+      return (
+				<div className = {"inputhandler-completion-cnt"}>
+					{this.renderApiError(this.state.apiError)}
+				</div> 
+			);
+    }
+
 		return(
 			<div className = {"inputhandler-completion-cnt"}>
 				<div className = {"progressAnimated"}/>
