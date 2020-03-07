@@ -29,7 +29,7 @@ function WIInputPanelDotProgession(props) {
         });
       }
       return (
-        <div style={isCovered ? coveredBubbleStyle : unCoveredBubbleStyle} />
+        <div key = {i} style={isCovered ? coveredBubbleStyle : unCoveredBubbleStyle} />
       );
     };
   
@@ -168,7 +168,6 @@ function WIInputPanelDotProgession(props) {
     };
     
     onError = (message) => {
-        console.log("hello");
         this.setState({
             error: {
                 status:true,
