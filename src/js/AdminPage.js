@@ -12,6 +12,12 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
 
     render(){
         return(
+			<div className = "admin-operations-cnt">
+			<h1 style = {{fontStyle:'oblique'}}>Operations</h1>
+			<p style = {{color:'darkgrey'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+			 standard dummy text ever since the 1500s.>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+			  industry's standard dummy text ever since the 1500s.</p>
+		
             <div className = "admin-operations-list-cnt">
 				<WTInputPanelController title = {'Add User'}
 				 description = {`
@@ -35,7 +41,7 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
                     </WTInputPanel>
 
                     <WTInputPanel 
-                    title={"Perfered Name"}
+                    title={"Preferred Name"}
                     subtitle={"IDK A NAME"}>
                         <Input1 title={"Name"} />
                     </WTInputPanel>
@@ -48,6 +54,7 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
                     </WTInputPanel>
                 </WTInputPanelController>
             </div>
+			</div>
         );
     }
 }

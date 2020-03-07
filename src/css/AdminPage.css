@@ -1,3 +1,7 @@
+.admin-operations-cnt{
+    max-width: 1200px;
+    margin: 0 auto;
+}
 .admin-operations-list-cnt{
     display: flex;
     flex-direction: column;

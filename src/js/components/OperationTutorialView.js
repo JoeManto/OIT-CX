@@ -299,7 +299,7 @@ function WIInputPanelDotProgession(props) {
             }
 
 			<div className = {"inputpanelcontroller-header-cnt"}>
-	  			<h1>{this.props.title}</h1>
+	  			<h3>{this.props.title}</h3>
 	  			<p>{this.props.description}</p>
 			</div>
 			<div className = {"inputpanelcontroller-content-cnt"}>
