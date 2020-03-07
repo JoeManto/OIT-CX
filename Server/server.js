@@ -104,7 +104,7 @@ app.post('/auth', async(req,res) => {
     
     if(result.password === pass){
         //Create user instance and send a success full login response
-        let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+        let key = apiService.createKeyForUser(user, result.role === 1,18000);
         return res.send({res: "auth-success", key: key});
     }
 
@@ -116,7 +116,7 @@ app.post('/auth', async(req,res) => {
     return ldapWrapper.authUser(user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
-                let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+                let key = apiService.createKeyForUser(user, result.role === 1,18000);
                 return res.send({res: "auth-success", key: key});
             })
             .catch((err) => {
@@ -159,6 +159,14 @@ app.post('/searchUser',async(req,res) => {
     });
 });
 
+app.post('/addUser',(req,res) => {
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }else{
+        return res.send({res: "Works"});
+    }
+});
+/*
 app.post('/addUser', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         console.log(req.body.inputs);
@@ -209,7 +217,7 @@ app.post('/addUser', (req, res) => {
     } else {
         res.send({res: "apiKey-error"});
     }
-});
+});*/
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
