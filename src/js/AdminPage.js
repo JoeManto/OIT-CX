@@ -4,6 +4,7 @@ import '../css/util.css';
 import '../css/OperationTutorialView.css';
 import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './components/OperationTutorialView'
 
+
  export default class AdminPage extends React.Component {
     constructor(props){
         super(props);
@@ -11,7 +12,6 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
 
     render(){
         return(
-			
             <div className = "admin-operations-list-cnt">
 				<WTInputPanelController title = {'Add User'}
 				 description = {`

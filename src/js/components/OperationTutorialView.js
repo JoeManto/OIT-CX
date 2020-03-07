@@ -1,6 +1,6 @@
 import React from 'react';
 import {CountDownMessage,Flex,Button} from './General';
-
+import {AlertMessage} from './AlertMessage'
 
 function WIInputPanelDotProgession(props) {
     const coveredBubbleStyle = {
@@ -67,17 +67,6 @@ function WIInputPanelDotProgession(props) {
         return true;
       }
     };
-
-    error = () => {
-      let shouldRenderError = !this.state.firstRender && this.shouldSetError();
-      if (this.state.error || shouldRenderError) {
-        return (
-          <div>
-            <h6>The field {this.state.key} can't be empty</h6>
-          </div>
-        );
-      }
-    };
   
     render() {
       return (
@@ -95,8 +84,6 @@ function WIInputPanelDotProgession(props) {
 
             <h2 className={"inputpanel-title"}>{this.props.title}</h2>
             <h6 className={"inputpanel-subtitle"}>{this.props.subtitle}</h6>
-
-            {this.error()}
 
             <div className={"inputpanel-content-cnt"}>
               {React.cloneElement(this.props.children, {
@@ -120,9 +107,11 @@ function WIInputPanelDotProgession(props) {
                     });
                   } else {
                     this.setState({ error: true });
+                    this.props.onError("Expected field to contain a value");
                   }
                 }}
               />
+
             </div>
           </div>
         </Flex>
@@ -143,6 +132,10 @@ function WIInputPanelDotProgession(props) {
           max: this.props.numPanels
         },
         savedData: [],
+        error:{
+            status:false,
+            message:null,
+        },
       };
   
       this.children = React.Children.toArray(this.props.children);
@@ -166,9 +159,23 @@ function WIInputPanelDotProgession(props) {
 			current: progression.current + 1,
 			max: progression.max
 			},
-			savedData:savedData,
+            savedData:savedData,
+            error:{
+                status:false,
+                message:null,
+            }
 		});
-	};
+    };
+    
+    onError = (message) => {
+        console.log("hello");
+        this.setState({
+            error: {
+                status:true,
+                message:message,
+            }
+        });
+    }
 	
 	onExit = (shouldReset = false) => {
 		if(shouldReset){
@@ -229,7 +236,8 @@ function WIInputPanelDotProgession(props) {
                     ? "Confirm"
                     : this.children[progress.current + 1].props.title,
 				onNextProgression: this.handleProgression,
-				onExit: this.onExit,
+                onExit: this.onExit,
+                onError: this.onError,
             })
         );
 	}
@@ -286,6 +294,11 @@ function WIInputPanelDotProgession(props) {
     render() {
       return (
         <div className={"inputpanelcontroller-cnt"}>
+
+            {this.state.error.status &&
+                <AlertMessage message = {this.state.error.message}/>
+            }
+
 			<div className = {"inputpanelcontroller-header-cnt"}>
 	  			<h1>{this.props.title}</h1>
 	  			<p>{this.props.description}</p>
