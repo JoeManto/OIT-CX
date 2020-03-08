@@ -4,10 +4,10 @@
     display: block;
     width: auto;
     height: auto;
-    visibility: hidden;
+    visibility: visible;
     background-color: var(--primary);
-    bottom: 0%;
-    right: 5%; 
+    bottom: -10%;
+    right: -50%; 
     padding-right: 20px; 
 }
 
@@ -52,10 +52,11 @@
 @keyframes ShowAlert {
     0% {
         bottom: -50px;
+        visibility: visible;
     }
     100% {
         bottom: 50px;
-        visibility: visible;
+        
     }
 }
 
@@ -65,7 +66,7 @@
     }
     100% {
         bottom: -100px;
-        visibility: visible;
+        visibility: hidden;
     }
 }
 

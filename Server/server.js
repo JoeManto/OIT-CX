@@ -159,11 +159,19 @@ app.post('/searchUser',async(req,res) => {
     });
 });
 
+//Error Messages
+// res.send({error:{error:"User Exists",errorMessage:"A user with the same bnid already exists in the database"}});
+
+//Success Messages
+// res.send({res:"Users Successfully added into the database"})
+
 app.post('/addUser',(req,res) => {
     if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         return res.send({res: "apiKey-error"}); 
     }else{
-        return res.send({res: "Works",error:{error:"User Exists",errorMessage:"A user with the same bnid already exists in the database"}});
+
+
+        return res.send({res:"Users Successfully added into the database"});
     }
 });
 /*
