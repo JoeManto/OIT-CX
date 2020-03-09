@@ -3,11 +3,24 @@ import '../css/AdminPage.css';
 import '../css/util.css';
 import '../css/OperationTutorialView.css';
 import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './components/OperationTutorialView'
+import {getPositionsForUser} from './DataFetchHandler'
 
 
  export default class AdminPage extends React.Component {
     constructor(props){
         super(props);
+
+        this.state = {
+            isFetchingData:true,
+            positions:[],
+        }
+    }
+
+    async componentDidMount(){
+        let data = await getPositionsForUser(false);
+        data = data.res.map((obj) => obj.posName); 
+     
+        this.setState({isFetchingData:false,positions:data});
     }
 
     render(){
@@ -17,8 +30,11 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
 			<p style = {{color:'darkgrey'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
 			 standard dummy text ever since the 1500s.>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
 			  industry's standard dummy text ever since the 1500s.</p>
-		
-            <div className = "admin-operations-list-cnt">
+
+            {this.state.isFetchingData ? (
+                <h2>fetching data</h2>
+            ):(
+                <div className = "admin-operations-list-cnt">
 				<WTInputPanelController endpoint = {'addUser'} title = {'Add User'}
 				 description = {`
 				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
@@ -36,7 +52,7 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={["helpdesk-stu", "labs-stu", "call-stu"]}
                         />
                     </WTInputPanel>
 
@@ -205,11 +221,12 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
                         <Input1 title={"Name"} />
                     </WTInputPanel>
                 </WTInputPanelController>
-                    <WTInputPanelController endpoint = {'removePosition'} title = {'Remove Position'}
+
+                <WTInputPanelController endpoint = {'removePosition'} title = {'Remove Position'}
                     description = {`
                     Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
                     `} 
-                    numPanels={1}>
+                    numPanels={2}>
 
                     <WTInputPanel 
                     title={"Department"} 
@@ -225,13 +242,14 @@ import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './
                     subtitle={"OIT Department Position"}>
                         <SelectionController
                             open = {true}
-                            fields={["Calls", "Walk-In", "Mobile"]}
+                            fields={this.state.positions}
                         />
                     </WTInputPanel>
 
                 </WTInputPanelController>
+                </div>
+            )}     
             </div>
-			</div>
         );
     }
 }

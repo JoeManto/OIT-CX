@@ -234,7 +234,7 @@ export class WTInputPanelController extends React.Component {
 		if (result.error) {
 			this.setState({
 				apiStatus: "error",
-				apiError: result.error,
+				apiError: result,
 			});
 			return;
 		}
@@ -301,7 +301,7 @@ export class WTInputPanelController extends React.Component {
 		)
 	}
 
-	renderApiSuccess = ({ res }) => {
+	renderApiSuccess = (res) => {
 		return (
 			<div>
 				<h3>Server Response - Success<span role="img">🎉</span></h3>
