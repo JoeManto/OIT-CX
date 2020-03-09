@@ -1,7 +1,7 @@
 class CXError extends Error {
     constructor(type,description,error){
         super(type);
-        this.message = type;
+        this.type = type;
         this.description = description;
         this.error = error;
     }

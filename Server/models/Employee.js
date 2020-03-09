@@ -34,7 +34,9 @@ class Employee extends User {
     .catch(err => err);
 
     //User was found in the database
-    if(!(cache instanceof Error)) return new CXError('Duplicate User Error','employee already exists in the database');
+    if(!(cache instanceof Error)){ 
+    	return Promise.reject(new CXError('Duplicate User Error','that employee already exists in the database',null));
+		}
 
     let result = await ldapSearchClient.search(bnid)
     .catch(err => err);

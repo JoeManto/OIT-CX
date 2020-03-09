@@ -231,17 +231,16 @@ export class WTInputPanelController extends React.Component {
 
 		let result = await adminOpt(this.props.endpoint, this.state.savedData);
 
-		if (result.error) {
+		if (!result.error) {
 			this.setState({
-				apiStatus: "error",
-				apiError: result,
+				apiStatus: "success",
+				apiRes: result.res,
 			});
 			return;
 		}
-
 		this.setState({
-			apiStatus: "success",
-			apiRes: result.res,
+			apiStatus: "error",
+			apiError: result,
 		});
 	}
 
