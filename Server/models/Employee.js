@@ -1,5 +1,6 @@
 const db = require('../wrappers/MysqlWrapper');
 const ldapSearchClient = require('../services/LdapSearch');
+const CXError = require('./CXError');
 const User = require('./User');
 
 class Employee extends User {
@@ -25,6 +26,38 @@ class Employee extends User {
 
     this.data = cache[0];
     return cache;
+  }
+
+  async create(bnid,group,role){
+    //Search for user in the database
+    const cache = await super.lookup({by:"empybnid",value:bnid})
+    .catch(err => err);
+
+    //User was found in the database
+    if(!(cache instanceof Error)) return new CXError('Duplicate User Error','employee already exists in the database');
+
+    let result = await ldapSearchClient.search(bnid)
+    .catch(err => err);
+
+    if(result.data.length === 0){
+      return Promise.reject(new CXError('LDAP Error','Data retrieval failed for the bronco netId '+bnid));
+    }
+    
+    let LDAP_Data = {
+			email:result.data[0].mail,
+			preferredName:result.data[0].eduPersonNickname,
+			lastName:result.data[0].wmuLastName,
+    }
+
+    return db.query('insert into users (empyname,surname,role,empybnid,email,groupRole) values (?,?,?,?,?,?)',{conditions:[
+			LDAP_Data.preferredName,
+			LDAP_Data.lastName,
+			role,
+			bnid,
+			LDAP_Data.email,
+			group,
+		]})
+		.catch(err => Promise.reject(new CXError('SQL Error','inserting new user',err)));
   }
 
   /**

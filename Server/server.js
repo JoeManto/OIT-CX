@@ -10,7 +10,10 @@ const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
+
+//models
 const Customer = require('./models/Customer');
+const Employee = require('./models/Employee');
 const Shift = require('./models/Shift');
 
 //child processes
@@ -165,14 +168,52 @@ app.post('/searchUser',async(req,res) => {
 //Success Messages
 // res.send({res:"Users Successfully added into the database"})
 
-app.post('/addUser',(req,res) => {
+app.post('/addUser',async(req,res) => {
     if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
         return res.send({res: "apiKey-error"}); 
-    }else{
-
-
-        return res.send({res:"Users Successfully added into the database"});
     }
+
+    let values = req.body.data.map(obj => obj.value);
+
+    let bnid = values[0];
+    let role = values[2] === 'Normal' ?  0 : 1;
+    let groupID;
+
+    //update when department class gets made
+    let results = await newDb.query('select * from groupRoles');
+
+    for(let i = 0; i < results.length; i++){
+        if(values[1] === results[i].groupName){
+            groupID = results[i].groupID;
+        }
+    }
+
+    let userGroup = await newDb.query('select * from users where empybnid = ?',{conditions:[req.body.user]})
+    .catch(err => console.log(err));
+
+    if(userGroup[0].groupRole !== groupID){
+        return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allow"});
+    }
+
+    //check if user exists
+    let employeeToAdd = new Employee()
+    let error;
+
+    error = await employeeToAdd.apply(bnid)
+    .catch(err => err);
+
+    if(!(error instanceof Error)){
+        return res.send({error:error.type,errorMessage:error.description});
+    }
+
+    error = await employeeToAdd.create(values[0],groupID,role)
+    .catch(err => err);
+
+    if(error instanceof Error){
+        return res.send({error:error.type,errorMessage:error.description});
+    }
+
+    return res.send({res:"User successfully added into the database"}); 
 });
 /*
 app.post('/addUser', (req, res) => {
