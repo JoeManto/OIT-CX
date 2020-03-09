@@ -15,6 +15,8 @@ const Mail = require('./Emails/MailNew');
 const Customer = require('./models/Customer');
 const Employee = require('./models/Employee');
 const Shift = require('./models/Shift');
+const Department = require('./models/Department');
+const CXError = require('./models/CXError');
 
 //child processes
 const cp = require('child_process');
@@ -177,43 +179,24 @@ app.post('/addUser',async(req,res) => {
 
     let bnid = values[0];
     let role = values[2] === 'Normal' ?  0 : 1;
-    let groupID;
-
-    //update when department class gets made
-    let results = await newDb.query('select * from groupRoles');
-
-    for(let i = 0; i < results.length; i++){
-        if(values[1] === results[i].groupName){
-            groupID = results[i].groupID;
-        }
-    }
+    let department = new Department();
+    await department.apply({by:'groupName',value:values[1]});
 
     let userGroup = await newDb.query('select * from users where empybnid = ?',{conditions:[req.body.user]})
     .catch(err => console.log(err));
 
-    if(userGroup[0].groupRole !== groupID){
+    if(userGroup[0].groupRole !== department.data.id){
         return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allow"});
     }
 
     //check if user exists
-    let employeeToAdd = new Employee()
-    let error;
+    let employeeToAdd = new Employee();
 
-    error = await employeeToAdd.apply(bnid)
-    .catch(err => err);
-
-    if(!(error instanceof Error)){
-        return res.send({error:error.type,errorMessage:error.description});
-    }
-
-    error = await employeeToAdd.create(values[0],groupID,role)
-    .catch(err => err);
-
-    if(error instanceof Error){
-        return res.send({error:error.type,errorMessage:error.description});
-    }
-
-    return res.send({res:"User successfully added into the database"}); 
+    employeeToAdd.create(values[0],department.data.id,role)
+    .then(res => {
+        res.send({res:"User successfully added into the database"});
+    })
+    .catch(err => res.send({error:err.type,errorMessage:err.description}));
 });
 
 app.post('/postShift', (req, res) => {
