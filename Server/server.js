@@ -215,58 +215,6 @@ app.post('/addUser',async(req,res) => {
 
     return res.send({res:"User successfully added into the database"}); 
 });
-/*
-app.post('/addUser', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
-        console.log(req.body.inputs);
-        console.log(req.body.keys);
-        let getInputMappingIndex = (key) => {
-            for (let i = 0; i < req.body.keys.length; i++) {
-                if (key === req.body.keys[i]) {
-                    return req.body.inputs[i];
-                }
-            }
-        };
-
-        let sqlUserLookUp = "select * from users where empybnid = ?";
-        sqlUserLookUp = mysql.format(sqlUserLookUp, [getInputMappingIndex("bnid")]);
-        db.query(sqlUserLookUp, (err, result) => {
-            if (err) {
-                res.send({res: "user-error", error: "Couldn't search for user"});
-                return;
-            }
-            if (result.length !== 0) {
-                res.send({res: "user-error", error: "user already exists"});
-                return;
-            }
-            let createUser = "insert into users (empyname,surname,empybnid,role,groupRole) values (?,?,?,?,?)";
-
-            ldapSearchClient.search(getInputMappingIndex("bnid")).then(ldapResult =>{
-                if(ldapResult.data.length === 0){
-                    res.send({res:"user-error",error:"User couldn't be found in LDAP server"});
-                }else{
-                    res.send({res: "success"});
-                    createUser = mysql.format(createUser,
-                        [getInputMappingIndex("fstName"),ldapResult.data[0].sn,
-                        getInputMappingIndex("bnid"),getInputMappingIndex('role'), getInputMappingIndex('pos')]);
-                        db.query(createUser, (err, result) => {
-                        if (err) {
-                            res.send({res: "user-error", error: "Couldn't add user"});
-                            return;
-                        }
-                        if (result.length !== 0) {
-                            res.send({res: "success"});
-                        }
-                        });
-                }
-            });
-
-
-        });
-    } else {
-        res.send({res: "apiKey-error"});
-    }
-});*/
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
