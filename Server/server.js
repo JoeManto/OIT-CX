@@ -103,6 +103,10 @@ app.post('/auth', async(req,res) => {
     .then(res => {return res[0]})
     .catch(err => res.send({res:"auth-failed",error:err}));
 
+    if(result.locked === 1){
+        return res.send({res: "auth-failed", error: "Account is locked"});
+    }
+
     //no records from database : auth session user is unknown
     if(!result)
         return res.send({res: "auth-failed", error: "User Not-Found"});

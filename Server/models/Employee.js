@@ -78,6 +78,19 @@ class Employee extends User {
     return (res instanceof Error) ? res : res[0].emailList;
   }
 
+  getGroup(){
+    if(!this.data) return new CXError('Employee is not selected');
+
+    return this.data.groupRole;
+  }
+
+  isLocked(){
+
+    if(!this.data) return new CXError('Employee is not selected');
+
+    return this.data.locked;
+  }
+
   /**
    * returns the users email if the user doesn't have an email recorded in the data base then an ldap request will be made
    * That request will be record into the data base for next time.
