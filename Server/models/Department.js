@@ -72,7 +72,10 @@ class Department {
 			this.editLock(new_data.locked);
 		}else if(new_data.locked === 0){
 			this.editLock(new_data.locked);
-		}        
+		}
+		
+		//update local data
+		await this.apply({by:'groupID',value:this.data.id});
 	}
 	
 	/**
