@@ -106,9 +106,9 @@ class Department {
     async delete(){
         if(this.data.id === -1) Promise.reject(new CXError('No Department Selected'));
         
-        db.query('DELETE * from users WHERE groupID = ?', {conditions:[this.data.id]});
+        db.query('DELETE from users WHERE groupRole = ?', {conditions:[this.data.id]});
 
-        db.query('DELETE * from positions WHERE groupID = ?', {conditions:[this.data.id]});
+        db.query('DELETE from positions WHERE groupID = ?', {conditions:[this.data.id]});
 
         return db.query('DELETE from groupRoles WHERE groupID = ?', {conditions:[this.data.id]})
         .catch(err => new CXError('SQL Error','Error deleting department',err));
