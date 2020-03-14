@@ -466,25 +466,18 @@ app.post('/removeDepartment', async(req, res) => {
     let employee = new Employee();
     await employee.apply(user);
 
-    if(employee.getGroup() !== department.data.id){
-        return res.send({error:"Permission Error",errorMessage:"you cannot delete a department you are not a part of."});
+    let numUsers = await newDb.query('select * from users where groupRole = ?',{conditions:[department.data.id]});
+
+    if(numUsers.length >= 2){
+        if(employee.getGroup() !== department.data.id){
+            return res.send({error:"Permission Error",errorMessage:"you cannot delete a department that you're not a part of because this department has more than one active user."});
+        }
     }
 
     department.delete();
     res.send({res:"Department successfully deleted."});
-})
+});
 
-/**
- * +---------+----------------------------+------------+--------+
-| groupID | emailList                  | groupName  | locked |
-+---------+----------------------------+------------+--------+
-|       0 | oit-hd-students@wmich.edu  | helpdesk   |      0 |
-|       1 | oit-lab-students@wmich.edu | labs-stu   |      0 |
-|       2 | oit-sw-students@wmich.edu  | call-stu   |      0 |
-|       3 | oit-ct-students@wmich.edu  | classtech  |      0 |
-|    NULL | NULL                       | codingclub |      0 |
-+---------+----------------------------+------------+--------+
- */
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
