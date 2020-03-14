@@ -25,7 +25,11 @@ class Department {
 		this.data.id = result[0].groupID;
 		
 		return Promise.resolve(this.data);
-    }
+	}
+	
+	async getAll(){
+		return db.query('select * from groupRoles');
+	}
 
     /**
 	 * TODO: TESTING

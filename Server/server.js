@@ -205,18 +205,6 @@ app.post('/addUser',async(req,res) => {
     .catch(err => res.send({error:err.type,errorMessage:err.description}));
 });
 
-
-app.post('/editUser',async(req, res) => {
-    let user = req.body.user;
-
-    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
-        return res.send({res: "apiKey-error"}); 
-    }
-
-    let department = new Department();
-    let employee = new Employee();
-    let values = req.body.data.map(obj => obj.value);
-
     /*
         [
             { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
@@ -227,6 +215,16 @@ app.post('/editUser',async(req, res) => {
             { type: 'select', key: 'User Role', value: 'Normal' }
         ]
     */
+app.post('/editUser',async(req, res) => {
+    let user = req.body.user;
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    let employee = new Employee();
+    let values = req.body.data.map(obj => obj.value);
 
     let bnid = values[0];
    
@@ -273,7 +271,7 @@ app.post('/lockUser',async(req, res) => {
     await department.apply({by:'groupName', value:values[1]});
 
     let employee = new Employee();
-    employee.apply(user);
+    await employee.apply(user);
 
     //check if groupId matches for the employee and whoever is making edits
     if(employee.getGroup() !== department.data.id){
@@ -311,7 +309,7 @@ app.post('/unlockUser',async(req, res) => {
     await department.apply({by:'groupName', value:values[1]});
 
     let employee = new Employee();
-    employee.apply(user);
+    await employee.apply(user);
 
     //check if groupId matches for the employee and whoever is making edits
     if(employee.getGroup() !== department.data.id){
@@ -341,7 +339,7 @@ app.post('/editDepartment', async(req, res) => {
     await department.apply({by:'groupName', value:values[0]});
 
     let employee = new Employee();
-    employee.apply(user);
+    await employee.apply(user);
 
     if(employee.getGroup() !== department.data.id){
         return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
@@ -535,7 +533,16 @@ app.post('/getShifts', (req, res) => {
     }
 });
 
+app.post('/getDepartments', async(req, res) => {
+    
+    if (!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
 
+    let department = new Department();
+
+    res.send({res:await department.getAll()});
+});
 
 app.post('/getPositions', (req, res) => {
     if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {

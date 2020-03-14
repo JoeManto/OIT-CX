@@ -64,6 +64,15 @@ export function getPositionsForUser(fetchAll = false) {
     },'/getPositions');
 }
 
+export function getAllDepartments(){
+    return apiResponse('POST',BASIC_HEADER,
+        {
+            user:getCookie('user-bnid'),
+            key: getCookie('key'),
+        },
+     '/getDepartments');
+}
+
 export function pickUpShift(user = getCookie("user-bnid"), shiftId) {
     return apiResponse('POST', BASIC_HEADER,
         {

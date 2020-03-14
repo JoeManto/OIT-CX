@@ -3,7 +3,7 @@ import '../css/AdminPage.css';
 import '../css/util.css';
 import '../css/OperationTutorialView.css';
 import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './components/OperationTutorialView'
-import {getPositionsForUser} from './DataFetchHandler'
+import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
 
  export default class AdminPage extends React.Component {
@@ -13,14 +13,21 @@ import {getPositionsForUser} from './DataFetchHandler'
         this.state = {
             isFetchingData:true,
             positions:[],
+            departments:[],
         }
     }
 
     async componentDidMount(){
-        let data = await getPositionsForUser(false);
-        data = data.res.map((obj) => obj.posName); 
-     
-        this.setState({isFetchingData:false,positions:data});
+
+        let resolves = await Promise.all([
+            getPositionsForUser(false),
+            getAllDepartments(),
+        ]);
+
+        resolves[0] = resolves[0].res.map((obj) => obj.posName); 
+        resolves[1] = resolves[1].res.map((obj) => obj.groupName);
+
+        this.setState({isFetchingData:false,positions:resolves[0],departments:resolves[1]});
     }
 
     render(){
@@ -50,7 +57,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["helpdesk-stu", "labs-stu", "call-stu"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
@@ -100,7 +107,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["helpdesk-stu","labs-stu","calls-stu","classtech"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
@@ -129,7 +136,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["helpdesk-stu", "classtech"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
                 </WTInputPanelController>
@@ -151,7 +158,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["helpdesk-stu", "classtech"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
                 </WTInputPanelController>
@@ -195,7 +202,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
@@ -225,7 +232,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
                             open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
@@ -242,7 +249,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
                             open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
@@ -265,7 +272,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
                             open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={this.state.departments}
                         />
                     </WTInputPanel>
 
