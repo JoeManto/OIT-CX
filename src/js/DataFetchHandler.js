@@ -73,6 +73,15 @@ export function getAllDepartments(){
      '/getDepartments');
 }
 
+export function getDataViewingData(){
+    return apiResponse('POST',BASIC_HEADER,
+        {
+            user:getCookie('user-bnid'),
+            key: getCookie('key'),
+        },
+     '/dataViewing');
+}
+
 export function pickUpShift(user = getCookie("user-bnid"), shiftId) {
     return apiResponse('POST', BASIC_HEADER,
         {
