@@ -94,9 +94,25 @@ class Department {
 	 * }
 	 */
 	async add(data){
-		return db.query('insert into groupRoles (emailList,groupName,Locked) values (?,?,?)',{conditions:[data.emailList,data.groupName,data.locked]})
+
+		let maxID = await db.query('select max(groupID) from groupRoles');
+
+		let newID = maxID['0']['max(groupID)'];
+
+		return db.query('insert into groupRoles (groupID,emailList,groupName,Locked) values (?,?,?,?)',{conditions:[newID+1,data.emailList,data.groupName,data.locked]})
 		.catch(err => new CXError('SQL Error','Error Inserting New Department',err));
-	}
+    }
+    
+    async delete(){
+        if(this.data.id === -1) Promise.reject(new CXError('No Department Selected'));
+        
+        db.query('DELETE * from users WHERE groupID = ?', {conditions:[this.data.id]});
+
+        db.query('DELETE * from positions WHERE groupID = ?', {conditions:[this.data.id]});
+
+        return db.query('DELETE from groupRoles WHERE groupID = ?', {conditions:[this.data.id]})
+        .catch(err => new CXError('SQL Error','Error deleting department',err));
+    }
 
 }
 

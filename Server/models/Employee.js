@@ -86,6 +86,21 @@ class Employee extends User {
 		return this.data.groupRole;
 	}
 
+	setGroup(groupID) {
+		if (!this.data) return new CXError('Employee is not selected');
+
+		db.query('update users set groupRole = ? where id = ?',{conditions:[groupID, this.data.id]});
+	}
+
+	/**
+	 * @param {int} role 0 or 1
+	 */
+	setRole(role){
+		if (!this.data) return new CXError('Employee is not selected');
+
+		db.query('update users set role = ? where id = ?',{conditions:[role, this.data.id]});
+	}
+
 	isLocked() {
 
 		if (!this.data) return new CXError('Employee is not selected');

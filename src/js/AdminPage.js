@@ -178,7 +178,7 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
                     <WTInputPanel
                     title={"Assign Supervisor"}
-                    subtitle={"Added the first user into the department"}
+                    subtitle={"Enter the supervisor's BNID e.g. abc1234"}
                     >
                         <Input1 title={"Bronco ID"} />
                     </WTInputPanel>
@@ -303,6 +303,33 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
                     </WTInputPanel>
 
                 </WTInputPanelController>
+
+                <WTInputPanelController endpoint = {'removeDepartment'} title = {'Remove Department'}
+                    description = {`
+                   Completely remove a department and all users within the department. This operation should only be used for accidentally created departments. WARNING! DATA CANNOT BE RECOVERED! 
+                    `} 
+                    numPanels={2}>
+
+                    <WTInputPanel 
+                    title={"Department"} 
+                    subtitle={"OIT Department"}>
+                        <SelectionController
+                            open = {true}
+                            fields={this.state.departments}
+                        />
+                    </WTInputPanel>
+
+                    <WTInputPanel 
+                    title={"Confirm"} 
+                    subtitle={"This is a dangerous operation. Do you wish to continue?"}>
+                        <SelectionController
+                            open = {true}
+                            fields={['Yes I understand']}
+                        />
+                    </WTInputPanel>
+
+                </WTInputPanelController>
+
                 </div>
             )}     
             </div>

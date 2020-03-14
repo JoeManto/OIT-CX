@@ -343,6 +343,44 @@ app.post('/unlockUser',async(req, res) => {
 
 });
 
+app.post('/addDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let employee = new Employee();
+    let error = await employee.apply(values[1]);
+
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+values[1]+"' doesn't match any users."});
+    }
+
+    let department = new Department();
+    let departments = await department.getAll();
+
+    for(let i = 0;i<departments.length;i++){
+        if(departments[i].groupName === values[0]){
+            return res.send({error:"Duplicate Department",errorMessage:"The department name "+values[0]+" already exists"});
+        }
+    }
+
+    await department.add({
+        groupName:values[0],
+        emailList:values[2],
+        locked:0,
+    });
+
+    await department.apply({by:'groupName',value:values[0]});
+    await employee.setGroup(department.data.id);
+    employee.setRole(1);
+
+    
+    res.send({res:"Department successfully added."});
+});
+
 app.post('/editDepartment', async(req, res) => {
     let user = req.body.user;
     let values = req.body.data.map(obj => obj.value);
@@ -413,6 +451,40 @@ app.post('/unlockDepartment', async(req, res) => {
     
     res.send({res:"Department successfully unlocked."});
 });
+
+app.post('/removeDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot delete a department you are not a part of."});
+    }
+
+    department.delete();
+    res.send({res:"Department successfully deleted."});
+})
+
+/**
+ * +---------+----------------------------+------------+--------+
+| groupID | emailList                  | groupName  | locked |
++---------+----------------------------+------------+--------+
+|       0 | oit-hd-students@wmich.edu  | helpdesk   |      0 |
+|       1 | oit-lab-students@wmich.edu | labs-stu   |      0 |
+|       2 | oit-sw-students@wmich.edu  | call-stu   |      0 |
+|       3 | oit-ct-students@wmich.edu  | classtech  |      0 |
+|    NULL | NULL                       | codingclub |      0 |
++---------+----------------------------+------------+--------+
+ */
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
