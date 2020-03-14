@@ -17,6 +17,7 @@ const EnvVarManager = require('./services/EnvVarManager');
 const Customer = require('./models/Customer');
 const Employee = require('./models/Employee');
 const Shift = require('./models/Shift');
+const User = require('./models/User');
 const Department = require('./models/Department');
 const CXError = require('./models/CXError');
 
@@ -478,6 +479,195 @@ app.post('/removeDepartment', async(req, res) => {
     res.send({res:"Department successfully deleted."});
 });
 
+/**
+ * Endpoint for addPosition
+ * position string 0
+ */
+app.post('/addPosition', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+
+    let department = new Department();
+    await department.apply({by:'groupID', value:employee.getGroup()});
+    
+    department.addPosition(values[0]);
+    res.send({res:"Position successfully added to " + department.data.name});
+});
+
+/**
+ * Endpoint for removePosition
+ * Should show a list of a positions in the current department
+ */
+app.post('/removePosition', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    let employee = new Employee();
+    await employee.apply(user);
+
+    let department = new Department();
+    await department.apply({by:'groupID', value:employee.getGroup()});
+    
+    department.removePosition(values[0]);
+    res.send({res:"Position successfully removed from " + department.data.name});
+});
+
+app.post('/dataViewing',async(req,res) => {
+    let employee = new Employee();
+    await employee.apply(req.body.user);
+    let groupID = employee.getGroup();
+
+    let data = {
+        userData:[],
+        shiftData:[],
+        helpdeskData:[],
+    }
+
+    let resolves = await Promise.all([
+        newDb.query('select * from users where groupRole = ?',{conditions:[groupID]}),
+        newDb.query('select * from positions where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from shifts INNER JOIN users ON shifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from legacyshifts INNER JOIN users ON legacyshifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from records INNER JOIN users on records.empyID = users.id'),
+        newDb.query('select * from location'),
+        newDb.query('select * from legacyrecords INNER JOIN users on legacyrecords.empyID = users.id'),
+    ])
+
+    //Add all user data
+    let users = resolves[0];
+    let positions = resolves[1];
+
+    //------------------------------------Users
+    users = users.map((obj) => {
+        return {...obj,
+            role:obj.role === 0 ? 'Normal' : 'Supervisor',
+            locked:obj.locked === 0 ? 'UnLocked' : 'Locked',
+            email:obj.email === null ? undefined : obj.email,
+        };
+    });
+
+    //------------------------------------Shifts
+    let activeShifts = resolves[2];
+    let legacyShifts = resolves[3];
+
+    let addShiftIntoData = async(shift,active) => {
+        
+        let startDate = new Date(Number(shift.shiftDateStart));
+        let endDate = new Date(Number(shift.shiftDateEnd));
+
+        let coveredBy = shift.coveredBy === null ? undefined : shift.coveredBy;
+        let timeOfDay = 'am';
+        let startTime = startDate.getHours();
+        let endTime = endDate.getHours();
+        let position = shift.positionID;
+
+        if(coveredBy){
+            let coverByEmployee = new User(undefined,'employee');
+            await coverByEmployee.lookup({by:'id',value:shift.coveredBy});
+            coveredBy = coverByEmployee.empybnid;
+        }
+
+        if(startTime >= 12){
+            timeOfDay = 'pm';
+            if(startTime !== 12){
+                startTime-=12;
+            }
+        }
+
+        if(endTime >= 12){
+            if(endTime !== 12){
+                endTime-=12;
+            }
+        }
+
+        for(let i = 0;i<positions.length;i++){
+            if(positions[i].id === position){
+                position = positions[i].posName;
+                break;
+            }
+        }
+
+        let insertData = {
+            requestor:shift.empybnid,
+            coveredBy:coveredBy,
+            startTime:startTime,
+            endTime:endTime,
+            timeOfDay:timeOfDay,
+            day:startDate.getDate(),
+            month:startDate.getMonth(),
+            year:startDate.getFullYear(),
+            shiftType:position,
+            datePosted:shift.postedDate.toLocaleDateString(),
+            active:active ? 'yes' : 'no',
+        }
+
+        data.shiftData.push(insertData);
+    }
+
+    for(let i = 0;i<activeShifts.length;i++){
+        await addShiftIntoData(activeShifts[i],true);
+    }
+
+    for(let i = 0;i<legacyShifts.length;i++){
+        await addShiftIntoData(legacyShifts[i],false);
+    }
+
+    //------------------------------------Records
+
+    let records = resolves[4];
+    let locations = resolves[5];
+    let legacyrecords = resolves[6];
+    let helpdeskRecordData = [];
+
+    let insertRecordIntoData = async(record) => {
+
+        let customer = new User(undefined,'customer');
+        customer = await customer.lookup({by:'id',value:record.cosID})
+        .catch(err => [{bnid:undefined}]);
+
+        let location;
+        for(let i = 0;i<locations.length;i++){
+            if(locations[i].id === record.location){
+                location = locations[i].locationName;
+                break;
+            }
+        }
+
+        let dataToInsert = {
+            recordBy:record.empybnid,
+            day:record.date.getDate(),
+            month:record.date.getMonth(),
+            year:record.date.getFullYear(),
+            customer:customer[0].bnid,
+            location:location,
+        }
+
+        helpdeskRecordData.push(dataToInsert);
+    }
+
+    for(let i = 0;i<records.length;i++){
+        await insertRecordIntoData(records[i]);
+    }
+
+    for(let i = 0;i<legacyrecords.length;i++){
+        await insertRecordIntoData(legacyrecords[i]);
+    }
+
+    data.userData = users;
+    data.helpdeskData = helpdeskRecordData;
+    res.send({res:data});
+});
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
