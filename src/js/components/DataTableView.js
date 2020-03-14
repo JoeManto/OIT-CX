@@ -5,32 +5,37 @@ import { useTable, useFilters, useGlobalFilter } from 'react-table'
 import matchSorter from 'match-sorter'
 
 const Styles = styled.div`
-  padding: 1rem;
+	padding: 1rem;
+	  
+	.results {
+		color:darkgrey;
+		margin: 0 auto;
+	}	
+	table {
+	border-spacing: 0;
+	border: 1px solid black;
+	margin: 0 auto;
 
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
+	tr {
+		:last-child {npm
+		td {
+			border-bottom: 0;
+		}
+		}
+	}
 
-    tr {
-      :last-child {npm
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
+	th,
+	td {
+		margin: 0;
+		padding: 0.5rem;
+		border-bottom: 1px solid black;
+		border-right: 1px solid black;
 
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
+		:last-child {
+		border-right: 0;
+		}
+	}
+	}
 `
 
 function GlobalFilter({
@@ -293,8 +298,8 @@ function Table({ columns, data }) {
 			</tbody>
 		  </table>
 		  <br />
-		  <div>Showing the first 20 results of {rows.length} rows</div>
-		  <div>
+		  <div className = {'results'}>Showing the first 20 results of {rows.length} rows</div>
+		  <div className = {'results'}>
 			<pre>
 			  <code>{JSON.stringify(state.filters, null, 2)}</code>
 			</pre>
