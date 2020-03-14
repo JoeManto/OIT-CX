@@ -188,10 +188,10 @@ app.post('/addUser',async(req,res) => {
     let department = new Department();
     await department.apply({by:'groupName',value:values[1]});
 
-    let userGroup = await newDb.query('select * from users where empybnid = ?',{conditions:[req.body.user]})
-    .catch(err => console.log(err));
+    let employee = new Employee();
+    await employee.apply(req.body.user);
 
-    if(userGroup[0].groupRole !== department.data.id){
+    if(employee.getGroup() !== department.data.id){
         return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allowed."});
     }
 
@@ -240,6 +240,10 @@ app.post('/editUser',async(req, res) => {
         return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
     }
 
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
     let new_data = {
         empyname:values[1],
         surname:values[2],
@@ -286,6 +290,11 @@ app.post('/lockUser',async(req, res) => {
         return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
     }
 
+    //check if groupId matches for the employee being edited
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
     await employee.editLock(1);
     res.send({res:"User successfully locked."});
 
@@ -324,6 +333,11 @@ app.post('/unlockUser',async(req, res) => {
         return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
     }
 
+    //check if groupId matches for the employee being edited
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
     await employee.editLock(0);
     res.send({res:"User successfully unlocked."});
 
@@ -342,7 +356,7 @@ app.post('/editDepartment', async(req, res) => {
     await employee.apply(user);
 
     if(employee.getGroup() !== department.data.id){
-        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
     }
 
     let new_data = {
@@ -352,6 +366,52 @@ app.post('/editDepartment', async(req, res) => {
     };
     await department.edit(new_data);
     res.send({res:"Department successfully updated."});
+});
+
+app.post('/lockDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
+    }
+
+    department.editLock(1);
+    
+    res.send({res:"Department successfully locked."});
+});
+
+app.post('/unlockDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
+    }
+
+    department.editLock(0);
+    
+    res.send({res:"Department successfully unlocked."});
 });
 
 app.post('/postShift', (req, res) => {

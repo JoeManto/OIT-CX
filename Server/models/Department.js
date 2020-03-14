@@ -41,7 +41,7 @@ class Department {
 
 		Promise.all([
 			db.query('update groupRoles set locked = ? where groupID = ?',{conditions:[locked,this.data.id]}),
-			db.query('update users set locked = ? where groupRole = ?',{conditions:[locked,this.data.id]}),
+			db.query('update users set locked = ? where groupRole = ? AND role = 0',{conditions:[locked,this.data.id]}),
 		]);	
     }
 

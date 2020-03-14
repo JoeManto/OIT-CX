@@ -223,7 +223,24 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'lockDepartment'} title = {'Lock Department'}
                     description = {`
-                    Remove access for all users within a department.	
+                    Remove access for all non-supervisor users within a department. 	
+                    `} 
+                    numPanels={1}>
+
+                    <WTInputPanel 
+                    title={"Department"} 
+                    subtitle={"OIT Department"}>
+                        <SelectionController
+                            open = {true}
+                            fields={this.state.departments}
+                        />
+                    </WTInputPanel>
+
+                </WTInputPanelController>
+
+                <WTInputPanelController endpoint = {'unlockDepartment'} title = {'Unlock Department'}
+                    description = {`
+                   Grant access to all users within a department.	
                     `} 
                     numPanels={1}>
 
