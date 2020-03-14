@@ -10,6 +10,8 @@ const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
+const dotenv = require('dotenv');
+const EnvVarManager = require('./services/EnvVarManager');
 
 //models
 const Customer = require('./models/Customer');
@@ -190,7 +192,7 @@ app.post('/addUser',async(req,res) => {
     .catch(err => console.log(err));
 
     if(userGroup[0].groupRole !== department.data.id){
-        return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allow"});
+        return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allowed."});
     }
 
     //check if user exists
@@ -198,7 +200,7 @@ app.post('/addUser',async(req,res) => {
 
     employeeToAdd.create(values[0],department.data.id,role)
     .then(res => {
-        res.send({res:"User successfully added into the database"});
+        res.send({res:"User successfully added into the database."});
     })
     .catch(err => res.send({error:err.type,errorMessage:err.description}));
 });
@@ -233,11 +235,11 @@ app.post('/editUser',async(req, res) => {
     await employee.apply(user);
 
     if(employee.getGroup() !== department.data.id){
-        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allow"});
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
     }
 
     if((await employee.apply(bnid)) instanceof Error){
-        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users"});
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
     }
 
     let new_data = {
@@ -250,7 +252,108 @@ app.post('/editUser',async(req, res) => {
 
     await employee.edit(new_data);
 
-    res.send({res:"User data successfully edited"});
+    res.send({res:"User data successfully edited."});
+});
+
+/*
+        [
+            { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
+            { type: 'select', key: 'Department', value: 'classtech' },
+        ]
+
+*/
+app.post('/lockUser',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[1]});
+
+    let employee = new Employee();
+    employee.apply(user);
+
+    //check if groupId matches for the employee and whoever is making edits
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+    
+    let error = await employee.apply(values[0])
+    .catch(err => err);
+
+    //check if user exists
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+    }
+
+    await employee.editLock(1);
+    res.send({res:"User successfully locked."});
+
+});
+
+/*
+        [
+            { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
+            { type: 'select', key: 'Department', value: 'classtech' },
+        ]
+
+*/
+app.post('/unlockUser',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[1]});
+
+    let employee = new Employee();
+    employee.apply(user);
+
+    //check if groupId matches for the employee and whoever is making edits
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+    
+    let error = await employee.apply(values[0])
+    .catch(err => err);
+
+    //check if user exists
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+    }
+
+    await employee.editLock(0);
+    res.send({res:"User successfully unlocked."});
+
+});
+
+app.post('/editDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+
+    let new_data = {
+        groupName:values[1],
+        emailList:values[2],
+        locked:values[3],
+    };
+    await department.edit(new_data);
+    res.send({res:"Department successfully updated."});
 });
 
 app.post('/postShift', (req, res) => {

@@ -22,9 +22,9 @@ class Department {
 
         this.data.email = result[0].emailList;
         this.data.name = result[0].groupName;
-        this.data.id = result[0].groupID;
-
-        return this.data;
+		this.data.id = result[0].groupID;
+		
+		return Promise.resolve(this.data);
     }
 
     /**

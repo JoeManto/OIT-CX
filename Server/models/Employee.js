@@ -107,6 +107,8 @@ class Employee extends User {
 	}
 
 	/**
+	 * TODO: TESTS
+	 * 
 	 * @param {object} new_data
 	 * 
 	 * {
@@ -119,24 +121,34 @@ class Employee extends User {
 	 * }
 	 */
 
-	/*
-	+-----------+--------------+------+-----+---------+----------------+
-| Field     | Type         | Null | Key | Default | Extra          |
-+-----------+--------------+------+-----+---------+----------------+
-| id        | int(11)      | NO   | PRI | NULL    | auto_increment |
-| empyname  | varchar(255) | YES  |     | NULL    |                |
-| surname   | varchar(255) | YES  |     | NULL    |                |
-| password  | varchar(255) | YES  |     | NULL    |                |
-| role      | int(11)      | YES  |     | NULL    |                |
-| empybnid  | varchar(255) | YES  |     | NULL    |                |
-| email     | varchar(255) | YES  |     | NULL    |                |
-| groupRole | int(11)      | YES  |     | NULL    |                |
-| locked    | tinyint(4)   | YES  |     | 0       |                |
-+-----------+--------------+------+-----+---------+----------------+ 
-	*/
 	async edit(new_data) {
-		if (!this.data) return new CXError('Employee is not selected');
 
+		if (!this.data) return new CXError('Employee is not selected');
+		
+		if(new_data.empyname != undefined){
+			await db.query('update users set empyname = ? WHERE id = ?', {conditions:[new_data.empyname,this.data.id]})
+			.catch(err => new CXError('SQL Error','Updating Employee Name',err));
+		}
+
+		if(new_data.surname != undefined){
+			await db.query('update users set surname = ? WHERE id = ?', {conditions:[new_data.surname,this.data.id]})
+			.catch(err => new CXError('SQL Error','Updating Employee surname',err));
+		}
+
+		if(new_data.role != undefined){
+			await db.query('update users set role = ? WHERE id = ?', {conditions:[new_data.role,this.data.id]})
+			.catch(err => new CXError('SQL Error','Updating Employee Role',err));
+		}
+
+		if(new_data.email != undefined){
+			await db.query('update users set email = ? WHERE id = ?', {conditions:[new_data.email,this.data.id]})
+			.catch(err => new CXError('SQL Error','Updating Employee Email',err));
+		}
+
+		if(new_data.groupRole != undefined){
+			await db.query('update users set groupRole = ? WHERE id = ?', {conditions:[new_data.groupRole,this.data.id]})
+			.catch(err => new CXError('SQL Error','Updating Employee groupRole',err));
+		}
 	}
 
 	/**
@@ -146,33 +158,30 @@ class Employee extends User {
 	 * @error return the respected error
 	 * @returns the email address of the selected employee
 	 */
-	async getEmail() {
+  	async getEmail(){
 
-		if (!this.data) return new Error('getEmail error: No Employee Selected');
+		if(!this.data) return new Error('getEmail error: No Employee Selected');
 
-		let cache = await db.query('select * from users where empybnid = ?', { conditions: [this.data.empybnid] });
-
-		if (cache.length > 0 && cache[0].email !== null) {
-			return cache[0].email;
+		let cache = await db.query('select * from users where empybnid = ?',{conditions:[this.data.empybnid]});
+		
+		if(cache.length > 0 && cache[0].email !== null){
+		return cache[0].email;
 		}
 
 		let result = await ldapSearchClient.search(this.data.empybnid)
-			.catch(err => err);
+		.catch(err => err);
 
-		if (result.data.length === 0) {
+		if(result.data.length === 0){
 			return Promise.reject(new Error('Employee could not be found with the provided bnid'));
 		}
 
 		let email = result.data[0].mail;
 
-		db.query('update users set email = ? where empybnid = ?', { conditions: [email, this.data.empybnid] })
-			.catch(err => console.log(err));
+		db.query('update users set email = ? where empybnid = ?',{conditions:[email,this.data.empybnid]})
+		.catch(err => console.log(err));
 
 		return email;
-	}
-
+  	}
 }
 
 module.exports = Employee;
-
-

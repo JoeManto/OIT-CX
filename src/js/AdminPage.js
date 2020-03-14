@@ -27,9 +27,7 @@ import {getPositionsForUser} from './DataFetchHandler'
         return(
 			<div className = "admin-operations-cnt">
 			<h1 style = {{fontStyle:'oblique'}}>Operations</h1>
-			<p style = {{color:'darkgrey'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
-			 standard dummy text ever since the 1500s.>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-			  industry's standard dummy text ever since the 1500s.</p>
+			<p style = {{color:'darkgrey'}}>The operations below allow you to manage departments and users within OIT-CX. You will only be able to modify data within your current department. Click start on any of the operations listed below to begin making changes.</p>
 
             {this.state.isFetchingData ? (
                 <h2>fetching data</h2>
@@ -37,7 +35,7 @@ import {getPositionsForUser} from './DataFetchHandler'
                 <div className = "admin-operations-list-cnt">
 				<WTInputPanelController endpoint = {'addUser'} title = {'Add User'}
 				 description = {`
-				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+				 Add a user to your department.
 				`} 
 				numPanels={3}>
                     <WTInputPanel
@@ -66,9 +64,9 @@ import {getPositionsForUser} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'editUser'} title = {'Edit User'}
 				 description = {`
-				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+				Edit an existing user's information. This user must be in your department. The BNID field will be the user whose information is edited.
 				`} 
-				numPanels={4}>
+				numPanels={6}>
                     <WTInputPanel
                     title={"Bronco Net-ID"}
                     subtitle={"Western Michigan University ID"}
@@ -76,21 +74,33 @@ import {getPositionsForUser} from './DataFetchHandler'
                         <Input1 title={"Bnid"} />
                     </WTInputPanel>
 
+                    <WTInputPanel
+                    title={"First Name"}
+                    subtitle={"Preferred First Name"}
+                    >
+                        <Input1 title={"empyname"} />
+                    </WTInputPanel>
+
+                    <WTInputPanel
+                    title={"Last Name"}
+                    subtitle={"Preferred Last Name"}
+                    >
+                        <Input1 title={"surname"} />
+                    </WTInputPanel>
+
+                    <WTInputPanel
+                    title={"Email"}
+                    subtitle={"Western Michigan Email"}
+                    >
+                        <Input1 title={"email"} />
+                    </WTInputPanel>
+
                     <WTInputPanel 
                     title={"Department"} 
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
-                        />
-                    </WTInputPanel>
-
-                    <WTInputPanel 
-                    title={"Account Status"} 
-                    subtitle={"This flag effectively removes a user without removing other data contributions. Note the locked flag will omit the ability to login."}>
-                        <SelectionController
-							open = {true}
-                            fields={["Normal", "Locked"]}
+                            fields={["helpdesk-stu","labs-stu","calls-stu","classtech"]}
                         />
                     </WTInputPanel>
 
@@ -102,9 +112,9 @@ import {getPositionsForUser} from './DataFetchHandler'
                     </WTInputPanel>
                 </WTInputPanelController>
 
-                <WTInputPanelController endpoint = {'Lock User'} title = {'Lock User'}
+                <WTInputPanelController endpoint = {'lockUser'} title = {'Lock User'}
 				 description = {`
-				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+				Deny a user access to this application. This user must be in your department.
 				`} 
 				numPanels={2}>
                     <WTInputPanel
@@ -119,14 +129,36 @@ import {getPositionsForUser} from './DataFetchHandler'
                     subtitle={"OIT Department"}>
                         <SelectionController
 							open = {true}
-                            fields={["Help-Desk", "Class Tech", "Operators"]}
+                            fields={["helpdesk-stu", "classtech"]}
+                        />
+                    </WTInputPanel>
+                </WTInputPanelController>
+
+                <WTInputPanelController endpoint = {'unlockUser'} title = {'Unlock User'}
+				 description = {`
+				Allow a user access to this application. This user must be in your department.
+				`} 
+				numPanels={2}>
+                    <WTInputPanel
+                    title={"Bronco Net-ID"}
+                    subtitle={"Western Michigan University ID"}
+                    >
+                        <Input1 title={"Bnid"} />
+                    </WTInputPanel>
+
+                    <WTInputPanel 
+                    title={"Department"} 
+                    subtitle={"OIT Department"}>
+                        <SelectionController
+							open = {true}
+                            fields={["helpdesk-stu", "classtech"]}
                         />
                     </WTInputPanel>
                 </WTInputPanelController>
 
                 <WTInputPanelController endpoint = {'addDepartment'} title = {'Add Department'}
 				 description = {`
-				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+				Create a new department and assign a department supervisor. This supervisor will be able to add, edit, and lock users within this department.
 				`} 
 				numPanels={2}>
 
@@ -155,7 +187,7 @@ import {getPositionsForUser} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'editDepartment'} title = {'Edit Department'}
 				 description = {`
-				 Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+				Update department name and email. Edits will be available to your department only.
 				`} 
 				numPanels={3}>
                     <WTInputPanel 
@@ -184,7 +216,7 @@ import {getPositionsForUser} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'lockDepartment'} title = {'Lock Department'}
                     description = {`
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+                    Remove access for all users within a department.	
                     `} 
                     numPanels={1}>
 
@@ -201,7 +233,7 @@ import {getPositionsForUser} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'addPosition'} title = {'Add Position'}
                     description = {`
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+                    Add a new position to your department.	
                     `} 
                     numPanels={1}>
 
@@ -224,7 +256,7 @@ import {getPositionsForUser} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'removePosition'} title = {'Remove Position'}
                     description = {`
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.	
+                    Remove a position from your department.
                     `} 
                     numPanels={2}>
 
