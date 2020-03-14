@@ -257,18 +257,9 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'addPosition'} title = {'Add Position'}
                     description = {`
-                    Add a new position to your department.	
+                    Add a new position to your current department.	
                     `} 
                     numPanels={1}>
-
-                    <WTInputPanel 
-                    title={"Department"} 
-                    subtitle={"OIT Department"}>
-                        <SelectionController
-                            open = {true}
-                            fields={this.state.departments}
-                        />
-                    </WTInputPanel>
 
                     <WTInputPanel
                     title={"Position Name"}
@@ -280,18 +271,9 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
                 <WTInputPanelController endpoint = {'removePosition'} title = {'Remove Position'}
                     description = {`
-                    Remove a position from your department.
+                    Remove a position from your current department.
                     `} 
-                    numPanels={2}>
-
-                    <WTInputPanel 
-                    title={"Department"} 
-                    subtitle={"OIT Department"}>
-                        <SelectionController
-                            open = {true}
-                            fields={this.state.departments}
-                        />
-                    </WTInputPanel>
+                    numPanels={1}>
 
                     <WTInputPanel 
                     title={"Position"} 

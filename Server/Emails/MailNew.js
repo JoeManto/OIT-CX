@@ -167,7 +167,7 @@ class Mail {
             subject : 'Shift Posting',
         }
 
-        this.send(this.adminTransporter,mailOptions,'/shiftposting.html',replacements);
+        //this.send(this.adminTransporter,mailOptions,'/shiftposting.html',replacements);
     }
 
 
