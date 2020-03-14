@@ -114,6 +114,22 @@ class Department {
         .catch(err => new CXError('SQL Error','Error deleting department',err));
     }
 
+    /**
+     * Add position function to add a position to the currently selected department
+     */
+    async addPosition(posNameStr){
+        if(this.data.id === -1) Promise.reject(new CXError('No Department Selected'));
+        db.query('INSERT INTO positions (groupID,posName) VALUES (?,?)', {conditions:[this.data.id, posNameStr]});
+    }
+
+     /**
+     * Remove position function to remove a position within your department
+     */
+    async removePosition(posNameStr){
+        if(this.data.id === -1) Promise.reject(new CXError('No Department Selected'));
+        db.query('DELETE FROM positions WHERE groupID = ? AND posName = ?', {conditions:[this.data.id, posNameStr]});
+    }
+
 }
 
 module.exports = Department;
