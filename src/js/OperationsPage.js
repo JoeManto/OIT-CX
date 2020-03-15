@@ -1,12 +1,13 @@
 import React from 'react';
-import '../css/AdminPage.css';
+import '../css/OperationsPage.css';
 import '../css/util.css';
 import '../css/OperationTutorialView.css';
 import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './components/OperationTutorialView'
 import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
+import {AdminNavBar} from './components/AdminNavBar';
 
 
- export default class AdminPage extends React.Component {
+ export default class OperationsPage extends React.Component {
     constructor(props){
         super(props);
 
@@ -32,6 +33,8 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
     render(){
         return(
+            <div>
+            <AdminNavBar/>
 			<div className = "admin-operations-cnt">
 			<h1 style = {{fontStyle:'oblique'}}>Operations</h1>
 			<p style = {{color:'darkgrey'}}>The operations below allow you to manage departments and users within OIT-CX. You will only be able to modify data within your current department. Click start on any of the operations listed below to begin making changes.</p>
@@ -314,6 +317,7 @@ import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
 
                 </div>
             )}     
+            </div>
             </div>
         );
     }
