@@ -2,6 +2,7 @@ import React from 'react';
 import {UsersDataTable,ShiftDataTable,HelpDeskRecords} from './components/DataTableView';
 import {getDataViewingData} from './DataFetchHandler';
 import '../css/DataViewingPage.css';
+import {AdminNavBar} from './components/AdminNavBar';
 
 export default class DataViewingPage extends React.Component {
     constructor(props){
@@ -24,6 +25,7 @@ export default class DataViewingPage extends React.Component {
     render(){
         return(
             <div>
+				<AdminNavBar/>
                 {!this.state.fetching &&
                     <div>
 						<CollapsibleContentWithHeader open = {true} header = {'Users Table'} subheader = {`
