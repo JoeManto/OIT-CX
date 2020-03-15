@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../css/components_css/AdminNavBar.css';
 import {IP} from '../Util';
+import {getCookie} from '../Authentication';
 
 export class AdminNavBar extends React.Component {
     render(){
@@ -8,11 +9,11 @@ export class AdminNavBar extends React.Component {
             <div className = {'nav-cnt'}>
                 <Logo/>
                 <div className = {'nav-item-cnt'}>
-                    <NavItem name = {'Operations'} link = {'/operations'}  />
-                    <NavItem name = {'Data Viewing'} link = {'/dataviewing'} />
-                    <NavItem name = {'App Settings'} link = {'/appsetings'} />
+                    <NavItem name = {'Operations'} link = {'/Operations'}  />
+                    <NavItem name = {'Data Viewing'} link = {'/Dataviewing'} />
+                    <NavItem name = {'App Settings'} link = {'/Appsetings'} />
+                    <button className = {'nav-item-btn'} style = {{marginLeft:'100px'}}>{'logout, '}{getCookie('user-bnid')}</button>
                 </div>
-               
             </div>
         );
     }
@@ -21,7 +22,10 @@ export class AdminNavBar extends React.Component {
 function NavItem(props){
 
     let isActive = () => {
-        return props.link === window.location.pathname; 
+        let path = window.location.pathname.toLocaleLowerCase();
+        let link = props.link.toLocaleLowerCase();
+
+        return path === link; 
     }
 
     let onLinkClick = () => {
