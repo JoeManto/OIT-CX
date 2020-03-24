@@ -1,0 +1,37 @@
+.nav-cnt {
+    display: flex;
+    flex-direction: row;
+    margin: 50px;
+    margin-left: 20px;
+}
+
+.nav-item-cnt {
+    display: flex;
+    flex-direction: row;
+    margin-left: 5px;
+}
+
+.logo-cnt {
+    padding: 20px;
+    background: white;
+    color:var(--primary);
+}
+
+.nav-item-btn {
+    background: transparent;
+    color:var(--text);
+    border: transparent;
+    font-style: oblique;
+    font-weight: 800;
+    padding: 15px;
+}
+
+.nav-item-btn:hover{
+    background: white;
+    color:var(--primary);
+}
+
+.active {
+    background: white;
+    color:var(--primary);
+}

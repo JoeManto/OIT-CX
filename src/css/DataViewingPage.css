@@ -1,0 +1,40 @@
+.collapsible-cnt {
+    margin-bottom: 50px;
+}
+
+.header {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.header-text{
+    margin-left: 20px;
+}
+.subHeader {
+    font-size: 0.8em;
+    margin-left: 20px;
+    color:darkgray;
+    font-weight: 500;
+}
+
+.arrow-down {
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    
+    border-top: 15px solid darkgray;
+    float: right;
+    margin-right: 20px;
+}
+
+.arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    
+    border-bottom: 15px solid lightgreen;
+    float: right;
+    margin-right: 20px;
+}

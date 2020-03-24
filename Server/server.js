@@ -10,8 +10,16 @@ const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
+const dotenv = require('dotenv');
+const EnvVarManager = require('./services/EnvVarManager');
+
+//models
 const Customer = require('./models/Customer');
+const Employee = require('./models/Employee');
 const Shift = require('./models/Shift');
+const User = require('./models/User');
+const Department = require('./models/Department');
+const CXError = require('./models/CXError');
 
 //child processes
 const cp = require('child_process');
@@ -82,7 +90,7 @@ app.get('/time', function (req, res) {
  */
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
-   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key))
+   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key,false))
         return res.send({res: "apiKey-error"});
 
     apiService.expireOpenKeyForUser(req.body.user);
@@ -98,13 +106,17 @@ app.post('/auth', async(req,res) => {
     .then(res => {return res[0]})
     .catch(err => res.send({res:"auth-failed",error:err}));
 
+    if(result.locked === 1){
+        return res.send({res: "auth-failed", error: "Account is locked"});
+    }
+
     //no records from database : auth session user is unknown
     if(!result)
         return res.send({res: "auth-failed", error: "User Not-Found"});
     
     if(result.password === pass){
         //Create user instance and send a success full login response
-        let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+        let key = apiService.createKeyForUser(user, result.role === 1,18000);
         return res.send({res: "auth-success", key: key});
     }
 
@@ -116,7 +128,7 @@ app.post('/auth', async(req,res) => {
     return ldapWrapper.authUser(user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
-                let key = apiService.createKeyForUser(user, result.userRole === 1,18000);
+                let key = apiService.createKeyForUser(user, result.role === 1,18000);
                 return res.send({res: "auth-success", key: key});
             })
             .catch((err) => {
@@ -126,7 +138,7 @@ app.post('/auth', async(req,res) => {
 
 app.post('/getUsers', async(req, res) => {
 
-    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true))
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,false))
         res.send({res: "apiKey-error"});
 
     //Query all users
@@ -159,63 +171,509 @@ app.post('/searchUser',async(req,res) => {
     });
 });
 
-app.post('/addUser', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
-        console.log(req.body.inputs);
-        console.log(req.body.keys);
-        let getInputMappingIndex = (key) => {
-            for (let i = 0; i < req.body.keys.length; i++) {
-                if (key === req.body.keys[i]) {
-                    return req.body.inputs[i];
-                }
-            }
-        };
+//Error Messages
+// res.send({error:{error:"User Exists",errorMessage:"A user with the same bnid already exists in the database"}});
 
-        let sqlUserLookUp = "select * from users where empybnid = ?";
-        sqlUserLookUp = mysql.format(sqlUserLookUp, [getInputMappingIndex("bnid")]);
-        db.query(sqlUserLookUp, (err, result) => {
-            if (err) {
-                res.send({res: "user-error", error: "Couldn't search for user"});
-                return;
-            }
-            if (result.length !== 0) {
-                res.send({res: "user-error", error: "user already exists"});
-                return;
-            }
-            let createUser = "insert into users (empyname,surname,empybnid,role,groupRole) values (?,?,?,?,?)";
+//Success Messages
+// res.send({res:"Users Successfully added into the database"})
 
-            ldapSearchClient.search(getInputMappingIndex("bnid")).then(ldapResult =>{
-                if(ldapResult.data.length === 0){
-                    res.send({res:"user-error",error:"User couldn't be found in LDAP server"});
-                }else{
-                    res.send({res: "success"});
-                    createUser = mysql.format(createUser,
-                        [getInputMappingIndex("fstName"),ldapResult.data[0].sn,
-                        getInputMappingIndex("bnid"),getInputMappingIndex('role'), getInputMappingIndex('pos')]);
-                        db.query(createUser, (err, result) => {
-                        if (err) {
-                            res.send({res: "user-error", error: "Couldn't add user"});
-                            return;
-                        }
-                        if (result.length !== 0) {
-                            res.send({res: "success"});
-                        }
-                        });
-                }
-            });
-
-
-        });
-    } else {
-        res.send({res: "apiKey-error"});
+app.post('/addUser',async(req,res) => {
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
     }
+
+    let values = req.body.data.map(obj => obj.value);
+
+    let bnid = values[0];
+    let role = values[2] === 'Normal' ?  0 : 1;
+    let department = new Department();
+    await department.apply({by:'groupName',value:values[1]});
+
+    let employee = new Employee();
+    await employee.apply(req.body.user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allowed."});
+    }
+
+    //check if user exists
+    let employeeToAdd = new Employee();
+
+    employeeToAdd.create(values[0],department.data.id,role)
+    .then(res => {
+        res.send({res:"User successfully added into the database."});
+    })
+    .catch(err => res.send({error:err.type,errorMessage:err.description}));
+});
+
+    /*
+        [
+            { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
+            { type: 'input', key: 'First Name', value: 'joe' },
+            { type: 'input', key: 'Last Name', value: 'manto' },
+            { type: 'input', key: 'Email', value: 'joe.manto@wmich.edu' },
+            { type: 'select', key: 'Department', value: 'classtech' },
+            { type: 'select', key: 'User Role', value: 'Normal' }
+        ]
+    */
+app.post('/editUser',async(req, res) => {
+    let user = req.body.user;
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    let employee = new Employee();
+    let values = req.body.data.map(obj => obj.value);
+
+    let bnid = values[0];
+   
+    await department.apply({by:'groupName',value:values[4]});
+
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+
+    if((await employee.apply(bnid)) instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+    }
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
+    let new_data = {
+        empyname:values[1],
+        surname:values[2],
+        email:values[3],
+        groupRole: department.data.id,
+        role: values[5] === 'Normal' ? 0 : 1,
+    };
+
+    await employee.edit(new_data);
+
+    res.send({res:"User data successfully edited."});
+});
+
+/*
+        [
+            { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
+            { type: 'select', key: 'Department', value: 'classtech' },
+        ]
+
+*/
+app.post('/lockUser',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[1]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    //check if groupId matches for the employee and whoever is making edits
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+    
+    let error = await employee.apply(values[0])
+    .catch(err => err);
+
+    //check if user exists
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+    }
+
+    //check if groupId matches for the employee being edited
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
+    await employee.editLock(1);
+    res.send({res:"User successfully locked."});
+
+});
+
+/*
+        [
+            { type: 'input', key: 'Bronco Net-ID', value: 'jfj5666' },
+            { type: 'select', key: 'Department', value: 'classtech' },
+        ]
+
+*/
+app.post('/unlockUser',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[1]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    //check if groupId matches for the employee and whoever is making edits
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"editing users outside of your department isn't allowed."});
+    }
+    
+    let error = await employee.apply(values[0])
+    .catch(err => err);
+
+    //check if user exists
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+    }
+
+    //check if groupId matches for the employee being edited
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"That user is not in "+department.data.name+"department"});
+    }
+
+    await employee.editLock(0);
+    res.send({res:"User successfully unlocked."});
+
+});
+
+app.post('/addDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let employee = new Employee();
+    let error = await employee.apply(values[1]);
+
+    if(error instanceof Error){
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+values[1]+"' doesn't match any users."});
+    }
+
+    let department = new Department();
+    let departments = await department.getAll();
+
+    for(let i = 0;i<departments.length;i++){
+        if(departments[i].groupName === values[0]){
+            return res.send({error:"Duplicate Department",errorMessage:"The department name "+values[0]+" already exists"});
+        }
+    }
+
+    await department.add({
+        groupName:values[0],
+        emailList:values[2],
+        locked:0,
+    });
+
+    await department.apply({by:'groupName',value:values[0]});
+    await employee.setGroup(department.data.id);
+    employee.setRole(1);
+
+    
+    res.send({res:"Department successfully added."});
+});
+
+app.post('/editDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
+    }
+
+    let new_data = {
+        groupName:values[1],
+        emailList:values[2],
+        locked:values[3],
+    };
+    await department.edit(new_data);
+    res.send({res:"Department successfully updated."});
+});
+
+app.post('/lockDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
+    }
+
+    department.editLock(1);
+    
+    res.send({res:"Department successfully locked."});
+});
+
+app.post('/unlockDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(employee.getGroup() !== department.data.id){
+        return res.send({error:"Permission Error",errorMessage:"you cannot edit a department you are not a part of."});
+    }
+
+    department.editLock(0);
+    
+    res.send({res:"Department successfully unlocked."});
+});
+
+app.post('/removeDepartment', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let department = new Department();
+    await department.apply({by:'groupName', value:values[0]});
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    let numUsers = await newDb.query('select * from users where groupRole = ?',{conditions:[department.data.id]});
+
+    if(numUsers.length >= 2){
+        if(employee.getGroup() !== department.data.id){
+            return res.send({error:"Permission Error",errorMessage:"you cannot delete a department that you're not a part of because this department has more than one active user."});
+        }
+    }
+
+    department.delete();
+    res.send({res:"Department successfully deleted."});
+});
+
+/**
+ * Endpoint for addPosition
+ * position string 0
+ */
+app.post('/addPosition', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+
+    let department = new Department();
+    await department.apply({by:'groupID', value:employee.getGroup()});
+    
+    department.addPosition(values[0]);
+    res.send({res:"Position successfully added to " + department.data.name});
+});
+
+/**
+ * Endpoint for removePosition
+ * Should show a list of a positions in the current department
+ */
+app.post('/removePosition', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+    let employee = new Employee();
+    await employee.apply(user);
+
+    let department = new Department();
+    await department.apply({by:'groupID', value:employee.getGroup()});
+    
+    department.removePosition(values[0]);
+    res.send({res:"Position successfully removed from " + department.data.name});
+});
+
+app.post('/dataViewing',async(req,res) => {
+    let employee = new Employee();
+    await employee.apply(req.body.user);
+    let groupID = employee.getGroup();
+
+    let data = {
+        userData:[],
+        shiftData:[],
+        helpdeskData:[],
+    }
+
+    let resolves = await Promise.all([
+        newDb.query('select * from users where groupRole = ?',{conditions:[groupID]}),
+        newDb.query('select * from positions where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from shifts INNER JOIN users ON shifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from legacyshifts INNER JOIN users ON legacyshifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from records INNER JOIN users on records.empyID = users.id'),
+        newDb.query('select * from location'),
+        newDb.query('select * from legacyrecords INNER JOIN users on legacyrecords.empyID = users.id'),
+    ])
+
+    //Add all user data
+    let users = resolves[0];
+    let positions = resolves[1];
+
+    //------------------------------------Users
+    users = users.map((obj) => {
+        return {...obj,
+            role:obj.role === 0 ? 'Normal' : 'Supervisor',
+            locked:obj.locked === 0 ? 'UnLocked' : 'Locked',
+            email:obj.email === null ? undefined : obj.email,
+        };
+    });
+
+    //------------------------------------Shifts
+    let activeShifts = resolves[2];
+    let legacyShifts = resolves[3];
+
+    let addShiftIntoData = async(shift,active) => {
+        
+        let startDate = new Date(Number(shift.shiftDateStart));
+        let endDate = new Date(Number(shift.shiftDateEnd));
+
+        let coveredBy = shift.coveredBy === null ? undefined : shift.coveredBy;
+        let timeOfDay = 'am';
+        let startTime = startDate.getHours();
+        let endTime = endDate.getHours();
+        let position = shift.positionID;
+
+        if(coveredBy){
+            let coverByEmployee = new User(undefined,'employee');
+            await coverByEmployee.lookup({by:'id',value:shift.coveredBy});
+            coveredBy = coverByEmployee.empybnid;
+        }
+
+        if(startTime >= 12){
+            timeOfDay = 'pm';
+            if(startTime !== 12){
+                startTime-=12;
+            }
+        }
+
+        if(endTime >= 12){
+            if(endTime !== 12){
+                endTime-=12;
+            }
+        }
+
+        for(let i = 0;i<positions.length;i++){
+            if(positions[i].id === position){
+                position = positions[i].posName;
+                break;
+            }
+        }
+
+        let insertData = {
+            requestor:shift.empybnid,
+            coveredBy:coveredBy,
+            startTime:startTime,
+            endTime:endTime,
+            timeOfDay:timeOfDay,
+            day:startDate.getDate(),
+            month:startDate.getMonth(),
+            year:startDate.getFullYear(),
+            shiftType:position,
+            datePosted:shift.postedDate.toLocaleDateString(),
+            active:active ? 'yes' : 'no',
+        }
+
+        data.shiftData.push(insertData);
+    }
+
+    for(let i = 0;i<activeShifts.length;i++){
+        await addShiftIntoData(activeShifts[i],true);
+    }
+
+    for(let i = 0;i<legacyShifts.length;i++){
+        await addShiftIntoData(legacyShifts[i],false);
+    }
+
+    //------------------------------------Records
+
+    let records = resolves[4];
+    let locations = resolves[5];
+    let legacyrecords = resolves[6];
+    let helpdeskRecordData = [];
+
+    let insertRecordIntoData = async(record) => {
+
+        let customer = new User(undefined,'customer');
+        customer = await customer.lookup({by:'id',value:record.cosID})
+        .catch(err => [{bnid:undefined}]);
+
+        let location;
+        for(let i = 0;i<locations.length;i++){
+            if(locations[i].id === record.location){
+                location = locations[i].locationName;
+                break;
+            }
+        }
+
+        let dataToInsert = {
+            recordBy:record.empybnid,
+            day:record.date.getDate(),
+            month:record.date.getMonth(),
+            year:record.date.getFullYear(),
+            customer:customer[0].bnid,
+            location:location,
+        }
+
+        helpdeskRecordData.push(dataToInsert);
+    }
+
+    for(let i = 0;i<records.length;i++){
+        await insertRecordIntoData(records[i]);
+    }
+
+    for(let i = 0;i<legacyrecords.length;i++){
+        await insertRecordIntoData(legacyrecords[i]);
+    }
+
+    data.userData = users;
+    data.helpdeskData = helpdeskRecordData;
+    res.send({res:data});
 });
 
 app.post('/postShift', (req, res) => {
     let postUserID = req.body.user;
     let shift = req.body.shiftDetails;
 
-    if (apiService.validHashedKeyForUser(postUserID, req.body.key)) {
+    if (apiService.validHashedKeyForUser(postUserID, req.body.key,false)) {
         let sqlUserLook = "select * from users where empybnid = ?";
         let sqlAddShift = "Insert into shifts (coveredBy,postedBy,availability,positionID," +
             "groupID,perm,shiftDateStart,shiftDateEnd,message) values (NULL,?,0,?,?,?,?,?,?)";
@@ -274,7 +732,7 @@ app.post('/pickUpShift', (req, res) => {
     let pickUpUser = req.body.user;
     let shiftId = req.body.shiftId;
 
-    if (apiService.validHashedKeyForUser(pickUpUser, req.body.key)) {
+    if (apiService.validHashedKeyForUser(pickUpUser, req.body.key, false)) {
         let sqlCheckShift = "Select * from shifts where shiftId = ? AND availability = 0";
         sqlCheckShift = mysql.format(sqlCheckShift, [shiftId]);
         db.query(sqlCheckShift, (err, result) => {
@@ -322,7 +780,7 @@ app.post('/pickUpShift', (req, res) => {
 });
 
 app.post('/deleteShift', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let shiftId = req.body.shiftId;
         let sqlShiftRemove = "Delete from shifts where shiftId = ?";
         sqlShiftRemove = mysql.format(sqlShiftRemove, [shiftId]);
@@ -348,7 +806,7 @@ app.post('/getShifts', (req, res) => {
       covered = 0;
     }
 
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let sqlGroupRole = "Select groupRole,id from users where empybnid = ?";
         sqlGroupRole = mysql.format(sqlGroupRole, [req.body.user]);
         db.query(sqlGroupRole, (err, result) => {
@@ -390,10 +848,19 @@ app.post('/getShifts', (req, res) => {
     }
 });
 
+app.post('/getDepartments', async(req, res) => {
+    
+    if (!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
 
+    let department = new Department();
+
+    res.send({res:await department.getAll()});
+});
 
 app.post('/getPositions', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let user = req.body.user;
         let roleChecksql = "Select role,groupRole from users where empybnid = ?";
         roleChecksql = mysql.format(roleChecksql, [user]);
@@ -435,7 +902,7 @@ app.post('/getPositions', (req, res) => {
 });
 
 app.post('/rec', (req, res) => {
-    if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.cookieUser, req.body.key, false)) {
         if (req.body.user) {
             let sql = "Select cosID,empyID,date,name,win,bnid,empybnid,empyname from records" +
                 " t1,customer t2,users t3 where (t1.cosID = t2.id && t1.empyID = t3.id && empybnid = ?) ORDER BY date DESC";
@@ -465,7 +932,7 @@ app.post('/rec', (req, res) => {
 });
 
 app.post('/addRec',(req,res) =>{
-    if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+    if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
         let userIdSql = "select id from users where empybnid = ?"
         db.query(mysql.format(userIdSql,[req.body.user]),(err,result) => {
             if(err || result.length === 0){
@@ -486,7 +953,7 @@ app.post('/addRec',(req,res) =>{
 });
 
 app.post('/locations',(req,res)=>{
-  if (apiService.validHashedKeyForUser(req.body.user, req.body.key)) {
+  if (apiService.validHashedKeyForUser(req.body.user, req.body.key, false)) {
     db.query("select * from location",(err,result)=>{
       if(err){
         res.send({res: "sql-error"});

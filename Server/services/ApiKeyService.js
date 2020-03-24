@@ -51,18 +51,19 @@ class ApiKeyService {
      * @returns {boolean} validation status
      */
     validHashedKeyForUser(user, hash,adminNeeded = false) {
-      return true; //remove this
         for (let i = 0; i < this.openKeys.length; i++) {
             if (this.openKeys[i].owner === user) {
                 if (this.openKeys[i].hash === hash) {
                     console.log("key found for user " + user);
                     if(adminNeeded){
-                        if(this.openKeys[i].admin)
+                        if(this.openKeys[i].admin){
                             return true;
+                        }else{
+                            return false;
+                        }   
                     }else{
                         return true;
                     }
-                    return false;
                 }
             }
         }

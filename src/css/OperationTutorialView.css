@@ -1,0 +1,116 @@
+
+/*Walk Through Input Panel*/
+.inputpanel-leftcnt {
+    margin-right: 30px;
+    width: 100px;
+}
+
+.inputpanel-subtitle {
+    margin: 0;
+    text-align: left;
+    color: #dfdfdf;
+}
+.inputpanel-title {
+    text-align: left;
+    color: white;
+}
+.inputpanel-content-cnt {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: row;
+}
+.inputpanelcontroller-cnt {
+    position: relative;
+    margin-top: 50px;
+    width: 50%;
+    display: inline-block;
+}
+.inputpanelcontroller-header-cnt{
+
+}
+.inputpanelcontroller-header-cnt > h1 {
+    font-style: oblique;
+}
+.inputpanelcontroller-header-cnt > p {
+    color: darkgray;
+}
+.inputpanelcontroller-content-cnt{ 
+    margin: 50px auto;
+}
+.inputhandler-completion-cnt > h3 {
+    margin-top: 50px;
+}
+/********************* Until Components Style **********************/
+
+/*input box*/
+.inputbox1-outer-cnt {
+    position: relative;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: solid 2px #dfdfdf;
+}
+.inputbox1-name-cnt {
+    position: absolute;
+    background-color: var(--background);
+    bottom: 95%;
+    left: calc(60% - 20px);
+}
+.inputbox1-name {
+    color: white;
+    margin: 0;
+    padding: 0 20px;
+}
+.inputbox1 {
+    border: none;
+    background-color: transparent;
+    color: white;
+}
+/*selection*/
+
+.selection1-option {
+    color: white;
+}
+.selection1-option-unselected {
+    color: #3d3d3d;
+}
+.selection1-option-unselected:hover {
+    color: #dfdfdf;
+}
+.selection1-cnt {
+    margin-top: 15px;
+    font-size: large;
+}
+.selection1-cnt > option {
+    padding: 8px;
+}
+
+.btn-1 {
+    border: none;
+    border: solid 2px #dfdfdf;
+    background-color: var(--background);
+    color: white;
+    max-height: 50px;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.btn-1:hover {
+    border-color: white;
+}
+
+/*Animations*/
+.expand-ani {
+    animation: progress-bubble-expand 0.5s 0.3s forwards;
+}
+
+@keyframes progress-bubble-expand {
+from {
+    width: 0;
+    height: 0;
+}
+
+to {
+    width: 15px;
+    height: 15px;
+}
+}

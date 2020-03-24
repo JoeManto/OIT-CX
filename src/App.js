@@ -5,10 +5,11 @@ import React from 'react';
 import LandingPage  from './js/LandingPage.js';
 import WaitList from "./js/WaitList";
 import Documentation from './js/Docs.js';
-import AdminPage from './js/AdminPage.js';
+import OperationPage from './js/OperationsPage.js';
 import Shifts from './js/Shifts.js';
 import PostShiftPage from './js/PostShiftPage'
 import ChangeLog from './js/ChangeLog'
+import DataViewingPage from './js/DataViewingPage';
 
 //function imports
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
@@ -35,10 +36,11 @@ function App() {
                         <Route path={"/"} exact component = {LandingPage}/>
                         <ProtectedRoute path = {"/WaitList"} comp = {WaitList}/>
                         <ProtectedRoute path = {"/Docs"} comp = {Documentation}/>
-                        <ProtectedRoute path = {"/Admin"} comp = {AdminPage}/>
+                        <ProtectedRoute path = {"/Operations"} comp = {OperationPage}/>
                         <ProtectedRoute path = {"/Shifts"} comp = {Shifts}/>
                         <ProtectedRoute path = {"/Post-shift"} comp = {PostShiftPage}/>
                         <ProtectedRoute path = {"/ChangeLog"} comp = {ChangeLog}/>
+                        <ProtectedRoute path = {"/DataViewing"} comp = {DataViewingPage}/>
                     </Switch>
                 </div>
             </Router>
