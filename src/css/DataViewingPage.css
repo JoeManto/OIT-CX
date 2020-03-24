@@ -1,13 +1,18 @@
 .collapsible-cnt {
     margin-bottom: 50px;
 }
+
+.header {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
 .header-text{
     margin-left: 20px;
 }
 .subHeader {
     font-size: 0.8em;
     margin-left: 20px;
-    max-width: 900px;
     color:darkgray;
     font-weight: 500;
 }

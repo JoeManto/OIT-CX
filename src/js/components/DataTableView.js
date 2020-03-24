@@ -8,9 +8,13 @@ const Styles = styled.div`
 	padding: 1rem;
 	  
 	.results {
-		color:darkgrey;
 		margin: 0 auto;
-	}	
+		color:darkgrey;
+		display:flex;
+		flex-direction:column;
+		align-items:center;
+	}
+
 	table {
 	border-spacing: 0;
 	border: 1px solid black;
@@ -298,11 +302,13 @@ function Table({ columns, data }) {
 			</tbody>
 		  </table>
 		  <br />
-		  <div className = {'results'}>Showing the first 20 results of {rows.length} rows</div>
 		  <div className = {'results'}>
+		  <div >Showing the first 20 results of {rows.length} rows</div>
+		  <div>
 			<pre>
 			  <code>{JSON.stringify(state.filters, null, 2)}</code>
 			</pre>
+		  </div>
 		  </div>
 		</>
 	  )
