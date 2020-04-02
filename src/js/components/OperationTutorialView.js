@@ -336,22 +336,27 @@ export class WTInputPanelController extends React.Component {
 	render() {
 		return (
 			<div className={"inputpanelcontroller-cnt"}>
+				<Flex direction = {'row'}>
+					<div className = {"inputpanelcontroller-bar"}/>
+					<div>
+					{this.state.error.status &&
+						<AlertMessage message={this.state.error.message} />
+					}
 
-				{this.state.error.status &&
-					<AlertMessage message={this.state.error.message} />
-				}
+					<div className={"inputpanelcontroller-header-cnt"}>
+						<h3>{this.props.title}</h3>
+						<p>{this.props.description}</p>
+					</div>
+					<div className={"inputpanelcontroller-content-cnt"}>
+						{this.state.opened ? (
+							this.renderOpenView()
+						) : (
+								this.renderClosedView()
+							)}
+					</div>
+					</div>
+				</Flex>
 
-				<div className={"inputpanelcontroller-header-cnt"}>
-					<h3>{this.props.title}</h3>
-					<p>{this.props.description}</p>
-				</div>
-				<div className={"inputpanelcontroller-content-cnt"}>
-					{this.state.opened ? (
-						this.renderOpenView()
-					) : (
-							this.renderClosedView()
-						)}
-				</div>
 			</div>
 		);
 	}
