@@ -4,14 +4,18 @@ const fs = require('fs');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
+
+//Sets Environment Override stored the database
+//Note it's important this operation happens before the loading of the server config
+const EnvVarManager = require('./services/EnvVarManager');
+
+
 const config = require('./SecertConfig.js');
 const ldapWrapper = require('./wrappers/LdapWrapper');
 const newDb = require('./wrappers/MysqlWrapper');
 const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
-const dotenv = require('dotenv');
-const EnvVarManager = require('./services/EnvVarManager');
 
 //models
 const Customer = require('./models/Customer');

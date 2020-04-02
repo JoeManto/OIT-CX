@@ -1,12 +1,20 @@
+const mysql = require('mysql');
 const db = require('../wrappers/MysqlWrapper');
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config();
+const config = require('../SecertConfig');
 
 class EnvVarManager {
     constructor(){
-
+        this.db = mysql.createConnection(config.db_config());
+        this.db.connect((err) => {
+            if (err) {
+                throw err;
+            }
+            console.log('mysql connected...');
+        });
     }
 
+    
     async getEnvironmentVariable(name){
         let variables = await this.gatherEnvironmentOverrides();
 
@@ -23,17 +31,22 @@ class EnvVarManager {
         return process.env[name];
     }
 
-    async gatherEnvironmentOverrides(){
-        let envChanges = await db.query('select * from env');
-
-        if(envChanges.length === 0){
-            return false;
-        }
-
-        return envChanges;
+    async applyEnvironmentOverrides(){
+        db.query('select * from env', (err, overrides) => {
+            if (err) {
+                console.log('sql err gathering env variables');
+                return;
+            }
+            
+            for(let i = 0; i < overrides.length; i++){
+                let {varName,varType,varValue} = overrides[i];
+                process.env[varName] = varType === 'int' ? Number(varValue) : varValue;
+                console.log('...applied override for variable'+varName + 'with value '+ varValue);
+            }
+        });
     }
 
-    async overrideVariable({varName,varType,varValue}){
+    async addEnvironmentOverride({varName,varType,varValue}){
         let res = await db.query('select * from env where varName = ?',{conditions:[varName]});
 
         if(res.length === 0){
