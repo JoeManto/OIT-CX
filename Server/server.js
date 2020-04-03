@@ -8,7 +8,6 @@ const path = require('path');
 const config = require('./SecertConfig.js');
 const ldapWrapper = require('./wrappers/LdapWrapper');
 const newDb = require('./wrappers/MysqlWrapper');
-const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
 
