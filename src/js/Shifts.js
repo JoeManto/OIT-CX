@@ -230,10 +230,13 @@ class CoveredShift extends React.Component {
                           )
                         }
 
-                        <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
-                        <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}} width={25} height={25}
-                                                                     src={require('../rightArrow.png')}/>}/>
-                        <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
+                        <div style = {{display:'flex',flexDirection:'row'}}>
+                            <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
+                            <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}}
+                                                                        width={25} height={25}
+                                                                        src={require('../rightArrow.png')}/>}/>
+                            <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
+                        </div>
                         <ShiftListItem header={"Type"} objToRender={
                             <h3>{this.getCorrectPosNameFromPosMapping(this.props.posmapping)}</h3>}/>
                     </div>
