@@ -35,8 +35,6 @@ class CoveredShift extends React.Component {
             this.shiftTimes.posted = new Date(props.data['postedDate']);
         }
 
-
-
         this.handleShiftClick = this.handleShiftClick.bind(this);
         this.handleShiftPickUp = this.handleShiftPickUp.bind(this);
         this.handleShiftDelete = this.handleShiftDelete.bind(this);
@@ -216,7 +214,7 @@ class CoveredShift extends React.Component {
                             }/>
                     ) : (
                         <ShiftListItem header={""} objToRender={
-                            <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]}-{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
+                            <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]+' '}{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
                         }/>
                     ) }
                    
@@ -238,13 +236,6 @@ class CoveredShift extends React.Component {
                         <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
                         <ShiftListItem header={"Type"} objToRender={
                             <h3>{this.getCorrectPosNameFromPosMapping(this.props.posmapping)}</h3>}/>
-                        <ShiftListItem header={"Date Posted"} objToRender={
-                            <h3>{
-                                this.shiftTimes.posted.getMonth() + 1
-                            }/{this.shiftTimes.posted.getDate()
-                            }/{this.shiftTimes.posted.getFullYear()
-                            } {formatAMPM(this.shiftTimes.posted)}
-                            </h3>}/>
                     </div>
                 </div>
             );
