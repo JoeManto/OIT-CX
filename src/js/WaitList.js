@@ -190,10 +190,9 @@ function Row(props) {
     //date.setHours(date.getHours()+4);
     return (
         <tr>
-            <td>{data.name}</td>
+            <td><a href={"https://itdirect.wmich.edu/WorkOrder.do?reqTemplate=1502"} target={"_blank"}>{data.name}</a></td>
             <td>{data.win}</td>
-            <td><a href={"https://itdirect.wmich.edu/WorkOrder.do?reqTemplate=1502"} target={"_blank"}>{data.bnid}</a>
-            </td>
+            <td>{data.bnid}</td>
             <td>{data.empyname}</td>
             <td>{formatAMPM(date)}</td>
         </tr>
