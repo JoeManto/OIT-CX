@@ -204,7 +204,7 @@ class CoveredShift extends React.Component {
                     )
             );
         } else {
-           
+            
             return (
                 <div onClick={this.handleShiftClick} className={"contentShifts shadow"}>
 
@@ -226,7 +226,7 @@ class CoveredShift extends React.Component {
                                 <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.props.data['empyname']}</h3>}/>
                           ):(
                             <ShiftListItem header={"Covered By"} objToRender={
-                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredBy']}</h3>}/>
+                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredByName']}</h3>}/>
                           )
                         }
 
