@@ -11,7 +11,7 @@ const ldapSearchClient = require('./services/LdapSearch');
 const ApiKeyService = require('./services/ApiKeyService');
 const Mail = require('./Emails/MailNew');
 const dotenv = require('dotenv');
-const EnvVarManager = require('./services/EnvVarManager');
+dotenv.config();
 
 //models
 const Customer = require('./models/Customer');

@@ -42,3 +42,6 @@ BeforeReleaseCheckList.txt
 *.sql
 
 settings.json
+
+*.out
+*.o
