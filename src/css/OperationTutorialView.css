@@ -23,7 +23,12 @@
     position: relative;
     margin-top: 50px;
     width: 50%;
-    display: inline-block;
+    display: block;
+}
+.inputpanelcontroller-bar {
+    margin: 0 50px;
+    width: 4px !important;
+    background-color: var(--seconardy);
 }
 .inputpanelcontroller-header-cnt{
 
