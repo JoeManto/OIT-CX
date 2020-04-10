@@ -11,7 +11,7 @@ export class AdminNavBar extends React.Component {
                 <div className = {'nav-item-cnt'}>
                     <NavItem name = {'Operations'} link = {'/Operations'}  />
                     <NavItem name = {'Data Viewing'} link = {'/Dataviewing'} />
-                    <NavItem name = {'App Settings'} link = {'/Appsetings'} />
+                    <NavItem name = {'App Settings'} link = {'/Appsettings'} />
                     <button className = {'nav-item-btn'} style = {{marginLeft:'100px'}}>{'logout, '}{getCookie('user-bnid')}</button>
                 </div>
             </div>

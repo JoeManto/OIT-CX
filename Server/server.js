@@ -873,7 +873,6 @@ app.post('/getPositions', (req, res) => {
                 return;
             }*/
             if(req.body.fetchAll){
-                console.log("this this ran");
                 let positionsSql = "Select id,posName from positions";
                 positionsSql = mysql.format(positionsSql, [userInfo.groupId]);
                 db.query(positionsSql, (err, result) => {
@@ -962,6 +961,40 @@ app.post('/locations',(req,res)=>{
   }else{
     res.send({res: "apiKey-error"});
   }
+});
+
+app.post('/editEnvironmentVariable', async(req,res) => {
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key, true)){
+        res.send({res: "apiKey-error"});
+    }
+
+    let data = req.body.data[0];
+    let varName = "";
+
+    if(data.key === "New Email Password"){
+        varName = "PASS_EMAIL";
+    }else if (data.key === "New LDAP Password"){
+        varName = "PASS_LDAP";
+    }else{
+        return res.send({error:"SQL Error",errorMessage:"Data received by client fails condition check"});
+    }
+
+    let result = await newDb.query('select * from env where varName = ?',{conditions:[varName]});
+
+    if(result.length === 0){
+        newDb.query("insert into env (varType,varName,varValue) values ('string',?,?)",{conditions:[
+            varName,
+            data.value,
+        ]})
+        .catch(err => res.send({error:'SQL Error',errorMessage:'Error Inserting into env table'}));
+        res.send({res:"Successfully inserted new environment override"});
+    }else {
+        newDb.query('update env set varValue = ? where varName = ?',{conditions:[
+            data.value,
+            varName,
+        ]}).catch(err => res.send({error:'SQL Error',errorMessage:'Error updating env table'}));
+        res.send({res:"Successfully updated environment override"});
+    }
 });
 
 let server = https.createServer(sslOptions, app);

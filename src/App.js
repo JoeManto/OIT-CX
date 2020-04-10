@@ -10,6 +10,7 @@ import Shifts from './js/Shifts.js';
 import PostShiftPage from './js/PostShiftPage'
 import ChangeLog from './js/ChangeLog'
 import DataViewingPage from './js/DataViewingPage';
+import AppSettingsPage from './js/AppSettingsPage';
 
 //function imports
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
@@ -41,6 +42,7 @@ function App() {
                         <ProtectedRoute path = {"/Post-shift"} comp = {PostShiftPage}/>
                         <ProtectedRoute path = {"/ChangeLog"} comp = {ChangeLog}/>
                         <ProtectedRoute path = {"/DataViewing"} comp = {DataViewingPage}/>
+                        <ProtectedRoute path = {'/Appsettings'} comp = {AppSettingsPage} />
                     </Switch>
                 </div>
             </Router>
