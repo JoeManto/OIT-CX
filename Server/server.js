@@ -947,9 +947,11 @@ app.post('/addRec',(req,res) =>{
               if(err){
                 console.log(err);
                 res.send({error:"mysql-error"});
+                return
               }
             })
         });
+        res.send({res:"success"});
     }else {
         res.send({res: "apiKey-error"});
     }
@@ -1001,10 +1003,6 @@ app.post('/editEnvironmentVariable', async(req,res) => {
         ]}).catch(err => res.send({error:'SQL Error',errorMessage:'Error updating env table'}));
         res.send({res:"Successfully updated environment override"});
     }
-});
-
-app.post('/tests',async(req,res) => {
-    return res.send(req.body);
 });
 
 let server = https.createServer(sslOptions, app);

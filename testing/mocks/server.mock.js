@@ -923,9 +923,11 @@ app.post('/addRec',(req,res) =>{
               if(err){
                 console.log(err);
                 res.send({error:"mysql-error"});
+                return
               }
             })
         });
+        res.send({res:"success"});
     }else {
         res.send({res: "apiKey-error"});
     }
