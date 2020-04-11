@@ -190,7 +190,12 @@ app.post('/addUser',async(req,res) => {
     await department.apply({by:'groupName',value:values[1]});
 
     let employee = new Employee();
-    await employee.apply(req.body.user);
+    let applyError = await employee.apply(req.body.user)
+    .catch(err => err);
+
+    if(applyError instanceof Error){
+        return;
+    }
 
     if(employee.getGroup() !== department.data.id){
         return res.send({error:"Permission Error",errorMessage:"Inserting users outside of your department isn't allowed."});
@@ -199,11 +204,14 @@ app.post('/addUser',async(req,res) => {
     //check if user exists
     let employeeToAdd = new Employee();
 
-    employeeToAdd.create(values[0],department.data.id,role)
-    .then(res => {
-        res.send({res:"User successfully added into the database."});
+    let error = await employeeToAdd.create(values[0],department.data.id,role)
+    .then(_ => {
+        return res.send({res:"User successfully added into the database."});
     })
-    .catch(err => res.send({error:err.type,errorMessage:err.description}));
+    .catch(err => {
+        res.send({error:err.type,errorMessage:err.description});
+        return true;
+    });
 });
 
     /*
@@ -238,7 +246,7 @@ app.post('/editUser',async(req, res) => {
     }
 
     if((await employee.apply(bnid)) instanceof Error){
-        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+values[0]+"' doesn't match any users."});
     }
 
     if(employee.getGroup() !== department.data.id){
@@ -680,8 +688,7 @@ app.post('/postShift', (req, res) => {
         sqlUserLook = mysql.format(sqlUserLook, [postUserID]);
         db.query(sqlUserLook, (err, result) => {
             if (err) {
-                res.send({res: "shiftpost-error"});
-                return;
+                return res.send({res: "shiftpost-error",error:err});
             }
             postUserID = result[0]['id'];
             group = result[0]['groupRole'];
@@ -698,12 +705,11 @@ app.post('/postShift', (req, res) => {
 
             db.query(sqlAddShift, (err, _) => {
                 if (err) {
-                    console.log(err);
-                    res.send({res: "shiftpost-error"});
+                    return res.send({res: "shiftpost-error",error:err});
                 } else {
                     db.query("select shiftDateEnd,shiftID from shifts where shiftID = (Select MAX(shiftID) from shifts)", async(err, result) => {
                         if (err) {
-                            console.log(err);
+                            return res.send({res: "shiftpost-error",error:err});
                         }
                         let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
                         shiftServiceChild.send('ADD ' + message);
@@ -739,7 +745,7 @@ app.post('/pickUpShift', (req, res) => {
                 return;
             }
             if (result.length === 0) {
-                res.send({res: "shift-error"});
+                res.send({res: "shift-not-found"});
                 return;
             }
             let sqlUserLook = "select id from users where empybnid = ?";
@@ -783,7 +789,7 @@ app.post('/deleteShift', (req, res) => {
         let sqlShiftRemove = "Delete from shifts where shiftId = ?";
         sqlShiftRemove = mysql.format(sqlShiftRemove, [shiftId]);
         db.query(sqlShiftRemove, (err, result) => {
-            if (err) {
+            if (err || result.affectedRows === 0) {
                 res.send({res: "shift-error"});
             }
             res.send({res: "success"});
@@ -997,5 +1003,11 @@ app.post('/editEnvironmentVariable', async(req,res) => {
     }
 });
 
+app.post('/tests',async(req,res) => {
+    return res.send(req.body);
+});
+
 let server = https.createServer(sslOptions, app);
 server.listen(7304);
+
+module.exports = server;
