@@ -22,10 +22,15 @@ class Department {
 
         this.data.email = result[0].emailList;
         this.data.name = result[0].groupName;
-		this.data.id = result[0].groupID;
+        this.data.id = result[0].groupID;
+        this.data.locked = result[0].locked;
 		
 		return Promise.resolve(this.data);
-	}
+    }
+    
+    async refresh(){
+        await this.apply({by:'groupID',value:this.data.id});
+    }
 	
 	async getAll(){
 		return db.query('select * from groupRoles');
@@ -106,12 +111,16 @@ class Department {
     async delete(){
         if(this.data.id === -1) Promise.reject(new CXError('No Department Selected'));
         
+        console.log(this.data);
+
         db.query('DELETE from users WHERE groupRole = ?', {conditions:[this.data.id]});
 
         db.query('DELETE from positions WHERE groupID = ?', {conditions:[this.data.id]});
 
-        return db.query('DELETE from groupRoles WHERE groupID = ?', {conditions:[this.data.id]})
+        let res = await db.query('DELETE from groupRoles WHERE groupID = ?', {conditions:[this.data.id]})
         .catch(err => new CXError('SQL Error','Error deleting department',err));
+
+        return res;
     }
 
     /**
