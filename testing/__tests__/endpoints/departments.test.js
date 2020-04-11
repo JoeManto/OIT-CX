@@ -186,3 +186,41 @@ describe('Remove Position', () => {
         expect(res.body.res).toEqual('Position successfully removed from helpdesk');
     });
 });
+
+
+//test for getDepartment
+
+
+//test for getPosition
+describe('Get Position Endpoint', () => {
+    //successfully returns all positions regardless of department
+    it('POST /getPositions_All', async() => {
+        const res = await request
+        .post('/getPositions')
+        .send({user:'helpdesk-stu', key:test_key, value:true})
+        .expect(200);
+        expect(res.body.res.length).toBeGreaterThan(0);
+    });
+
+    //successfully returns all positions in the department
+    it('POST /getPositions_byDepartment', async() => {
+        const res = await request
+        .post('/getPositions')
+        .send({user:'helpdesk-stu', key:test_key, value:false})
+        .expect(200);
+        expect(res.body.res.length).toBeGreaterThan(0);
+    });
+});
+
+//test for getDepartment
+describe('Get Department Endpoint', () => {
+    //returns a list of all departments
+    it('POST /getDepartments_All', async() => {
+        const res = await request
+        .post('/getDepartments')
+        .send({user:'helpdesk-stu', key:test_key})
+        .expect(200);
+        expect(res.body.res.length).toBeGreaterThan(0);
+    });
+});
+
