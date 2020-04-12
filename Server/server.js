@@ -103,10 +103,8 @@ app.post('/auth', async(req,res) => {
       
     //query database for user-id
     let result = await newDb.userLookUp(user)
-    //.then(res => {return res[0]})
+    .then(res => {return res[0]})
     .catch(err => res.send({res:"auth-failed",error:err}));
-
-    console.log(result);
 
     if(result.locked === 1){
         return res.send({res: "auth-failed", error: "Account is locked"});
