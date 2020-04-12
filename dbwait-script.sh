@@ -1,5 +1,5 @@
-mysqlRootPass=12345678;
-host=localhost;
+mysqlRootPass=?;
+host=?;
 
 while ! mysql -h $host -u root -p$mysqlRootPass -P 3306 -e "SELECT VERSION();SELECT NOW()"; do
     sleep 5;
