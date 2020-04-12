@@ -52,3 +52,17 @@ export function checkWindowHeight() {
         }
     }
 }
+export function changeTimezone(date, ianatz) {
+
+    var invdate = new Date(date.toLocaleString('en-US', {
+      timeZone: ianatz
+    }));
+
+    var diff = date.getTime() - invdate.getTime();
+
+    return new Date(date.getTime() + diff);
+  }
+
+export const inDifferentTimeZone = () =>{
+    return new Date().getHours() != changeTimezone(new Date(),'America/New_York').getHours();
+}

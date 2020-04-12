@@ -6,7 +6,7 @@ import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
-import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek} from "./Util";
+import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek,changeTimezone,inDifferentTimeZone} from "./Util";
 
 
 
@@ -30,8 +30,8 @@ class CoveredShift extends React.Component {
         };
         this.shiftTimes = {posted: new Date(), start: new Date(), end: new Date()};
         if (props.data) {
-            this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']));
-            this.shiftTimes.end = new Date(Number(props.data['shiftDateEnd']));
+            this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']))
+            this.shiftTimes.end =  new Date(Number(props.data['shiftDateEnd']))
             this.shiftTimes.posted = new Date(props.data['postedDate']);
         }
 
@@ -194,6 +194,7 @@ class CoveredShift extends React.Component {
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                                 <div className = {"flexColumn"}>
                                   <h3>Hello, picking this shift up? <span role="img">🙇🏽‍♂️</span></h3>
+                                  {inDifferentTimeZone() && <p>Looks like your not in the eastern timezone. Shift times are effected</p>}
                                   <p style = {{color:"var(secondary)"}}>Cancel</p>
                                 </div>
                                 <button onClick={this.handleShiftPickUp} style={{marginLeft: "50%", marginTop: "15px"}}
@@ -308,6 +309,7 @@ export default class Shifts extends React.Component {
                         <h3 style={{color: "var(--text)"}}>Open Shifts</h3>
                         <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with 
                         </p>
+                        {inDifferentTimeZone() && <p>Looks like your not in the eastern timezone. Shift times are effected</p>}
                         <a href={IP()+'/post-shift'} className={'postShiftBtn'}>Post Shift</a>
                     </div>
                     

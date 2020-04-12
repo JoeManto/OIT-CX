@@ -6,7 +6,7 @@ import "../css/util.css"
 import "../css/PostShiftPage.css"
 import {Header} from "./WaitList";
 import {getPositionsForUser, postShift} from "./DataFetchHandler";
-import {getDaysInMonth, formatAMPM, IP,checkWindowHeight} from "./Util";
+import {getDaysInMonth, formatAMPM, IP,checkWindowHeight,changeTimezone,inDifferentTimeZone} from "./Util";
 import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 
@@ -542,7 +542,11 @@ export default class PostShiftPage extends React.Component {
 
     handleConfirmPost = () => {
         this.setState({confirmStatus: "untested"}, function () {
-            postShift(getCookie("user-bnid"), this.state);
+            postShift(getCookie("user-bnid"), {
+                ...this.state,
+                date:changeTimezone(this.state.date,'America/New_York'),
+                endDate:changeTimezone(this.state.endDate,'America/New_York'),
+            });
             window.location.href = IP()+"/shifts";
         });
     };
@@ -567,6 +571,7 @@ export default class PostShiftPage extends React.Component {
         const isCallin = () => {
             return this.state.selectedPosition !== null && this.getCorrectPosNameFromPosMapping(this.state.selectedPosition, this.state.positionData) === "Call-In";
         };
+
         //state constants
         const overNightWarning = this.state.overNightWarning;
         const longShiftWarning = this.state.longShiftWarning;
@@ -610,6 +615,9 @@ export default class PostShiftPage extends React.Component {
                         {
                             //set long shift warning
                             (longShiftWarning.status && !isMobile() && !isCallin()) && <p className={"cautionText"}>{longShiftWarning.message}</p>
+                        }
+                        {   
+                            inDifferentTimeZone() && <p className={"cautionText"}>{'Looks like you\'re timezone is different. The shift times will be treated as if you were in the eastern time zone - don\'t make time corrections'}</p>
                         }
                         <h3 style={{marginBottom: "5px",color: "var(--text)"}}>Other Info</h3>
                         <p className={"smallLineHeight"}
