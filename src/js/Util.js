@@ -1,7 +1,8 @@
 const dotenv = require('dotenv');
+const config = require('../config');
 dotenv.config();
 
-export let IP = () => {return "http://localhost:3000"};
+export let IP = () => {return config.host_name()};
 
 export let daysOfTheWeek = () => ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
