@@ -91,7 +91,7 @@ class Mail {
 
 		console.log("sending mail to :"+ mailOptions1.to+":");
 		
-		this.send(this.adminTransporter,mailOptions1,'/shiftcovering.html',replacements1);
+		//this.send(this.adminTransporter,mailOptions1,'/shiftcovering.html',replacements1);
 
 		let extraTransporter = nodemailer.createTransport(config.transporter_config());
 
@@ -106,7 +106,7 @@ class Mail {
 
 		console.log("sending mail to :"+ mailOptions2.to+":");
 
-        this.send(extraTransporter,mailOptions2,'/shiftcovering.html',replacements2);
+        //this.send(extraTransporter,mailOptions2,'/shiftcovering.html',replacements2);
     
     }
 

@@ -7,32 +7,20 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
 
-const config = require('./SecertConfig.js');
-const ldapWrapper = require('./wrappers/LdapWrapper');
-const newDb = require('./wrappers/MysqlWrapper');
-const ApiKeyService = require('./services/ApiKeyService');
-const Mail = require('./Emails/MailNew');
+const config = require('../../Server/SecertConfig');
+const ldapWrapper = require('../../Server/wrappers/LdapWrapper');
+const newDb = require('../../Server/wrappers/MysqlWrapper');
+const ApiKeyService = require('../../Server/services/ApiKeyService');
+const Mail = require('../../Server/Emails/MailNew');
 
 //models
-const Customer = require('./models/Customer');
-const Employee = require('./models/Employee');
-const Shift = require('./models/Shift');
-const User = require('./models/User');
-const Department = require('./models/Department');
-const CXError = require('./models/CXError');
+const Customer = require('../../Server/models/Customer');
+const Employee = require('../../Server/models/Employee');
+const Shift = require('../../Server/models/Shift');
+const User = require('../../Server/models/User');
+const Department = require('../../Server/models/Department');
+const CXError = require('../../Server/models/CXError');
 
-//child processes
-const cp = require('child_process');
-const shiftServiceChild = cp.fork('Server/services/ShiftService.js');
-const recordServiceChild = cp.fork('Server/services/RecordService.js');
-
-//ssl
-const key = fs.readFileSync(__dirname + '/ssl/selfsigned.key');
-const cert = fs.readFileSync(__dirname + '/ssl/selfsigned.crt');
-const sslOptions = {
-    key: key,
-    cert: cert
-};
 
 //DataBase Connection Config
 const db = mysql.createConnection(config.db_config());
@@ -52,20 +40,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('client'));
 
 //----------------------------SERVICES----------------------------------
-
-setInterval(() => {
-    shiftServiceChild.send('CHECK');
-}, 20000);
-setInterval(() => {
-    recordServiceChild.send('CHECK');
-}, 20000);
-
-shiftServiceChild.on('message', function (m) {
-    console.log('[AUTO][SHIFT WORKER] : ' + m);
-});
-recordServiceChild.on('message',function (m) {
-    console.log('[AUTO][Record WORKER] : ' + m)
-});
 
 let apiService = new ApiKeyService();//.api();
 let mailService = new Mail();
@@ -90,8 +64,9 @@ app.get('/time', function (req, res) {
  */
 app.post('/unAuth',(req,res) => {
    console.log("attempting to remove access for user "+req.body.user);
-   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key,false))
+   if(!apiService.validHashedKeyForUser(req.body.user,req.body.key,false)){
         return res.send({res: "apiKey-error"});
+   }
 
     apiService.expireOpenKeyForUser(req.body.user);
     console.log("removed user");
@@ -246,7 +221,7 @@ app.post('/editUser',async(req, res) => {
     }
 
     if((await employee.apply(bnid)) instanceof Error){
-        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+values[0]+"' doesn't match any users."});
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
     }
 
     if(employee.getGroup() !== department.data.id){
@@ -265,6 +240,7 @@ app.post('/editUser',async(req, res) => {
 
     res.send({res:"User data successfully edited."});
 });
+
 
 /*
         [
@@ -295,7 +271,7 @@ app.post('/lockUser',async(req, res) => {
 
     //check if user exists
     if(error instanceof Error){
-        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+bnid+"' doesn't match any users."});
+        return res.send({error:"User Not Found",errorMessage:"The Bnid '"+values[0]+"' doesn't match any users."});
     }
 
     //check if groupId matches for the employee being edited
@@ -304,7 +280,7 @@ app.post('/lockUser',async(req, res) => {
     }
 
     await employee.editLock(1);
-    res.send({res:"User successfully locked."});
+    res.send({res:"User successfully locked"});
 
 });
 
@@ -712,7 +688,7 @@ app.post('/postShift', (req, res) => {
                             return res.send({res: "shiftpost-error",error:err});
                         }
                         let message = result[0]['shiftID'] + " " + result[0]['shiftDateEnd'];
-                        shiftServiceChild.send('ADD ' + message);
+                        //shiftServiceChild.send('ADD ' + message);
 
                         let shiftID = result[0]['shiftID'];
                         let shiftToPost = new Shift();
@@ -790,7 +766,7 @@ app.post('/deleteShift', (req, res) => {
         sqlShiftRemove = mysql.format(sqlShiftRemove, [shiftId]);
         db.query(sqlShiftRemove, (err, result) => {
             if (err || result.affectedRows === 0) {
-                res.send({res: "shift-error"});
+                return res.send({res: "shift-error"});
             }
             res.send({res: "success"});
         })
@@ -1005,7 +981,19 @@ app.post('/editEnvironmentVariable', async(req,res) => {
     }
 });
 
-let server = https.createServer(sslOptions, app);
-server.listen(7304);
+app.post('/tests',async(req,res) => {
+    if(!apiService.validHashedKeyForUser(req.body.user, req.body.key, true)){
+        res.send({res: "apiKey-error"});
+    }
+    return res.send({helloWorld:req.body.testMessage});
+});
 
-module.exports = server;
+const server_instance = app.listen(7304);
+
+let tearDown = () => {
+    db.destroy();
+    newDb.db.destroy();
+    server_instance.close();
+}
+
+module.exports = {app:app,apiService:apiService,tearDown:tearDown};

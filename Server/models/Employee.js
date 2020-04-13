@@ -28,7 +28,11 @@ class Employee extends User {
 		return cache;
 	}
 
-	async create(bnid, group, role) {
+	async refresh(){
+		await this.apply(this.data.empybnid);
+	}
+
+	async create(bnid, group, role,ignoreLDAP = false) {
 		//Search for user in the database
 		const cache = await super.lookup({ by: "empybnid", value: bnid })
 			.catch(err => err);
@@ -38,17 +42,27 @@ class Employee extends User {
 			return Promise.reject(new CXError('Duplicate User Error', 'that employee already exists in the database', null));
 		}
 
-		let result = await ldapSearchClient.search(bnid)
-			.catch(err => err);
-
-		if (result.data.length === 0) {
-			return Promise.reject(new CXError('LDAP Error', 'Data retrieval failed for the bronco netId ' + bnid));
-		}
 
 		let LDAP_Data = {
-			email: result.data[0].mail,
-			preferredName: result.data[0].eduPersonNickname,
-			lastName: result.data[0].wmuLastName,
+			email:null,
+			preferredName:null,
+			lastName:null,
+		}
+
+		if(!ignoreLDAP){
+
+			let result = await ldapSearchClient.search(bnid)
+				.catch(err => err);
+
+			if (result.data.length === 0) {
+				return Promise.reject(new CXError('LDAP Error', 'Data retrieval failed for the bronco netId ' + bnid));
+			}
+
+			LDAP_Data = {
+				email: result.data[0].mail,
+				preferredName: result.data[0].eduPersonNickname,
+				lastName: result.data[0].wmuLastName,
+			}
 		}
 
 		return db.query('insert into users (empyname,surname,role,empybnid,email,groupRole) values (?,?,?,?,?,?)', {

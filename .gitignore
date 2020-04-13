@@ -14,7 +14,7 @@
 # misc
 .DS_Store
 .idea
-.env
+
 .env.local
 .env.development.local
 .env.t.local
@@ -40,5 +40,9 @@ server/build
 BeforeReleaseCheckList.txt
 
 *.sql
+!db_init.sql
 
 settings.json
+
+*.out
+*.o

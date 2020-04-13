@@ -6,7 +6,7 @@ import {getCookie} from "./Authentication";
 import {Footer} from "./LandingPage";
 import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
-import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek} from "./Util";
+import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek,changeTimezone,inDifferentTimeZone} from "./Util";
 
 
 
@@ -30,12 +30,10 @@ class CoveredShift extends React.Component {
         };
         this.shiftTimes = {posted: new Date(), start: new Date(), end: new Date()};
         if (props.data) {
-            this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']));
-            this.shiftTimes.end = new Date(Number(props.data['shiftDateEnd']));
+            this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']))
+            this.shiftTimes.end =  new Date(Number(props.data['shiftDateEnd']))
             this.shiftTimes.posted = new Date(props.data['postedDate']);
         }
-
-
 
         this.handleShiftClick = this.handleShiftClick.bind(this);
         this.handleShiftPickUp = this.handleShiftPickUp.bind(this);
@@ -196,6 +194,7 @@ class CoveredShift extends React.Component {
                                 {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                                 <div className = {"flexColumn"}>
                                   <h3>Hello, picking this shift up? <span role="img">🙇🏽‍♂️</span></h3>
+                                  {inDifferentTimeZone() && <p>Looks like your not in the eastern timezone. Shift times are effected</p>}
                                   <p style = {{color:"var(secondary)"}}>Cancel</p>
                                 </div>
                                 <button onClick={this.handleShiftPickUp} style={{marginLeft: "50%", marginTop: "15px"}}
@@ -206,7 +205,7 @@ class CoveredShift extends React.Component {
                     )
             );
         } else {
-           
+            
             return (
                 <div onClick={this.handleShiftClick} className={"contentShifts shadow"}>
 
@@ -216,7 +215,7 @@ class CoveredShift extends React.Component {
                             }/>
                     ) : (
                         <ShiftListItem header={""} objToRender={
-                            <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]}-{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
+                            <h2>{daysOfTheWeek()[this.shiftTimes.start.getDay()]+' '}{this.shiftTimes.start.getMonth() + 1}/{this.shiftTimes.start.getDate()}/{this.shiftTimes.start.getFullYear()}</h2>
                         }/>
                     ) }
                    
@@ -228,23 +227,19 @@ class CoveredShift extends React.Component {
                                 <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.props.data['empyname']}</h3>}/>
                           ):(
                             <ShiftListItem header={"Covered By"} objToRender={
-                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredBy']}</h3>}/>
+                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredByName']}</h3>}/>
                           )
                         }
 
-                        <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
-                        <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}} width={25} height={25}
-                                                                     src={require('../rightArrow.png')}/>}/>
-                        <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
+                        <div style = {{display:'flex',flexDirection:'row'}}>
+                            <ShiftListItem header={"Start"} objToRender={<h3>{formatAMPM(this.shiftTimes.start)}</h3>}/>
+                            <ShiftListItem header={""} objToRender={<img style={{marginTop: "20px"}}
+                                                                        width={25} height={25}
+                                                                        src={require('../rightArrow.png')}/>}/>
+                            <ShiftListItem header={"End"} objToRender={<h3>{formatAMPM(this.shiftTimes.end)}</h3>}/>
+                        </div>
                         <ShiftListItem header={"Type"} objToRender={
                             <h3>{this.getCorrectPosNameFromPosMapping(this.props.posmapping)}</h3>}/>
-                        <ShiftListItem header={"Date Posted"} objToRender={
-                            <h3>{
-                                this.shiftTimes.posted.getMonth() + 1
-                            }/{this.shiftTimes.posted.getDate()
-                            }/{this.shiftTimes.posted.getFullYear()
-                            } {formatAMPM(this.shiftTimes.posted)}
-                            </h3>}/>
                     </div>
                 </div>
             );
@@ -314,6 +309,7 @@ export default class Shifts extends React.Component {
                         <h3 style={{color: "var(--text)"}}>Open Shifts</h3>
                         <p style={{color: "darkgrey"}}>Click the shifts you wish to interact with 
                         </p>
+                        {inDifferentTimeZone() && <p>Looks like your not in the eastern timezone. Shift times are effected</p>}
                         <a href={IP()+'/post-shift'} className={'postShiftBtn'}>Post Shift</a>
                     </div>
                     

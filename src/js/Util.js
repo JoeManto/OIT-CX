@@ -1,7 +1,8 @@
 const dotenv = require('dotenv');
+const config = require('../config');
 dotenv.config();
 
-export let IP = () => {return "http://localhost:3000"};
+export let IP = () => {return config.host_name()};
 
 export let daysOfTheWeek = () => ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
@@ -50,4 +51,18 @@ export function checkWindowHeight() {
                 elem.style.display = "none";
         }
     }
+}
+export function changeTimezone(date, ianatz) {
+
+    var invdate = new Date(date.toLocaleString('en-US', {
+      timeZone: ianatz
+    }));
+
+    var diff = date.getTime() - invdate.getTime();
+
+    return new Date(date.getTime() + diff);
+  }
+
+export const inDifferentTimeZone = () =>{
+    return new Date().getHours() != changeTimezone(new Date(),'America/New_York').getHours();
 }
