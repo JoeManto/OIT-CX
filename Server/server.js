@@ -530,6 +530,11 @@ app.post('/removePosition', async(req, res) => {
 });
 
 app.post('/dataViewing',async(req,res) => {
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
     let employee = new Employee();
     await employee.apply(req.body.user);
     let groupID = employee.getGroup();
