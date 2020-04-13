@@ -530,6 +530,11 @@ app.post('/removePosition', async(req, res) => {
 });
 
 app.post('/dataViewing',async(req,res) => {
+
+    if (!apiService.validHashedKeyForUser(req.body.user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
     let employee = new Employee();
     await employee.apply(req.body.user);
     let groupID = employee.getGroup();
@@ -544,11 +549,11 @@ app.post('/dataViewing',async(req,res) => {
         newDb.query('select * from users where groupRole = ?',{conditions:[groupID]}),
         newDb.query('select * from positions where groupID = ?',{conditions:[groupID]}),
         newDb.query('select * from shifts INNER JOIN users ON shifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
-        newDb.query('select * from legacyshifts INNER JOIN users ON legacyshifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from legacyShifts INNER JOIN users ON legacyShifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
         newDb.query('select * from records INNER JOIN users on records.empyID = users.id'),
         newDb.query('select * from location'),
-        newDb.query('select * from legacyrecords INNER JOIN users on legacyrecords.empyID = users.id'),
-    ])
+        newDb.query('select * from legacyRecords INNER JOIN users on legacyRecords.empyID = users.id'),
+    ]);
 
     //Add all user data
     let users = resolves[0];
@@ -572,7 +577,7 @@ app.post('/dataViewing',async(req,res) => {
         let startDate = new Date(Number(shift.shiftDateStart));
         let endDate = new Date(Number(shift.shiftDateEnd));
 
-        let coveredBy = shift.coveredBy === null ? undefined : shift.coveredBy;
+        let coveredBy = (shift.coveredBy === null || shift.coveredBy === '') ? undefined : shift.coveredBy;
         let timeOfDay = 'am';
         let startTime = startDate.getHours();
         let endTime = endDate.getHours();
@@ -580,8 +585,16 @@ app.post('/dataViewing',async(req,res) => {
 
         if(coveredBy){
             let coverByEmployee = new User(undefined,'employee');
-            await coverByEmployee.lookup({by:'id',value:shift.coveredBy});
-            coveredBy = coverByEmployee.empybnid;
+            let result = await coverByEmployee.lookup({by:'id',value:shift.coveredBy}).catch(err => {
+                return err;
+            });
+            if(result instanceof Error){
+                coveredBy = 'non-existing user';
+            }else{
+                coveredBy = coverByEmployee.empybnid;
+            }
+        }else{
+            coveredBy = 'n/a'
         }
 
         if(startTime >= 12){
@@ -618,6 +631,11 @@ app.post('/dataViewing',async(req,res) => {
             active:active ? 'yes' : 'no',
         }
 
+        if(insertData.coveredBy === undefined){
+            console.log(shift.shiftID);
+            insertData.coveredBy = 'n/a';
+        }
+
         data.shiftData.push(insertData);
     }
 
@@ -640,7 +658,9 @@ app.post('/dataViewing',async(req,res) => {
 
         let customer = new User(undefined,'customer');
         customer = await customer.lookup({by:'id',value:record.cosID})
-        .catch(err => [{bnid:undefined}]);
+        .catch(err => {
+            return [{bnid:'n/a'}]
+        });
 
         let location;
         for(let i = 0;i<locations.length;i++){
@@ -672,6 +692,7 @@ app.post('/dataViewing',async(req,res) => {
 
     data.userData = users;
     data.helpdeskData = helpdeskRecordData;
+    //console.log(data);
     res.send({res:data});
 });
 

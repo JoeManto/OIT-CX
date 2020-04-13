@@ -37,4 +37,4 @@ done
 
 #Node entry
 echo "starting node";
-#exec node Server/server.js
+exec node Server/server.js

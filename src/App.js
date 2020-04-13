@@ -41,7 +41,7 @@ function App() {
                         <ProtectedRoute path = {"/Shifts"} comp = {Shifts}/>
                         <ProtectedRoute path = {"/Post-shift"} comp = {PostShiftPage}/>
                         <ProtectedRoute path = {"/ChangeLog"} comp = {ChangeLog}/>
-                        <ProtectedRoute path = {"/DataViewing"} comp = {DataViewingPage}/>
+                        <ProtectedRoute path = {"/Dataviewing"} comp = {DataViewingPage}/>
                         <ProtectedRoute path = {'/Appsettings'} comp = {AppSettingsPage} />
                     </Switch>
                 </div>

@@ -40,7 +40,7 @@ describe('getEmailGroup Function', () => {
 
         let resolves = await Promise.all([
            employee.getEmailGroup(),
-           dbhandler.query('select * from grouproles where groupID = 0'),
+           dbhandler.query('select * from groupRoles where groupID = 0'),
         ]);
         
         expect(resolves[0] === resolves[1][0].emailList).toBeTruthy();
@@ -54,7 +54,7 @@ describe('getEmailGroup Function', () => {
 
 		let resolves = await Promise.all([
 			employee.getEmailGroup(),
-			dbhandler.query('select * from grouproles where groupID = 1'),
+			dbhandler.query('select * from groupRoles where groupID = 1'),
 		]);
 
 		expect(resolves[0] === resolves[1][0].emailList).toBeTruthy();

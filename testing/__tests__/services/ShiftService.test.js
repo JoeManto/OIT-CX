@@ -53,7 +53,7 @@ flushShifts = async(table) => {
 describe('Shift Deletion', () => {
     it('Should un-track,delete and migrate an expired shift', async() => {
         
-        flushShifts('legacyshifts');
+        flushShifts('legacyShifts');
         flushShifts('shifts');
 
         await insertTestExpiredShift();
@@ -75,7 +75,7 @@ describe('Shift Deletion', () => {
 
         let resolves = await Promise.all([
             dbhandler.query('select * from shifts'),
-            dbhandler.query('select * from legacyshifts'),
+            dbhandler.query('select * from legacyShifts'),
         ]);
 
         resolves = resolves.map((obj) => obj.length);
@@ -85,7 +85,7 @@ describe('Shift Deletion', () => {
 
     it('Should NOT un-track,delete and migrate a valid non-expired shift', async() => {
         
-        flushShifts('legacyshifts');
+        flushShifts('legacyShifts');
         flushShifts('shifts');
 
         await insertTestValidShift();
@@ -108,7 +108,7 @@ describe('Shift Deletion', () => {
 
         let resolves = await Promise.all([
             dbhandler.query('select * from shifts'),
-            dbhandler.query('select * from legacyshifts'),
+            dbhandler.query('select * from legacyShifts'),
         ]);
 
         resolves = resolves.map((obj) => obj.length);

@@ -88,7 +88,7 @@ class Employee extends User {
 
 		if (!this.data) return;
 
-		let res = await db.query('select * from grouproles where groupID = ?', { conditions: [this.data.groupRole] })
+		let res = await db.query('select * from groupRoles where groupID = ?', { conditions: [this.data.groupRole] })
 			.catch(err => new Error(err));
 
 		return (res instanceof Error) ? res : res[0].emailList;
