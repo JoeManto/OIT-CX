@@ -520,10 +520,10 @@ app.post('/dataViewing',async(req,res) => {
         newDb.query('select * from users where groupRole = ?',{conditions:[groupID]}),
         newDb.query('select * from positions where groupID = ?',{conditions:[groupID]}),
         newDb.query('select * from shifts INNER JOIN users ON shifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
-        newDb.query('select * from legacyshifts INNER JOIN users ON legacyshifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
+        newDb.query('select * from legacyShifts INNER JOIN users ON legacyShifts.postedBy = users.id where groupID = ?',{conditions:[groupID]}),
         newDb.query('select * from records INNER JOIN users on records.empyID = users.id'),
         newDb.query('select * from location'),
-        newDb.query('select * from legacyrecords INNER JOIN users on legacyrecords.empyID = users.id'),
+        newDb.query('select * from legacyRecords INNER JOIN users on legacyRecords.empyID = users.id'),
     ])
 
     //Add all user data

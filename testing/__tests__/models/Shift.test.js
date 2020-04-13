@@ -37,7 +37,7 @@ describe('Shift Delete Function', () => {
 
         let resolves = await Promise.all([
             dbhandler.query('select * from shifts where shiftID = ?',{conditions:[shiftId]}),
-            dbhandler.query('select * from legacyshifts where shiftID = ?',{conditions:[shiftId]}),
+            dbhandler.query('select * from legacyShifts where shiftID = ?',{conditions:[shiftId]}),
         ]);
         
         resolves = resolves.map(obj => obj.length);
@@ -58,7 +58,7 @@ describe('Shift Delete Function', () => {
 
         let resolves = await Promise.all([
             dbhandler.query('select * from shifts where shiftID = ?',{conditions:[shiftId]}),
-            dbhandler.query('select * from legacyshifts where shiftID = ?',{conditions:[shiftId]}),
+            dbhandler.query('select * from legacyShifts where shiftID = ?',{conditions:[shiftId]}),
         ]);
 
         resolves = resolves.map(obj => obj.length);

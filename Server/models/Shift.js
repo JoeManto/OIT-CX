@@ -88,7 +88,7 @@ class Shift {
 
             let {shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart} = this.rawData;
 
-            db.query('insert into legacyshifts (shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values (?,?,?,?,?,?,?,?,?,?,?)',
+            db.query('insert into legacyShifts (shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart) values (?,?,?,?,?,?,?,?,?,?,?)',
             {conditions:[
                 shiftID,coveredBy,postedBy,postedDate,availability,positionID,groupID,perm,message,shiftDateEnd,shiftDateStart, 
             ]})
