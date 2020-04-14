@@ -623,11 +623,12 @@ app.post('/dataViewing',async(req,res) => {
             startTime:startTime,
             endTime:endTime,
             timeOfDay:timeOfDay,
+            date:startDate,
             day:startDate.getDate(),
             month:startDate.getMonth(),
             year:startDate.getFullYear(),
             shiftType:position,
-            datePosted:shift.postedDate.toLocaleDateString(),
+            datePosted:shift.postedDate,
             active:active ? 'yes' : 'no',
         }
 
@@ -672,6 +673,7 @@ app.post('/dataViewing',async(req,res) => {
 
         let dataToInsert = {
             recordBy:record.empybnid,
+            date:record.date,
             day:record.date.getDate(),
             month:record.date.getMonth(),
             year:record.date.getFullYear(),
