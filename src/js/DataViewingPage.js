@@ -40,12 +40,12 @@ export default class DataViewingPage extends React.Component {
 						</CollapsibleContentWithHeader>
 
                         <CollapsibleContentWithHeader header = {'Shifts Table'} subheader = {`
-						The shifts table contains all active and non-active shifts from the database for your department. Note that both start time and start end are rounded down to the nearest hour, meaning the minutes for start and end time are not expressed in the table.`}>
+						The shifts table contains all active and non-active shifts from the database for your department. Note that both start time and start end are rounded down to the nearest hour, meaning the minutes for start and end time are not expressed in the table. When filtering data the results are sensitive to the time of day of a record. To avoid results not showing, use the In-Range filtering option when filtering by date.`}>
 							<ShiftDataTable data = {this.state.shiftData}/>
 						</CollapsibleContentWithHeader>
 
                         <CollapsibleContentWithHeader header = {'HelpDesk Record Table'} subheader = {`
-						The helpdesk records table contains all active and legacy records. Note all blank table records should be treated as the value doesn't exist.`}>
+						The helpdesk records table contains all active and legacy records. Note all blank table records should be treated as the value doesn't exist. When filtering data the results are sensitive to the time of day of a record. To avoid results not showing, use the In-Range filtering option when filtering by date.`}>
 							<HelpDeskRecords data = {this.state.helpdeskData}/>
 						</CollapsibleContentWithHeader>
                         <div style = {{marginTop:'100px'}}/>

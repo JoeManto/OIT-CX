@@ -500,12 +500,41 @@ app.post('/addPosition', async(req, res) => {
     let employee = new Employee();
     await employee.apply(user);
 
-
     let department = new Department();
     await department.apply({by:'groupID', value:employee.getGroup()});
     
     department.addPosition(values[0]);
     res.send({res:"Position successfully added to " + department.data.name});
+});
+
+/*
+*/
+app.post('/removeShift',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let shift = new Shift();
+    let shiftData = await shift.apply(Number(values[0]))
+    .catch(err => {console.log(err); return err;});
+
+    if(shiftData instanceof Error){
+        return res.send({error:"Shift Not Found",errorMessage:"No shift was found in your department with ID "+values[0]});
+    }
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(shiftData.groupID !== employee.getGroup()){
+        return res.send({error:"Permission Error",errorMessage:"You can't delete a shift that is not in your department"});
+    }
+
+    let result = await shift.delete();
+
+    res.send({res:'Shift was successfully deleted from the database'});
 });
 
 /**

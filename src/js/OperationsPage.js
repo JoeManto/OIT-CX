@@ -315,6 +315,29 @@ import {AdminNavBar} from './components/AdminNavBar';
 
                 </WTInputPanelController>
 
+                <WTInputPanelController endpoint = {'removeShift'} title = {'Remove Shift'}
+                    description = {`
+                   Completely remove a shift based on shiftID. Note that you will only be able to remove shifts for your given department.
+                    `} 
+                    numPanels={2}>
+
+                    <WTInputPanel 
+                    title={"ShiftID"} 
+                    subtitle={"eg. 224"}>
+                        <Input1 title={"ShiftID"} />
+                    </WTInputPanel>
+
+                    <WTInputPanel 
+                    title={"Confirm"} 
+                    subtitle={"This operation can't be un-done. Do you wish to continue?"}>
+                        <SelectionController
+                            open = {true}
+                            fields={['Yes I understand']}
+                        />
+                    </WTInputPanel>
+
+                </WTInputPanelController>
+
                 </div>
             )}     
             </div>
