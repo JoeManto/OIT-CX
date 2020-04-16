@@ -2,17 +2,24 @@ import React from 'react';
 import '../../css/components_css/AdminNavBar.css';
 import {IP} from '../Util';
 import {getCookie} from '../Authentication';
+import {logout} from '../DataFetchHandler';
 
 export class AdminNavBar extends React.Component {
+
+    handleLogout () {
+        logout();
+        window.location.href = IP();
+    }
+
     render(){
         return (
             <div className = {'nav-cnt'}>
                 <Logo/>
                 <div className = {'nav-item-cnt'}>
                     <NavItem name = {'Operations'} link = {'/Operations'}  />
-                    <NavItem name = {'Data Viewing'} link = {'/Dataviewing'} />
+                    <NavItem name = {'Reporting'} link = {'/Reporting'} />
                     <NavItem name = {'App Settings'} link = {'/Appsettings'} />
-                    <button className = {'nav-item-btn'} style = {{marginLeft:'100px'}}>{'logout, '}{getCookie('user-bnid')}</button>
+                    <button onClick = {()=>{this.handleLogout()}} className = {'nav-item-btn'} style = {{marginLeft:'100px'}}>{'logout, '}{getCookie('user-bnid')}</button>
                 </div>
             </div>
         );
