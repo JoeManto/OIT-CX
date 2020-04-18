@@ -117,7 +117,8 @@ app.post('/auth', async(req,res) => {
     if(result.password === pass){
         //Create user instance and send a success full login response
         let key = apiService.createKeyForUser(user, result.role === 1,18000);
-        return res.send({res: "auth-success", key: key});
+
+        return res.send({res: "auth-success", key: key,group: result.role});
     }
 
     /*
@@ -125,11 +126,12 @@ app.post('/auth', async(req,res) => {
         
         *requires auth from lDAP
     */
+    
     return ldapWrapper.authUser(user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
                 let key = apiService.createKeyForUser(user, result.role === 1,18000);
-                return res.send({res: "auth-success", key: key});
+                return res.send({res: "auth-success", key: key,role:result.role});
             })
             .catch((err) => {
                 return res.send(err);
@@ -457,6 +459,37 @@ app.post('/unlockDepartment', async(req, res) => {
     department.editLock(0);
     
     res.send({res:"Department successfully unlocked."});
+});
+
+app.post('/addLocation', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let result = await newDb.query("insert into location (locationName) values (?)",{conditions:[values[0]]})
+    .then(res => {return res})
+    .catch(err => console.log(err));
+    
+    return res.send({res:'Successfully inserted location.'}); 
+});
+
+app.post('/removeLocation', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let result = await newDb.query("delete from location where locationName = ?",{conditions:[values[0]]})
+    .then(res => {return res})
+    .catch(err => console.log(err));
+
+    return res.send({res:'Successfully deleted location.'}); 
+
 });
 
 app.post('/removeDepartment', async(req, res) => {
@@ -1032,9 +1065,9 @@ app.post('/editEnvironmentVariable', async(req,res) => {
     let varName = "";
 
     if(data.key === "New Email Password"){
-        varName = "PASS_EMAIL";
+        varName = "EMAIL_PASS";
     }else if (data.key === "New LDAP Password"){
-        varName = "PASS_LDAP";
+        varName = "LDAP_PASS";
     }else{
         return res.send({error:"SQL Error",errorMessage:"Data received by client fails condition check"});
     }

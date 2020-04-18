@@ -101,6 +101,15 @@ export function deleteShift(user = getCookie("user-bnid"), shiftID) {
         }, '/deleteShift',
     );
 }
+
+export function locations(){
+    return apiResponse('POST',BASIC_HEADER,
+    {
+        user: getCookie("user-bnid"),
+        key: getCookie("key"),
+    },'/locations');
+}
+
 export function postShift(user = getCookie("user-bnid"), shiftDetails) {
     shiftDetails.endDate = shiftDetails.endDate.getTime();
     shiftDetails.date = shiftDetails.date.getTime();

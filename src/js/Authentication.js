@@ -20,6 +20,7 @@ export function Auth(cred) {
         if(content.res === "auth-success"){
             setCookie("user-bnid",cred.user,1);
             setCookie("key",content.key,1);
+            setCookie("user-role",content.role);
             return {status:true,error:"no-error"};
         }
         if(content.error){
