@@ -3,7 +3,7 @@ import '../css/OperationsPage.css';
 import '../css/util.css';
 import '../css/OperationTutorialView.css';
 import {WTInputPanelController,WTInputPanel,Input1,SelectionController} from './components/OperationTutorialView'
-import {getPositionsForUser,getAllDepartments} from './DataFetchHandler'
+import {getPositionsForUser,getAllDepartments,apiResponse, locations} from './DataFetchHandler'
 import {AdminNavBar} from './components/AdminNavBar';
 
 
@@ -15,20 +15,22 @@ import {AdminNavBar} from './components/AdminNavBar';
             isFetchingData:true,
             positions:[],
             departments:[],
+            locations:[],
         }
     }
 
     async componentDidMount(){
-
         let resolves = await Promise.all([
             getPositionsForUser(false),
             getAllDepartments(),
+            locations(),
         ]);
 
         resolves[0] = resolves[0].res.map((obj) => obj.posName); 
         resolves[1] = resolves[1].res.map((obj) => obj.groupName);
-
-        this.setState({isFetchingData:false,positions:resolves[0],departments:resolves[1]});
+        resolves[2] = resolves[2].res.map((obj) => obj.locationName);
+     
+        this.setState({isFetchingData:false,positions:resolves[0],departments:resolves[1],locations:resolves[2]});
     }
 
     render(){
@@ -289,6 +291,36 @@ import {AdminNavBar} from './components/AdminNavBar';
 
                 </WTInputPanelController>
 
+                <WTInputPanelController endpoint = {'addLocation'} title = {'Add Location'}
+                    description = {`
+                    Add a new waitlist location.	
+                    `} 
+                    numPanels={1}>
+
+                    <WTInputPanel
+                    title={"Location Name"}
+                    subtitle={"eg. Walk-In"}
+                    >
+                        <Input1 title={"Name"} />
+                    </WTInputPanel>
+                </WTInputPanelController>
+
+                <WTInputPanelController endpoint = {'removeLocation'} title = {'Remove Location'}
+                    description = {`
+                    Remove a waitlist location.	
+                    `} 
+                    numPanels={1}>
+
+                    <WTInputPanel
+                    title={"Location Name"}
+                    subtitle={"eg. Walk-In"}>
+                        <SelectionController
+                            open = {true}
+                            fields={this.state.locations}
+                        />
+                    </WTInputPanel>
+                </WTInputPanelController>
+
                 <WTInputPanelController endpoint = {'removeDepartment'} title = {'Remove Department'}
                     description = {`
                    Completely remove a department and all users within the department. This operation should only be used for accidentally created departments. WARNING! DATA CANNOT BE RECOVERED! 
@@ -307,6 +339,29 @@ import {AdminNavBar} from './components/AdminNavBar';
                     <WTInputPanel 
                     title={"Confirm"} 
                     subtitle={"This is a dangerous operation. Do you wish to continue?"}>
+                        <SelectionController
+                            open = {true}
+                            fields={['Yes I understand']}
+                        />
+                    </WTInputPanel>
+
+                </WTInputPanelController>
+
+                <WTInputPanelController endpoint = {'removeShift'} title = {'Remove Shift'}
+                    description = {`
+                   Completely remove a shift based on shiftID. Note that you will only be able to remove shifts for your given department.
+                    `} 
+                    numPanels={2}>
+
+                    <WTInputPanel 
+                    title={"ShiftID"} 
+                    subtitle={"eg. 224"}>
+                        <Input1 title={"ShiftID"} />
+                    </WTInputPanel>
+
+                    <WTInputPanel 
+                    title={"Confirm"} 
+                    subtitle={"This operation can't be un-done. Do you wish to continue?"}>
                         <SelectionController
                             open = {true}
                             fields={['Yes I understand']}

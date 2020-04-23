@@ -35,7 +35,10 @@ import {AdminNavBar} from './components/AdminNavBar';
             <AdminNavBar/>
 			<div className = "admin-operations-cnt">
 			<h1 style = {{fontStyle:'oblique'}}>App Settings</h1>
-			<p style = {{color:'darkgrey'}}>---</p>
+            <p style = {{color:'darkgrey'}}>{`The app settings below allow you to either update the LDAP password used for login
+             and authentication services in OIT-CX, or the Email password used for sending shift related emails to users in the system.
+             Note: the docker container needs to be restarted for these changes to take effect. Please reference the maintenance doc for instructions on restarting OIT-CX.
+             `}</p>
 
             {this.state.isFetchingData ? (
                 <h2>fetching data</h2>

@@ -117,7 +117,8 @@ app.post('/auth', async(req,res) => {
     if(result.password === pass){
         //Create user instance and send a success full login response
         let key = apiService.createKeyForUser(user, result.role === 1,18000);
-        return res.send({res: "auth-success", key: key});
+
+        return res.send({res: "auth-success", key: key,group: result.role});
     }
 
     /*
@@ -125,11 +126,12 @@ app.post('/auth', async(req,res) => {
         
         *requires auth from lDAP
     */
+    
     return ldapWrapper.authUser(user, pass)
             .then(_ => {
                 //Create user instance and send a success full login response
                 let key = apiService.createKeyForUser(user, result.role === 1,18000);
-                return res.send({res: "auth-success", key: key});
+                return res.send({res: "auth-success", key: key,role:result.role});
             })
             .catch((err) => {
                 return res.send(err);
@@ -459,6 +461,37 @@ app.post('/unlockDepartment', async(req, res) => {
     res.send({res:"Department successfully unlocked."});
 });
 
+app.post('/addLocation', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let result = await newDb.query("insert into location (locationName) values (?)",{conditions:[values[0]]})
+    .then(res => {return res})
+    .catch(err => console.log(err));
+    
+    return res.send({res:'Successfully inserted location.'}); 
+});
+
+app.post('/removeLocation', async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let result = await newDb.query("delete from location where locationName = ?",{conditions:[values[0]]})
+    .then(res => {return res})
+    .catch(err => console.log(err));
+
+    return res.send({res:'Successfully deleted location.'}); 
+
+});
+
 app.post('/removeDepartment', async(req, res) => {
     let user = req.body.user;
     let values = req.body.data.map(obj => obj.value);
@@ -500,12 +533,41 @@ app.post('/addPosition', async(req, res) => {
     let employee = new Employee();
     await employee.apply(user);
 
-
     let department = new Department();
     await department.apply({by:'groupID', value:employee.getGroup()});
     
     department.addPosition(values[0]);
     res.send({res:"Position successfully added to " + department.data.name});
+});
+
+/*
+*/
+app.post('/removeShift',async(req, res) => {
+    let user = req.body.user;
+    let values = req.body.data.map(obj => obj.value);
+
+    if (!apiService.validHashedKeyForUser(user, req.body.key,true)) {
+        return res.send({res: "apiKey-error"}); 
+    }
+
+    let shift = new Shift();
+    let shiftData = await shift.apply(Number(values[0]))
+    .catch(err => {console.log(err); return err;});
+
+    if(shiftData instanceof Error){
+        return res.send({error:"Shift Not Found",errorMessage:"No shift was found in your department with ID "+values[0]});
+    }
+
+    let employee = new Employee();
+    await employee.apply(user);
+
+    if(shiftData.groupID !== employee.getGroup()){
+        return res.send({error:"Permission Error",errorMessage:"You can't delete a shift that is not in your department"});
+    }
+
+    let result = await shift.delete();
+
+    res.send({res:'Shift was successfully deleted from the database'});
 });
 
 /**
@@ -1003,9 +1065,9 @@ app.post('/editEnvironmentVariable', async(req,res) => {
     let varName = "";
 
     if(data.key === "New Email Password"){
-        varName = "PASS_EMAIL";
+        varName = "EMAIL_PASS";
     }else if (data.key === "New LDAP Password"){
-        varName = "PASS_LDAP";
+        varName = "LDAP_PASS";
     }else{
         return res.send({error:"SQL Error",errorMessage:"Data received by client fails condition check"});
     }

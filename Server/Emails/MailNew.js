@@ -91,7 +91,7 @@ class Mail {
 
 		console.log("sending mail to :"+ mailOptions1.to+":");
 		
-		//this.send(this.adminTransporter,mailOptions1,'/shiftcovering.html',replacements1);
+		this.send(this.adminTransporter,mailOptions1,'/shiftcovering.html',replacements1);
 
 		let extraTransporter = nodemailer.createTransport(config.transporter_config());
 
@@ -106,7 +106,7 @@ class Mail {
 
 		console.log("sending mail to :"+ mailOptions2.to+":");
 
-        //this.send(extraTransporter,mailOptions2,'/shiftcovering.html',replacements2);
+        this.send(extraTransporter,mailOptions2,'/shiftcovering.html',replacements2);
     
     }
 
@@ -144,11 +144,6 @@ class Mail {
         let group = await db.query('select * from groupRoles where groupID = ?',{conditions:[postedBy[0].groupRole]});
         let emailList = group[0].emailList;
 
-        console.log('EMAIL LIST = '+emailList);
-
-        //remove this
-        emailList = 'joe.m.manto@wmich.edu'
-
         //Build Replacements
         let replacements = {
                 _FullName:  postedBy[0].empyname + ' ' + postedBy[0].surname,
@@ -167,7 +162,7 @@ class Mail {
             subject : 'Shift Posting',
         }
 
-        //this.send(this.adminTransporter,mailOptions,'/shiftposting.html',replacements);
+        this.send(this.adminTransporter,mailOptions,'/shiftposting.html',replacements);
     }
 
 
@@ -178,26 +173,21 @@ class Mail {
      */
     send(transport,mailOptions,htmlPath,replacements){
 
-        //remove all before release
-		//mailOptions.to = 'joe.m.manto@wmich.edu';
+        this.readHTMLFile(__dirname + htmlPath, function(err, html) {
+            var template = handlebars.compile(html);
+            var htmlToSend = template(replacements);
 
-		if(mailOptions.to === 'joe.m.manto@wmich.edu' || mailOptions.to === 'jared.e.teller@wmich.edu'){
+            Object.assign(mailOptions,{html:htmlToSend});
 
-			this.readHTMLFile(__dirname + htmlPath, function(err, html) {
-				var template = handlebars.compile(html);
-				var htmlToSend = template(replacements);
-
-				Object.assign(mailOptions,{html:htmlToSend});
-
-				transport.sendMail(mailOptions, function (error, res) {
-					if (error) {
-						console.log(error);
-						return;
-					}
-					console.log('mailed!');
-				});
-			});
-		}
+            transport.sendMail(mailOptions, function (error, res) {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                console.log('mailed!');
+            });
+        });
+		
     }
 
 

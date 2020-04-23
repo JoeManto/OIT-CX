@@ -3,6 +3,7 @@ import React from 'react';
 import {getDataViewingData} from './DataFetchHandler';
 import '../css/DataViewingPage.css';
 import {AdminNavBar} from './components/AdminNavBar';
+import {Button} from './components/General';
 
 import {AgGridReact} from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -39,14 +40,15 @@ export default class DataViewingPage extends React.Component {
 						</CollapsibleContentWithHeader>
 
                         <CollapsibleContentWithHeader header = {'Shifts Table'} subheader = {`
-						The shifts table contains all active and non-active shifts from the database for your department. Note that both start time and start end are rounded down to the nearest hour, meaning the minutes for start and end time are not expressed in the table.`}>
+						The shifts table contains all active and non-active shifts from the database for your department. Note that both start time and start end are rounded down to the nearest hour, meaning the minutes for start and end time are not expressed in the table. When filtering data the results are sensitive to the time of day of a record. To avoid results not showing, use the In-Range filtering option when filtering by date.`}>
 							<ShiftDataTable data = {this.state.shiftData}/>
 						</CollapsibleContentWithHeader>
 
                         <CollapsibleContentWithHeader header = {'HelpDesk Record Table'} subheader = {`
-						The helpdesk records table contains all active and legacy records. Note all blank table records should be treated as the value doesn't exist.`}>
+						The helpdesk records table contains all active and legacy records. Note all blank table records should be treated as the value doesn't exist. When filtering data the results are sensitive to the time of day of a record. To avoid results not showing, use the In-Range filtering option when filtering by date.`}>
 							<HelpDeskRecords data = {this.state.helpdeskData}/>
 						</CollapsibleContentWithHeader>
+                        <div style = {{marginTop:'100px'}}/>
                     </div>
                 }
             </div>
@@ -119,6 +121,7 @@ class UsersDataTable extends React.Component {
             ],
             rowData: this.props.data
           }
+
     }
     onGridReady = (params) => {
         this.api = params.api;
@@ -130,6 +133,7 @@ class UsersDataTable extends React.Component {
     filterChanged = (params) => {
         this.setState({rowCount:this.api.getDisplayedRowCount()});
     }
+
     render(){
         return(
             <div
@@ -274,6 +278,8 @@ class HelpDeskRecords extends React.Component {
             totalRowCount:0,
             rowCount:0,
           }
+
+          this.handleExport = this.handleExport.bind(this);
     }
 
     onGridReady = (params) => {
@@ -287,6 +293,9 @@ class HelpDeskRecords extends React.Component {
         this.setState({rowCount:this.api.getDisplayedRowCount()});
     }
 
+    handleExport () {
+        this.api.exportDataAsCsv();
+    }
     render(){
         return(
             <div
@@ -303,8 +312,16 @@ class HelpDeskRecords extends React.Component {
               onFilterChanged={this.filterChanged}
               columnDefs={this.state.columnDefs}
               rowData={this.state.rowData}>
+           
             </AgGridReact>
             <p>Rows displayed: {this.state.rowCount}/{this.state.totalRowCount}</p>
+            <Button
+				btnText={"export"}
+				onClick={() => {
+					this.handleExport();
+                }}
+                style = {{marginBottom:'25px'}}
+			/>
           </div>
 
         );

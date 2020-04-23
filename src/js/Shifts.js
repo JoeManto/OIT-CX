@@ -8,8 +8,6 @@ import {Header} from "./WaitList";
 import {getPositionsForUser, pickUpShift, deleteShift, shiftFetch} from "./DataFetchHandler";
 import {formatAMPM,checkWindowHeight,IP,daysOfTheWeek,changeTimezone,inDifferentTimeZone} from "./Util";
 
-
-
 function ShiftListItem(props) {
     return (
         <div className={"ShiftListItem"}>

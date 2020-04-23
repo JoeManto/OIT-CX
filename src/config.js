@@ -1,5 +1,5 @@
 module.exports = {
     host_name:function () {
-        return "http://localhost:3000";
+        return "https://shifts.it.wmich.edu";
     }
 };

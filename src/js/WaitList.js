@@ -2,7 +2,8 @@ import React from 'react';
 import {Footer} from './LandingPage';
 import {getCookie, setCookie} from "./Authentication";
 import {apiResponse,BASIC_HEADER,recordFetch,logout} from "./DataFetchHandler";
-import {checkWindowHeight,formatAMPM,sqlTimeStampFormat,sqlDateFormat} from "./Util";
+import {checkWindowHeight,formatAMPM,sqlTimeStampFormat,sqlDateFormat,IP} from "./Util";
+import {Button} from './components/General';
 import "../css/WaitList.css"
 import "../css/util.css"
 import "../css/Media.css";
@@ -165,16 +166,31 @@ export function Header(props) {
         }
     }
 
+    function handleAdminRedirect(){
+      window.location.href = IP() + '/operations';
+    }
+
     return (
         <div id="HeaderCont">
             <div id = "header-titleBlock" className={"left flexColumn"}>
                 <h2 style={{fontStyle: "oblique"}}>{props.title}</h2>
                 <p id = "header-subTitle">{props.subtitle}</p>
             </div>
+            
+            <div style = {{display:'flex',flexDirection:'row',float:'right',marginTop:'10px'}}>
+            {getCookie('user-role') === '1' && 
+                <Button 
+                  btnText = {'admin tools'} 
+                  onClick = {handleAdminRedirect}
+                  style = {{marginRight: '20px'}}
+                />
+              }
+              <p onClick={handleLogout} id="logout" className={"right"}>
+                <strong>{getCookie("user-bnid")}</strong>
+                <a href={"/"} style={{color: 'var(--text)',marginLeft:"10px"}}>logout</a>
+              </p>
+            </div>
 
-            <p onClick={handleLogout} id="logout" className={"right"}><strong>{getCookie("user-bnid")}</strong>
-            <a href={"/"} style={{color: 'var(--text)',marginLeft:"10px"}}>logout</a>
-            </p>
         </div>
     );
 }
