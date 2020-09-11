@@ -31,6 +31,8 @@ class CoveredShift extends React.Component {
             this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']))
             this.shiftTimes.end =  new Date(Number(props.data['shiftDateEnd']))
             this.shiftTimes.posted = new Date(props.data['postedDate']);
+
+            console.log(props.data);
         }
 
         this.handleShiftClick = this.handleShiftClick.bind(this);
@@ -90,6 +92,18 @@ class CoveredShift extends React.Component {
     isOwner = () => {
         return getCookie("user-bnid") === this.props.data['empybnid'] && this.props.data['coveredBy'] === null;
     };
+
+    capFirstChar = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    getNameAndInitials = (type, data) => {
+        if(type === "coveredBy"){
+            return `${this.capFirstChar(data['coveredByName'])} ${this.capFirstChar(data['coveredBySurname'].substring(0, 1))}`
+        }else{
+            return `${this.capFirstChar(data['empyname'])} ${this.capFirstChar(data['surname'].substring(0, 1))}`
+        }
+    }
 
     render() {
         if (this.state.pickedUp) {
@@ -222,10 +236,10 @@ class CoveredShift extends React.Component {
                         <ShiftListItem header={"ShiftID"} objToRender={<h3>{this.props.data['shiftId']}</h3>}/>
                         {this.props.data['coveredBy'] === null ? (
                             <ShiftListItem header={"Requester"} objToRender={
-                                <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.props.data['empyname']}</h3>}/>
+                                <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.getNameAndInitials("Requester",this.props.data)}</h3>}/>
                           ):(
                             <ShiftListItem header={"Covered By"} objToRender={
-                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.props.data['coveredByName']}</h3>}/>
+                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.getNameAndInitials("coveredByName",this.props.data)}</h3>}/>
                           )
                         }
 

@@ -907,7 +907,7 @@ app.post('/getShifts', (req, res) => {
             userId = result[0]['id'];
 
             let sqlShifts = "Select shiftId,coveredBy,postedBy,postedDate,availability,positionID," +
-                "perm,shiftDateStart,shiftDateEnd,empyname,empybnid from shifts t1,users t2 where" +
+                "perm,shiftDateStart,shiftDateEnd,empyname,empybnid,surname from shifts t1,users t2 where" +
                 " groupId = ? AND t1.postedBy = t2.id AND availability = ? AND perm = ? ORDER BY shiftDateStart ASC;";
 
             let sqlUsers = "SELECT * FROM users where groupRole = "+groupRole;
@@ -923,6 +923,7 @@ app.post('/getShifts', (req, res) => {
                         if(result2[i].id === obj.coveredBy){
                           obj.coveredBy = result2[i].empybnid;
                           Object.assign(obj,{coveredByName:result2[i].empyname});
+                          Object.assign(obj,{coveredBySurname:result2[i].surname})
                         }
                       }
                    })
