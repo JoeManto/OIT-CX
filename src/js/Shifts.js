@@ -237,7 +237,7 @@ class CoveredShift extends React.Component {
                                 <h3>{this.props.data['empybnid'] === getCookie("user-bnid") ? "You!": this.getNameAndInitials("Requester",this.props.data)}</h3>}/>
                           ):(
                             <ShiftListItem header={"Covered By"} objToRender={
-                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.getNameAndInitials("coveredByName",this.props.data)}</h3>}/>
+                                <h3>{this.props.data['coveredBy'] === getCookie("user-bnid") ? "You!": this.getNameAndInitials("coveredBy",this.props.data)}</h3>}/>
                           )
                         }
 
