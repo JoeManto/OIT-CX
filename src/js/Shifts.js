@@ -31,8 +31,6 @@ class CoveredShift extends React.Component {
             this.shiftTimes.start = new Date(Number(props.data['shiftDateStart']))
             this.shiftTimes.end =  new Date(Number(props.data['shiftDateEnd']))
             this.shiftTimes.posted = new Date(props.data['postedDate']);
-
-            console.log(props.data);
         }
 
         this.handleShiftClick = this.handleShiftClick.bind(this);
